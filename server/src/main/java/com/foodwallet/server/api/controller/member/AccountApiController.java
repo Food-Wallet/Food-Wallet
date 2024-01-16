@@ -1,8 +1,10 @@
 package com.foodwallet.server.api.controller.member;
 
 import com.foodwallet.server.api.ApiResponse;
+import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
 import com.foodwallet.server.api.controller.member.request.SigninRequest;
+import com.foodwallet.server.api.service.member.response.CheckEmailDuplicationResponse;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
 import com.foodwallet.server.security.TokenInfo;
 import jakarta.validation.Valid;
@@ -36,5 +38,13 @@ public class AccountApiController {
             .refreshToken("jwt.refresh.token")
             .build();
         return ApiResponse.ok(tokenInfo);
+    }
+
+    @PostMapping("/email")
+    public ApiResponse<CheckEmailDuplicationResponse> checkEmailDuplication(@Valid @RequestBody CheckEmailDuplicationRequest request) {
+        CheckEmailDuplicationResponse response = CheckEmailDuplicationResponse.builder()
+            .isDuplicated(true)
+            .build();
+        return ApiResponse.ok(response);
     }
 }

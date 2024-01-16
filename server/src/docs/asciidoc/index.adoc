@@ -11,14 +11,19 @@ endif::[]
 
 include::overview.adoc[]
 
+[[Account-API]]
+== Account API
+
+include::api/member/signin.adoc[]
+include::api/member/logout.adoc[]
+include::api/member/signup.adoc[]
+include::api/member/check-email-duplication.adoc[]
 
 [[Member-API]]
 == Member API
 
-include::api/member/signup.adoc[]
-include::api/member/signin.adoc[]
-include::api/member/check-email-duplication.adoc[]
-include::api/member/modify-pwd.adoc[]
-include::api/member/withdrawal.adoc[]
 include::api/member/search-member-info.adoc[]
 include::api/member/modify-account.adoc[]
+include::api/member/modify-pwd.adoc[]
+include::api/member/withdrawal.adoc[]
+

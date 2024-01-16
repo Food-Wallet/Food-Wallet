@@ -1,0 +1,12 @@
+[[logout]]
+=== 회원 로그아웃 API
+
+==== HTTP Request
+
+include::{snippets}/logout/http-request.adoc[]
+include::{snippets}/logout/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/logout/http-response.adoc[]
+include::{snippets}/logout/response-fields.adoc[]

@@ -37,3 +37,8 @@ include::api/store/modify-store-image.adoc[]
 include::api/store/open-store.adoc[]
 include::api/store/close-store.adoc[]
 include::api/store/remove-store.adoc[]
+
+[[Menu-API]]
+== Menu API
+
+include::api/menu/create-menu.adoc[]

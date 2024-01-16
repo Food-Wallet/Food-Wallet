@@ -1,0 +1,13 @@
+[[create-store]]
+=== 매장 등록 API
+
+==== HTTP Request
+
+include::{snippets}/create-store/http-request.adoc[]
+include::{snippets}/create-store/request-headers.adoc[]
+include::{snippets}/create-store/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/create-store/http-response.adoc[]
+include::{snippets}/create-store/response-fields.adoc[]

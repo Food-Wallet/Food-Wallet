@@ -27,3 +27,8 @@ include::api/member/modify-account.adoc[]
 include::api/member/modify-pwd.adoc[]
 include::api/member/withdrawal.adoc[]
 
+[[Store-API]]
+== Store API
+
+include::api/store/create-store.adoc[]
+

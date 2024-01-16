@@ -1,6 +1,7 @@
 package com.foodwallet.server.docs.member;
 
 import com.foodwallet.server.api.controller.member.AccountApiController;
+import com.foodwallet.server.api.controller.member.request.SigninRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
 import com.foodwallet.server.docs.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
@@ -74,6 +75,49 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
                         .description("회원 가입된 회원명"),
                     fieldWithPath("data.signupDateTime").type(JsonFieldType.ARRAY)
                         .description("회원 가입된 일시")
+                )
+            ));
+    }
+
+    @DisplayName("회원 로그인 API")
+    @Test
+    void signin() throws Exception {
+        SigninRequest request = SigninRequest.builder()
+            .email("dong82@naver.com")
+            .pwd("dong1234!")
+            .build();
+
+        mockMvc.perform(
+                post(BASE_URL + "/signin")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("signin",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestFields(
+                    fieldWithPath("email").type(JsonFieldType.STRING)
+                        .description("이메일"),
+                    fieldWithPath("pwd").type(JsonFieldType.STRING)
+                        .description("비밀번호")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.grantType").type(JsonFieldType.STRING)
+                        .description("인증 권한"),
+                    fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
+                        .description("접근 토큰"),
+                    fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
+                            .description("재인증 토큰")
                 )
             ));
     }

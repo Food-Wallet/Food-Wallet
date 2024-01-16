@@ -1,5 +1,5 @@
 [[search-stores]]
-=== 매장 삭제 API
+=== 매장 조회 API
 
 ==== HTTP Request
 

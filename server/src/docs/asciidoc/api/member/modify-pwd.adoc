@@ -1,0 +1,14 @@
+[[modify-pwd]]
+=== 비밀번호 변경 API
+
+==== HTTP Request
+
+include::{snippets}/modify-pwd/http-request.adoc[]
+include::{snippets}/modify-pwd/request-headers.adoc[]
+include::{snippets}/modify-pwd/request-fields.adoc[]
+
+
+==== HTTP Response
+
+include::{snippets}/modify-pwd/http-response.adoc[]
+include::{snippets}/modify-pwd/response-fields.adoc[]

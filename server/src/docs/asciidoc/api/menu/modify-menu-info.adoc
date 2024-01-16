@@ -1,0 +1,14 @@
+[[modify-menu-info]]
+=== 메뉴 정보 수정 API
+
+==== HTTP Request
+
+include::{snippets}/modify-menu-info/http-request.adoc[]
+include::{snippets}/modify-menu-info/path-parameters.adoc[]
+include::{snippets}/modify-menu-info/request-headers.adoc[]
+include::{snippets}/modify-menu-info/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/modify-menu-info/http-response.adoc[]
+include::{snippets}/modify-menu-info/response-fields.adoc[]

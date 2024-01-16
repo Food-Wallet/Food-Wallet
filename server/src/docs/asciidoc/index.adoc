@@ -42,3 +42,4 @@ include::api/store/remove-store.adoc[]
 == Menu API
 
 include::api/menu/create-menu.adoc[]
+include::api/menu/modify-menu-info.adoc[]

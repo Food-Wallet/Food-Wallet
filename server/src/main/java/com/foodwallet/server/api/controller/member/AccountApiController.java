@@ -2,7 +2,9 @@ package com.foodwallet.server.api.controller.member;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
+import com.foodwallet.server.api.controller.member.request.SigninRequest;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
+import com.foodwallet.server.security.TokenInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,5 +26,15 @@ public class AccountApiController {
             .signupDateTime(LocalDateTime.of(2024, 1, 16, 9, 0))
             .build();
         return ApiResponse.created(response);
+    }
+
+    @PostMapping("/signin")
+    public ApiResponse<TokenInfo> signin(@Valid @RequestBody SigninRequest request) {
+        TokenInfo tokenInfo = TokenInfo.builder()
+            .grantType("Bearer")
+            .accessToken("jwt.access.token")
+            .refreshToken("jwt.refresh.token")
+            .build();
+        return ApiResponse.ok(tokenInfo);
     }
 }

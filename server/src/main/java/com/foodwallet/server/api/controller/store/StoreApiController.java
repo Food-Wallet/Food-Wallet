@@ -3,13 +3,13 @@ package com.foodwallet.server.api.controller.store;
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
+import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -103,5 +103,18 @@ public class StoreApiController {
         SliceResponse<StoreResponse> data = SliceResponse.of(slice);
 
         return ApiResponse.ok(data);
+    }
+
+    @PostMapping("/{storeId}/image")
+    public ApiResponse<StoreModifyImageResponse> modifyStoreImage(
+        @PathVariable Long storeId,
+        @Valid @ModelAttribute StoreModifyImageRequest request
+    ) {
+        StoreModifyImageResponse response = StoreModifyImageResponse.builder()
+            .type("치킨")
+            .name("나리닭강정")
+            .imageModifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
+            .build();
+        return ApiResponse.ok(response);
     }
 }

@@ -4,10 +4,7 @@ import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
-import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
-import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
-import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
+import com.foodwallet.server.api.service.store.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -66,6 +63,16 @@ public class StoreApiController {
             .name("나리닭강정")
             .description("대한민국에서 1등 닭강정!")
             .modifiedDateTime(LocalDateTime.of(2024, 1, 16, 9, 15))
+            .build();
+        return ApiResponse.ok(response);
+    }
+
+    @DeleteMapping("/{storeId}")
+    public ApiResponse<StoreRemoveResponse> removeStore(@PathVariable Long storeId) {
+        StoreRemoveResponse response = StoreRemoveResponse.builder()
+            .type("치킨")
+            .name("나리닭강정")
+            .removedDateTime(LocalDateTime.of(2024, 1, 16, 20, 0))
             .build();
         return ApiResponse.ok(response);
     }

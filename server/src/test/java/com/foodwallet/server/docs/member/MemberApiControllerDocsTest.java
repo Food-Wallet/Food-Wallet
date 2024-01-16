@@ -18,6 +18,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -114,6 +115,43 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
                         .description("탈퇴한 계정 회원명"),
                     fieldWithPath("data.withdrawalDateTime").type(JsonFieldType.ARRAY)
                         .description("탈퇴 일시")
+                )
+            ));
+    }
+
+    @DisplayName("회원 정보 조회 API")
+    @Test
+    void searchMemberInfo() throws Exception {
+        mockMvc.perform(
+                get(BASE_URL)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("search-member-info",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.email").type(JsonFieldType.STRING)
+                        .description("계정 이메일"),
+                    fieldWithPath("data.name").type(JsonFieldType.STRING)
+                        .description("회원명"),
+                    fieldWithPath("data.age").type(JsonFieldType.NUMBER)
+                        .description("회원 나이"),
+                    fieldWithPath("data.gender").type(JsonFieldType.STRING)
+                        .description("회원 성별")
                 )
             ));
     }

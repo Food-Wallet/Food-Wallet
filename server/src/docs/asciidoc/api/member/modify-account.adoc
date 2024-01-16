@@ -1,0 +1,14 @@
+[[modify-account]]
+=== 계좌 등록 및 수정 API
+
+==== HTTP Request
+
+include::{snippets}/modify-account/http-request.adoc[]
+include::{snippets}/modify-account/request-headers.adoc[]
+include::{snippets}/modify-account/request-fields.adoc[]
+
+
+==== HTTP Response
+
+include::{snippets}/modify-account/http-response.adoc[]
+include::{snippets}/modify-account/response-fields.adoc[]

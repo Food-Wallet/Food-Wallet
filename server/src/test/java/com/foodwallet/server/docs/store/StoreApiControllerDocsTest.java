@@ -96,7 +96,7 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
             .build();
 
         mockMvc.perform(
-                patch(BASE_URL + "/{storeId}", 1)
+                patch(BASE_URL + "/{storeId}/open", 1)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
                     .content(objectMapper.writeValueAsString(request))
                     .contentType(MediaType.APPLICATION_JSON)

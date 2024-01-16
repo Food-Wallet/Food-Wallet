@@ -29,7 +29,7 @@ public class StoreApiController {
         return ApiResponse.created(response);
     }
 
-    @PatchMapping("/{storeId}")
+    @PatchMapping("/{storeId}/open")
     public ApiResponse<StoreOpenResponse> openStore(@Valid @RequestBody StoreOpenRequest request, @PathVariable Long storeId) {
         StoreOpenResponse response = StoreOpenResponse.builder()
             .name("나리닭강정")
@@ -40,4 +40,5 @@ public class StoreApiController {
             .build();
         return ApiResponse.ok(response);
     }
+
 }

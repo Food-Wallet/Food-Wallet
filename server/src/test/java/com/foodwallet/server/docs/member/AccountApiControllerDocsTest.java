@@ -1,6 +1,7 @@
 package com.foodwallet.server.docs.member;
 
 import com.foodwallet.server.api.controller.member.AccountApiController;
+import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
 import com.foodwallet.server.api.controller.member.request.SigninRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
 import com.foodwallet.server.docs.RestDocsSupport;
@@ -118,6 +119,42 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
                         .description("접근 토큰"),
                     fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
                             .description("재인증 토큰")
+                )
+            ));
+    }
+
+    @DisplayName("이메일 중복 체크 API")
+    @Test
+    void checkEmailDuplication() throws Exception {
+        CheckEmailDuplicationRequest request = CheckEmailDuplicationRequest.builder()
+            .email("dong82@naver.com")
+            .build();
+
+        mockMvc.perform(
+                post(BASE_URL + "/email")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("check-email-duplication",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestFields(
+                    fieldWithPath("email").type(JsonFieldType.STRING)
+                        .description("이메일")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.isDuplicated").type(JsonFieldType.BOOLEAN)
+                        .description("이메일 중복 여부")
                 )
             ));
     }

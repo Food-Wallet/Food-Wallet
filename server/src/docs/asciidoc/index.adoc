@@ -31,4 +31,5 @@ include::api/member/withdrawal.adoc[]
 == Store API
 
 include::api/store/create-store.adoc[]
+include::api/store/open-store.adoc[]
 

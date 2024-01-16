@@ -1,0 +1,14 @@
+[[open-store]]
+=== 매장 오픈 API
+
+==== HTTP Request
+
+include::{snippets}/open-store/http-request.adoc[]
+include::{snippets}/open-store/path-parameters.adoc[]
+include::{snippets}/open-store/request-headers.adoc[]
+include::{snippets}/open-store/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/open-store/http-response.adoc[]
+include::{snippets}/open-store/response-fields.adoc[]

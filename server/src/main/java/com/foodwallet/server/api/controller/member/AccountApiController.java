@@ -47,4 +47,9 @@ public class AccountApiController {
             .build();
         return ApiResponse.ok(response);
     }
+
+    @PostMapping("/logout")
+    public ApiResponse<String> logout() {
+        return ApiResponse.ok(null);
+    }
 }

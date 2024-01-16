@@ -3,6 +3,7 @@ package com.foodwallet.server.api.controller.store;
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import jakarta.validation.Valid;
@@ -41,4 +42,15 @@ public class StoreApiController {
         return ApiResponse.ok(response);
     }
 
+    @PatchMapping("/{storeId}/close")
+    public ApiResponse<StoreCloseResponse> closeStore(@PathVariable Long storeId) {
+        StoreCloseResponse response = StoreCloseResponse.builder()
+            .name("나리닭강정")
+            .address("서울 중구 세종대로 110")
+            .latitude(37.566352778)
+            .longitude(126.977952778)
+            .closedDateTime(LocalDateTime.of(2023, 1, 16, 22, 0))
+            .build();
+        return ApiResponse.ok(response);
+    }
 }

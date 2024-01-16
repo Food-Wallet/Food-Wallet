@@ -1,6 +1,7 @@
 package com.foodwallet.server.docs.menu;
 
 import com.foodwallet.server.api.controller.menu.MenuApiController;
+import com.foodwallet.server.api.controller.menu.request.MenuModifyImageRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.docs.RestDocsSupport;
@@ -22,7 +23,6 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -157,6 +157,58 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
                         .description("수정된 메뉴 가격"),
                     fieldWithPath("data.modifiedDateTime").type(JsonFieldType.ARRAY)
                         .description("메뉴 정보 수정 일시")
+                )
+            ));
+    }
+
+    @DisplayName("메뉴 이미지 수정 API")
+    @Test
+    void modifyMenuImage() throws Exception {
+        MockMultipartFile image = new MockMultipartFile(
+            "image",
+            "store-menu-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
+        mockMvc.perform(
+                multipart(BASE_URL + "/{menuId}/image", 1, 1)
+                    .file(image)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("modify-menu-image",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키"),
+                    parameterWithName("menuId")
+                        .description("메뉴 식별키")
+                ),
+                requestParts(
+                    partWithName("image")
+                        .description("메뉴 이미지")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.name").type(JsonFieldType.STRING)
+                        .description("수정된 메뉴 이름"),
+                    fieldWithPath("data.modifiedDateTime").type(JsonFieldType.ARRAY)
+                        .description("메뉴 이미지 수정 일시")
                 )
             ));
     }

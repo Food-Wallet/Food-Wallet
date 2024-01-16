@@ -2,9 +2,11 @@ package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
+import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
 import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,20 @@ public class StoreApiController {
             .latitude(37.566352778)
             .longitude(126.977952778)
             .closedDateTime(LocalDateTime.of(2023, 1, 16, 22, 0))
+            .build();
+        return ApiResponse.ok(response);
+    }
+
+    @PatchMapping("/{storeId}")
+    public ApiResponse<StoreModifyResponse> modifyStoreInfo(
+        @PathVariable Long storeId,
+        @Valid @RequestBody StoreModifyRequest request
+    ) {
+        StoreModifyResponse response = StoreModifyResponse.builder()
+            .type("치킨")
+            .name("나리닭강정")
+            .description("대한민국에서 1등 닭강정!")
+            .modifiedDateTime(LocalDateTime.of(2024, 1, 16, 9, 15))
             .build();
         return ApiResponse.ok(response);
     }

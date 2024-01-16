@@ -43,3 +43,4 @@ include::api/store/remove-store.adoc[]
 
 include::api/menu/create-menu.adoc[]
 include::api/menu/modify-menu-info.adoc[]
+include::api/menu/modify-menu-image.adoc[]

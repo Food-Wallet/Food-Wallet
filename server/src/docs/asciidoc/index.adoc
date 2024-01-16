@@ -34,4 +34,4 @@ include::api/store/create-store.adoc[]
 include::api/store/open-store.adoc[]
 include::api/store/close-store.adoc[]
 include::api/store/modify-store-info.adoc[]
-
+include::api/store/remove-store.adoc[]

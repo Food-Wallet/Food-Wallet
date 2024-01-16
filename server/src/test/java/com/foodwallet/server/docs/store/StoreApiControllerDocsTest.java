@@ -144,4 +144,48 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                 )
             ));
     }
+
+    @DisplayName("매장 종료 API")
+    @Test
+    void closeStore() throws Exception {
+        mockMvc.perform(
+                patch(BASE_URL + "/{storeId}/close", 1)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("close-store",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.name").type(JsonFieldType.STRING)
+                        .description("매장 이름"),
+                    fieldWithPath("data.address").type(JsonFieldType.STRING)
+                        .description("매장 운영 주소"),
+                    fieldWithPath("data.latitude").type(JsonFieldType.NUMBER)
+                        .description("매장 운영 위도"),
+                    fieldWithPath("data.longitude").type(JsonFieldType.NUMBER)
+                        .description("매장 운영 경도"),
+                    fieldWithPath("data.closedDateTime").type(JsonFieldType.ARRAY)
+                        .description("매장 종료 시간")
+                )
+            ));
+    }
 }

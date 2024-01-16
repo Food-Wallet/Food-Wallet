@@ -14,6 +14,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -245,6 +246,46 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                         .description("매장 설명"),
                     fieldWithPath("data.modifiedDateTime").type(JsonFieldType.ARRAY)
                         .description("매장 정보 수정 일시")
+                )
+            ));
+    }
+
+    @DisplayName("매장 삭제 API")
+    @Test
+    void removeStore() throws Exception {
+        mockMvc.perform(
+                delete(BASE_URL + "/{storeId}", 1)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("remove-store",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.type").type(JsonFieldType.STRING)
+                        .description("매장 타입"),
+                    fieldWithPath("data.name").type(JsonFieldType.STRING)
+                        .description("매장명"),
+                    fieldWithPath("data.removedDateTime").type(JsonFieldType.ARRAY)
+                        .description("매장 삭제 일시")
                 )
             ));
     }

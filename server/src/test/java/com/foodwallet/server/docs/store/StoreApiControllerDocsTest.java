@@ -2,6 +2,7 @@ package com.foodwallet.server.docs.store;
 
 import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
+import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.docs.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
@@ -185,6 +186,65 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                         .description("매장 운영 경도"),
                     fieldWithPath("data.closedDateTime").type(JsonFieldType.ARRAY)
                         .description("매장 종료 시간")
+                )
+            ));
+    }
+
+    @DisplayName("매장 정보 수정 API")
+    @Test
+    void modifyStoreInfo() throws Exception {
+        StoreModifyRequest request = StoreModifyRequest.builder()
+            .type("치킨")
+            .name("나리닭강정")
+            .description("대한민국에서 1등 닭강정!")
+            .build();
+
+        mockMvc.perform(
+                patch(BASE_URL + "/{storeId}", 1)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("modify-store-info",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키")
+                ),
+                requestFields(
+                    fieldWithPath("type").type(JsonFieldType.STRING)
+                        .description("매장 타입"),
+                    fieldWithPath("name").type(JsonFieldType.STRING)
+                        .description("매장명"),
+                    fieldWithPath("description").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("매장 설명")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.type").type(JsonFieldType.STRING)
+                        .description("매장 타입"),
+                    fieldWithPath("data.name").type(JsonFieldType.STRING)
+                        .description("매장명"),
+                    fieldWithPath("data.description").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("매장 설명"),
+                    fieldWithPath("data.modifiedDateTime").type(JsonFieldType.ARRAY)
+                        .description("매장 정보 수정 일시")
                 )
             ));
     }

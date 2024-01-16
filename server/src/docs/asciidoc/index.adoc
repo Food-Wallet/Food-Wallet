@@ -1,0 +1,29 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= Food Wallet REST API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+include::overview.adoc[]
+
+[[Account-API]]
+== Account API
+
+include::api/member/signin.adoc[]
+include::api/member/logout.adoc[]
+include::api/member/signup.adoc[]
+include::api/member/check-email-duplication.adoc[]
+
+[[Member-API]]
+== Member API
+
+include::api/member/search-member-info.adoc[]
+include::api/member/modify-account.adoc[]
+include::api/member/modify-pwd.adoc[]
+include::api/member/withdrawal.adoc[]
+

@@ -1,0 +1,13 @@
+[[check-email-duplication]]
+=== 이메일 중복 체크 API
+
+==== HTTP Request
+
+include::{snippets}/check-email-duplication/http-request.adoc[]
+include::{snippets}/check-email-duplication/request-fields.adoc[]
+
+
+==== HTTP Response
+
+include::{snippets}/check-email-duplication/http-response.adoc[]
+include::{snippets}/check-email-duplication/response-fields.adoc[]

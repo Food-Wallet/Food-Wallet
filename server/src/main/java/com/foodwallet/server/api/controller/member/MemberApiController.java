@@ -1,8 +1,10 @@
 package com.foodwallet.server.api.controller.member;
 
 import com.foodwallet.server.api.ApiResponse;
+import com.foodwallet.server.api.controller.member.request.AccountModifyRequest;
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
+import com.foodwallet.server.api.service.member.response.AccountModifyResponse;
 import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
 import com.foodwallet.server.api.service.member.response.MemberWithdrawalResponse;
 import jakarta.validation.Valid;
@@ -38,6 +40,15 @@ public class MemberApiController {
             .name("동팔이")
             .age(10)
             .gender("F")
+            .build();
+        return ApiResponse.ok(response);
+    }
+
+    @PostMapping("/account")
+    public ApiResponse<AccountModifyResponse> modifyAccount(@Valid @RequestBody AccountModifyRequest request) {
+        AccountModifyResponse response = AccountModifyResponse.builder()
+            .bankCode("088")
+            .accountNumber("110111222222")
             .build();
         return ApiResponse.ok(response);
     }

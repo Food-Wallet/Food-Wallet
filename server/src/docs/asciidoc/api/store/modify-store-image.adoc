@@ -1,0 +1,15 @@
+[[modify-store-image]]
+=== 매장 등록 API
+
+==== HTTP Request
+
+include::{snippets}/modify-store-image/http-request.adoc[]
+include::{snippets}/modify-store-image/path-parameters.adoc[]
+include::{snippets}/modify-store-image/request-headers.adoc[]
+include::{snippets}/modify-store-image/request-parts.adoc[]
+
+
+==== HTTP Response
+
+include::{snippets}/modify-store-image/http-response.adoc[]
+include::{snippets}/modify-store-image/response-fields.adoc[]

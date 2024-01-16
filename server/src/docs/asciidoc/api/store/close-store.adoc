@@ -1,5 +1,5 @@
 [[close-store]]
-=== 매장 오픈 API
+=== 매장 종료 API
 
 ==== HTTP Request
 

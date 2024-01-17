@@ -47,3 +47,8 @@ include::api/menu/modify-menu-info.adoc[]
 include::api/menu/modify-menu-image.adoc[]
 include::api/menu/modify-menu-status.adoc[]
 include::api/menu/remove-menu.adoc[]
+
+[[Bookmark-API]]
+== Bookmark API
+
+include::api/bookmark/create-bookmark.adoc[]

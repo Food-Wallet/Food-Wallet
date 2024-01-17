@@ -1,0 +1,14 @@
+[[create-menu]]
+=== 메뉴 등록 API
+
+==== HTTP Request
+
+include::{snippets}/create-menu/http-request.adoc[]
+include::{snippets}/create-menu/path-parameters.adoc[]
+include::{snippets}/create-menu/request-headers.adoc[]
+include::{snippets}/create-menu/request-parts.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/create-menu/http-response.adoc[]
+include::{snippets}/create-menu/response-fields.adoc[]

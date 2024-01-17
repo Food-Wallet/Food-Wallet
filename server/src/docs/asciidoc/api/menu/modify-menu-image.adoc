@@ -1,0 +1,14 @@
+[[modify-menu-image]]
+=== 메뉴 이미지 수정 API
+
+==== HTTP Request
+
+include::{snippets}/modify-menu-image/http-request.adoc[]
+include::{snippets}/modify-menu-image/path-parameters.adoc[]
+include::{snippets}/modify-menu-image/request-headers.adoc[]
+include::{snippets}/modify-menu-image/request-parts.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/modify-menu-image/http-response.adoc[]
+include::{snippets}/modify-menu-image/response-fields.adoc[]

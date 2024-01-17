@@ -1,0 +1,13 @@
+[[search-stores]]
+=== 매장 조회 API
+
+==== HTTP Request
+
+include::{snippets}/search-stores/http-request.adoc[]
+include::{snippets}/search-stores/request-headers.adoc[]
+include::{snippets}/search-stores/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search-stores/http-response.adoc[]
+include::{snippets}/search-stores/response-fields.adoc[]

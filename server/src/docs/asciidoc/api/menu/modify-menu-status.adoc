@@ -1,0 +1,14 @@
+[[modify-menu-status]]
+=== 메뉴 판매 상태 수정 API
+
+==== HTTP Request
+
+include::{snippets}/modify-menu-status/http-request.adoc[]
+include::{snippets}/modify-menu-status/path-parameters.adoc[]
+include::{snippets}/modify-menu-status/request-headers.adoc[]
+include::{snippets}/modify-menu-status/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/modify-menu-status/http-response.adoc[]
+include::{snippets}/modify-menu-status/response-fields.adoc[]

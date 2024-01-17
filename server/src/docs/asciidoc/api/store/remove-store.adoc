@@ -1,0 +1,13 @@
+[[remove-store]]
+=== 매장 삭제 API
+
+==== HTTP Request
+
+include::{snippets}/remove-store/http-request.adoc[]
+include::{snippets}/remove-store/path-parameters.adoc[]
+include::{snippets}/remove-store/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/remove-store/http-response.adoc[]
+include::{snippets}/remove-store/response-fields.adoc[]

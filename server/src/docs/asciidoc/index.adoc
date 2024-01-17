@@ -27,3 +27,30 @@ include::api/member/modify-account.adoc[]
 include::api/member/modify-pwd.adoc[]
 include::api/member/withdrawal.adoc[]
 
+[[Store-API]]
+== Store API
+
+include::api/store/create-store.adoc[]
+include::api/store/search-stores.adoc[]
+include::api/store/search-store.adoc[]
+include::api/store/modify-store-info.adoc[]
+include::api/store/modify-store-image.adoc[]
+include::api/store/open-store.adoc[]
+include::api/store/close-store.adoc[]
+include::api/store/remove-store.adoc[]
+
+[[Menu-API]]
+== Menu API
+
+include::api/menu/create-menu.adoc[]
+include::api/menu/modify-menu-info.adoc[]
+include::api/menu/modify-menu-image.adoc[]
+include::api/menu/modify-menu-status.adoc[]
+include::api/menu/remove-menu.adoc[]
+
+[[Bookmark-API]]
+== Bookmark API
+
+include::api/bookmark/create-bookmark.adoc[]
+include::api/bookmark/cancel-bookmark.adoc[]
+include::api/bookmark/search-bookmarks.adoc[]

@@ -1,0 +1,13 @@
+[[close-store]]
+=== 매장 종료 API
+
+==== HTTP Request
+
+include::{snippets}/close-store/http-request.adoc[]
+include::{snippets}/close-store/path-parameters.adoc[]
+include::{snippets}/close-store/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/close-store/http-response.adoc[]
+include::{snippets}/close-store/response-fields.adoc[]

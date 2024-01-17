@@ -1,0 +1,14 @@
+[[modify-store-info]]
+=== 매장 정보 수정 API
+
+==== HTTP Request
+
+include::{snippets}/modify-store-info/http-request.adoc[]
+include::{snippets}/modify-store-info/path-parameters.adoc[]
+include::{snippets}/modify-store-info/request-headers.adoc[]
+include::{snippets}/modify-store-info/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/modify-store-info/http-response.adoc[]
+include::{snippets}/modify-store-info/response-fields.adoc[]

@@ -54,3 +54,7 @@ include::api/menu/remove-menu.adoc[]
 include::api/bookmark/create-bookmark.adoc[]
 include::api/bookmark/cancel-bookmark.adoc[]
 include::api/bookmark/search-bookmarks.adoc[]
+
+[[Basket-API]]
+
+include::api/basket/create-basket.adoc[]

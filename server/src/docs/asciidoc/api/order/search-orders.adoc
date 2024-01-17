@@ -1,0 +1,13 @@
+[[search-orders]]
+=== 주문 생성 API
+
+==== HTTP Request
+
+include::{snippets}/search-orders/http-request.adoc[]
+include::{snippets}/search-orders/request-headers.adoc[]
+include::{snippets}/search-orders/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search-orders/http-response.adoc[]
+include::{snippets}/search-orders/response-fields.adoc[]

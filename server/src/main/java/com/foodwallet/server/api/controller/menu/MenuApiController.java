@@ -5,10 +5,7 @@ import com.foodwallet.server.api.controller.menu.request.MenuCreateRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyImageRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest;
-import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyStatusResponse;
+import com.foodwallet.server.api.service.menu.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -73,6 +70,18 @@ public class MenuApiController {
             .name("간장닭강정")
             .status("STOP_SELLING")
             .modifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
+            .build();
+        return ApiResponse.ok(response);
+    }
+
+    @DeleteMapping("/{menuId}")
+    public ApiResponse<MenuRemoveResponse> removeMenu(
+        @PathVariable Long storeId,
+        @PathVariable Long menuId
+    ) {
+        MenuRemoveResponse response = MenuRemoveResponse.builder()
+            .name("간장닭강정")
+            .removedDateTime(LocalDateTime.of(2024, 1, 17, 23, 0))
             .build();
         return ApiResponse.ok(response);
     }

@@ -2,6 +2,7 @@ package com.foodwallet.server.docs.basket;
 
 import com.foodwallet.server.api.controller.basket.BasketApiController;
 import com.foodwallet.server.api.controller.basket.request.BasketCreateRequest;
+import com.foodwallet.server.api.controller.basket.request.BasketModifyRequest;
 import com.foodwallet.server.docs.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,10 +13,13 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,6 +76,55 @@ public class BasketApiControllerDocsTest extends RestDocsSupport {
                         .description("담은 메뉴 갯수"),
                     fieldWithPath("data.totalPrice").type(JsonFieldType.NUMBER)
                         .description("담은 메뉴 총 금액")
+                )
+            ));
+    }
+
+    @DisplayName("메뉴 갯수 수정 API")
+    @Test
+    void modifyBasket() throws Exception {
+        BasketModifyRequest request = BasketModifyRequest.builder()
+            .count(3)
+            .build();
+
+        mockMvc.perform(
+                patch(BASE_URL + "/{basketMenuId}", 1)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("modify-basket",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("basketMenuId")
+                        .description("장바구니 메뉴 식별키")
+                ),
+                requestFields(
+                    fieldWithPath("count").type(JsonFieldType.NUMBER)
+                        .description("수정할 메뉴 갯수")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.menuName").type(JsonFieldType.STRING)
+                        .description("수정된 메뉴명"),
+                    fieldWithPath("data.count").type(JsonFieldType.NUMBER)
+                        .description("수정된 메뉴 갯수"),
+                    fieldWithPath("data.totalPrice").type(JsonFieldType.NUMBER)
+                        .description("수정된 메뉴 총 금액")
                 )
             ));
     }

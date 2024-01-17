@@ -1,5 +1,5 @@
 [[remove-menu]]
-=== 메뉴 판매 상태 수정 API
+=== 메뉴 삭제 API
 
 ==== HTTP Request
 

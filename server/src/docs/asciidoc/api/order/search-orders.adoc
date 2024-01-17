@@ -1,5 +1,5 @@
 [[search-orders]]
-=== 주문 생성 API
+=== 주문 조회 API
 
 ==== HTTP Request
 

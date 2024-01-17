@@ -1,10 +1,8 @@
 package com.foodwallet.server.docs.menu;
 
 import com.foodwallet.server.api.controller.menu.MenuApiController;
-import com.foodwallet.server.api.controller.menu.request.MenuModifyImageRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.docs.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +15,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -260,6 +257,46 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.status").type(JsonFieldType.STRING)
                         .description("수정된 메뉴 판매 상태"),
                     fieldWithPath("data.modifiedDateTime").type(JsonFieldType.ARRAY)
+                        .description("메뉴 판매 상태 수정 일시")
+                )
+            ));
+    }
+
+    @DisplayName("메뉴 삭제 API")
+    @Test
+    void removeMenu() throws Exception {
+        mockMvc.perform(
+                delete(BASE_URL + "/{menuId}", 1, 1)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("remove-menu",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키"),
+                    parameterWithName("menuId")
+                        .description("메뉴 식별키")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.name").type(JsonFieldType.STRING)
+                        .description("수정된 메뉴 이름"),
+                    fieldWithPath("data.removedDateTime").type(JsonFieldType.ARRAY)
                         .description("메뉴 판매 상태 수정 일시")
                 )
             ));

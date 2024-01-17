@@ -1,0 +1,13 @@
+[[search-order]]
+=== 주문 상세 조회 API
+
+==== HTTP Request
+
+include::{snippets}/search-order/http-request.adoc[]
+include::{snippets}/search-order/path-parameters.adoc[]
+include::{snippets}/search-order/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search-order/http-response.adoc[]
+include::{snippets}/search-order/response-fields.adoc[]

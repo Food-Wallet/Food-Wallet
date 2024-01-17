@@ -1,0 +1,13 @@
+[[remove-order]]
+=== 주문 내역 삭제 API
+
+==== HTTP Request
+
+include::{snippets}/remove-order/http-request.adoc[]
+include::{snippets}/remove-order/path-parameters.adoc[]
+include::{snippets}/remove-order/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/remove-order/http-response.adoc[]
+include::{snippets}/remove-order/response-fields.adoc[]

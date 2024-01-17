@@ -356,6 +356,77 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
             ));
     }
 
+    @DisplayName("매장 상세 조회 API")
+    @Test
+    void searchStore() throws Exception {
+        mockMvc.perform(
+                get(BASE_URL + "/{storeId}", 1)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("search-store",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.storeId").type(JsonFieldType.NUMBER)
+                        .description("매장 식별키"),
+                    fieldWithPath("data.type").type(JsonFieldType.STRING)
+                        .description("매장 타입"),
+                    fieldWithPath("data.name").type(JsonFieldType.STRING)
+                        .description("매장명"),
+                    fieldWithPath("data.description").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("매장 설명"),
+                    fieldWithPath("data.storeImage").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("매장 이미지 URL"),
+                    fieldWithPath("data.avgRate").type(JsonFieldType.NUMBER)
+                        .description("매장 별점 평균"),
+                    fieldWithPath("data.status").type(JsonFieldType.STRING)
+                        .description("매장 운영 상태"),
+                    fieldWithPath("data.address").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("매장 운영 위치"),
+                    fieldWithPath("data.openTime").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("매장 운영 시간"),
+                    fieldWithPath("data.menus").type(JsonFieldType.ARRAY)
+                        .description("메뉴 목록"),
+                    fieldWithPath("data.menus[].menuId").type(JsonFieldType.NUMBER)
+                        .description("메뉴 식별키"),
+                    fieldWithPath("data.menus[].name").type(JsonFieldType.STRING)
+                        .description("메뉴명"),
+                    fieldWithPath("data.menus[].description").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("메뉴 설명"),
+                    fieldWithPath("data.menus[].price").type(JsonFieldType.NUMBER)
+                        .description("메뉴 가격"),
+                    fieldWithPath("data.menus[].status").type(JsonFieldType.STRING)
+                        .description("메뉴 판매 상태"),
+                    fieldWithPath("data.menus[].menuImage").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("메뉴 이미지 URL")
+                )
+            ));
+    }
+
     @DisplayName("매장 이미지 수정 API")
     @Test
     void modifyStoreImage() throws Exception {

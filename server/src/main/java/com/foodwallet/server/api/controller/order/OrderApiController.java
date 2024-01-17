@@ -2,10 +2,7 @@ package com.foodwallet.server.api.controller.order;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.SliceResponse;
-import com.foodwallet.server.api.service.order.response.OrderCreateResponse;
-import com.foodwallet.server.api.service.order.response.OrderDetailResponse;
-import com.foodwallet.server.api.service.order.response.OrderMenuResponse;
-import com.foodwallet.server.api.service.order.response.OrderResponse;
+import com.foodwallet.server.api.service.order.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
@@ -84,6 +81,18 @@ public class OrderApiController {
             .totalPrice(25000)
             .orderDateTime(LocalDateTime.of(2024, 1, 17, 18, 0))
             .orderMenus(List.of(menu1, menu2))
+            .build();
+        return ApiResponse.ok(response);
+    }
+
+    @DeleteMapping("/orders/{orderId}")
+    public ApiResponse<OrderRemoveResponse> removeOrder(@PathVariable Long orderId) {
+        OrderRemoveResponse response = OrderRemoveResponse.builder()
+            .orderId(1L)
+            .storeName("나리닭강정")
+            .orderStatus("COMPLETED")
+            .totalPrice(25000)
+            .orderDateTime(LocalDateTime.of(2024, 1, 17, 18, 0))
             .build();
         return ApiResponse.ok(response);
     }

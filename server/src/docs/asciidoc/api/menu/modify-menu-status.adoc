@@ -1,5 +1,5 @@
 [[modify-menu-status]]
-=== 메뉴 정보 수정 API
+=== 메뉴 판매 상태 수정 API
 
 ==== HTTP Request
 

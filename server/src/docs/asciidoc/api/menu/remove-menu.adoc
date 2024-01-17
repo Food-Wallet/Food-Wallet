@@ -1,0 +1,13 @@
+[[remove-menu]]
+=== 메뉴 판매 상태 수정 API
+
+==== HTTP Request
+
+include::{snippets}/remove-menu/http-request.adoc[]
+include::{snippets}/remove-menu/path-parameters.adoc[]
+include::{snippets}/remove-menu/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/remove-menu/http-response.adoc[]
+include::{snippets}/remove-menu/response-fields.adoc[]

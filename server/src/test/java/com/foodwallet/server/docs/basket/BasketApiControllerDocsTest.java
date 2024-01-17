@@ -13,8 +13,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -47,7 +46,7 @@ public class BasketApiControllerDocsTest extends RestDocsSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isCreated())
             .andDo(document("create-basket",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
@@ -76,6 +75,54 @@ public class BasketApiControllerDocsTest extends RestDocsSupport {
                         .description("담은 메뉴 갯수"),
                     fieldWithPath("data.totalPrice").type(JsonFieldType.NUMBER)
                         .description("담은 메뉴 총 금액")
+                )
+            ));
+    }
+
+    @DisplayName("장바구니 조회 API")
+    @Test
+    void searchBasket() throws Exception {
+        mockMvc.perform(
+                get(BASE_URL)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("search-basket",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.basketId").type(JsonFieldType.NUMBER)
+                        .description("장바구니 식별키"),
+                    fieldWithPath("data.storeName").type(JsonFieldType.STRING)
+                        .description("매장명"),
+                    fieldWithPath("data.totalPrice").type(JsonFieldType.NUMBER)
+                        .description("총 금액"),
+                    fieldWithPath("data.menus").type(JsonFieldType.ARRAY)
+                        .description("장바구니 담은 메뉴 목록"),
+                    fieldWithPath("data.menus[].menuId").type(JsonFieldType.NUMBER)
+                        .description("메뉴 식별키"),
+                    fieldWithPath("data.menus[].menuName").type(JsonFieldType.STRING)
+                        .description("메뉴명"),
+                    fieldWithPath("data.menus[].menuImage").type(JsonFieldType.STRING)
+                        .description("메뉴 이미지 URL"),
+                    fieldWithPath("data.menus[].count").type(JsonFieldType.NUMBER)
+                        .description("메뉴 갯수"),
+                    fieldWithPath("data.menus[].totalPrice").type(JsonFieldType.NUMBER)
+                        .description("메뉴 총 금액")
                 )
             ));
     }

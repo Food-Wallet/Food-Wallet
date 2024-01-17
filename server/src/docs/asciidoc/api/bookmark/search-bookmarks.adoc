@@ -1,0 +1,13 @@
+[[search-bookmarks]]
+=== 매장 조회 API
+
+==== HTTP Request
+
+include::{snippets}/search-bookmarks/http-request.adoc[]
+include::{snippets}/search-bookmarks/request-headers.adoc[]
+include::{snippets}/search-bookmarks/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search-bookmarks/http-response.adoc[]
+include::{snippets}/search-bookmarks/response-fields.adoc[]

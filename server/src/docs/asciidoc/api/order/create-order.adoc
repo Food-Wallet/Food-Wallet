@@ -1,0 +1,13 @@
+[[create-order]]
+=== 주문 생성 API
+
+==== HTTP Request
+
+include::{snippets}/create-order/http-request.adoc[]
+include::{snippets}/create-order/path-parameters.adoc[]
+include::{snippets}/create-order/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/create-order/http-response.adoc[]
+include::{snippets}/create-order/response-fields.adoc[]

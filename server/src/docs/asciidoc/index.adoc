@@ -60,3 +60,7 @@ include::api/bookmark/search-bookmarks.adoc[]
 include::api/basket/create-basket.adoc[]
 include::api/basket/search-basket.adoc[]
 include::api/basket/modify-basket.adoc[]
+
+[[Order-API]]
+
+include::api/order/create-order.adoc[]

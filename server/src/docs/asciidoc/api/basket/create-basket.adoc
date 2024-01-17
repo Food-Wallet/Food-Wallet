@@ -1,0 +1,13 @@
+[[create-basket]]
+=== 메뉴 담기 API
+
+==== HTTP Request
+
+include::{snippets}/create-basket/http-request.adoc[]
+include::{snippets}/create-basket/request-headers.adoc[]
+include::{snippets}/create-basket/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/create-basket/http-response.adoc[]
+include::{snippets}/create-basket/response-fields.adoc[]

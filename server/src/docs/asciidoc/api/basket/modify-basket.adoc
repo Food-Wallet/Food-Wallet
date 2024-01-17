@@ -1,0 +1,14 @@
+[[modify-basket]]
+=== 메뉴 갯수 수정 API
+
+==== HTTP Request
+
+include::{snippets}/modify-basket/http-request.adoc[]
+include::{snippets}/modify-basket/path-parameters.adoc[]
+include::{snippets}/modify-basket/request-headers.adoc[]
+include::{snippets}/modify-basket/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/modify-basket/http-response.adoc[]
+include::{snippets}/modify-basket/response-fields.adoc[]

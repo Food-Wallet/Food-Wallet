@@ -1,0 +1,12 @@
+[[search-basket]]
+=== 메뉴 담기 API
+
+==== HTTP Request
+
+include::{snippets}/search-basket/http-request.adoc[]
+include::{snippets}/search-basket/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search-basket/http-response.adoc[]
+include::{snippets}/search-basket/response-fields.adoc[]

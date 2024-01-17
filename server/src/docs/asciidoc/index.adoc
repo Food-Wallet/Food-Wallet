@@ -54,3 +54,16 @@ include::api/menu/remove-menu.adoc[]
 include::api/bookmark/create-bookmark.adoc[]
 include::api/bookmark/cancel-bookmark.adoc[]
 include::api/bookmark/search-bookmarks.adoc[]
+
+[[Basket-API]]
+== Basket API
+
+include::api/basket/create-basket.adoc[]
+include::api/basket/search-basket.adoc[]
+include::api/basket/modify-basket.adoc[]
+
+[[Order-API]]
+== Order API
+
+include::api/order/create-order.adoc[]
+include::api/order/search-orders.adoc[]

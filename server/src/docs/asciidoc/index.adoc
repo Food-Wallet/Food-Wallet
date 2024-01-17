@@ -58,4 +58,5 @@ include::api/bookmark/search-bookmarks.adoc[]
 [[Basket-API]]
 
 include::api/basket/create-basket.adoc[]
+include::api/basket/search-basket.adoc[]
 include::api/basket/modify-basket.adoc[]

@@ -2,13 +2,12 @@ package com.foodwallet.server.api.controller.basket;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.basket.request.BasketCreateRequest;
+import com.foodwallet.server.api.controller.basket.request.BasketModifyRequest;
 import com.foodwallet.server.api.service.basket.response.BasketCreateResponse;
+import com.foodwallet.server.api.service.basket.response.BasketModifyResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -21,6 +20,19 @@ public class BasketApiController {
             .menuName("간장닭강정")
             .count(2)
             .totalPrice(16000)
+            .build();
+        return ApiResponse.ok(response);
+    }
+
+    @PatchMapping("/{basketMenuId}")
+    public ApiResponse<BasketModifyResponse> modifyBasket(
+        @PathVariable Long basketMenuId,
+        @Valid @RequestBody BasketModifyRequest request
+    ) {
+        BasketModifyResponse response = BasketModifyResponse.builder()
+            .menuName("간장닭강정")
+            .count(3)
+            .totalPrice(24000)
             .build();
         return ApiResponse.ok(response);
     }

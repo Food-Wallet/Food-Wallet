@@ -6,6 +6,7 @@ import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.api.service.menu.response.MenuResponse;
 import com.foodwallet.server.api.service.store.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -103,6 +104,39 @@ public class StoreApiController {
         SliceResponse<StoreResponse> data = SliceResponse.of(slice);
 
         return ApiResponse.ok(data);
+    }
+
+    @GetMapping("/{storeId}")
+    public ApiResponse<StoreDetailResponse> searchStore(@PathVariable Long storeId) {
+        MenuResponse menu1 = MenuResponse.builder()
+            .menuId(1L)
+            .name("간장닭강정")
+            .description("우리 매장 시그니처 메뉴입니다!")
+            .price(8000)
+            .status("SELLING")
+            .menuImage("s3-store-menu-img-url")
+            .build();
+        MenuResponse menu2 = MenuResponse.builder()
+            .menuId(2L)
+            .name("양념닭강정")
+            .description(null)
+            .price(9000)
+            .status("HOLD")
+            .menuImage("s3-store-menu-img-url")
+            .build();
+        StoreDetailResponse response = StoreDetailResponse.builder()
+            .storeId(1L)
+            .type("치킨")
+            .name("나리닭강정")
+            .description("대한민국에서 1등 닭강정!")
+            .storeImage("s3-store-img-url")
+            .avgRate(5.0)
+            .status("OPEN")
+            .address("서울 중구 세종대로 110")
+            .openTime("오전 11:00 ~ 오후 8:00")
+            .menus(List.of(menu1, menu2))
+            .build();
+        return ApiResponse.ok(response);
     }
 
     @PostMapping("/{storeId}/image")

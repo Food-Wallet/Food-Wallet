@@ -1,5 +1,5 @@
 [[create-bookmark]]
-=== 메뉴 등록 API
+=== 매장 즐겨찾기 등록 API
 
 ==== HTTP Request
 

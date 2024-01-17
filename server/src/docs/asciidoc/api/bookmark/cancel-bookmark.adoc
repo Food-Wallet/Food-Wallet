@@ -1,0 +1,13 @@
+[[cancel-bookmark]]
+=== 매장 즐겨찾기 취소 API
+
+==== HTTP Request
+
+include::{snippets}/cancel-bookmark/http-request.adoc[]
+include::{snippets}/cancel-bookmark/path-parameters.adoc[]
+include::{snippets}/cancel-bookmark/request-headers.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/cancel-bookmark/http-response.adoc[]
+include::{snippets}/cancel-bookmark/response-fields.adoc[]

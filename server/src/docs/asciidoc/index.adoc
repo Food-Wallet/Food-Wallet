@@ -52,3 +52,4 @@ include::api/menu/remove-menu.adoc[]
 == Bookmark API
 
 include::api/bookmark/create-bookmark.adoc[]
+include::api/bookmark/cancel-bookmark.adoc[]

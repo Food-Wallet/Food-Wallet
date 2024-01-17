@@ -190,6 +190,49 @@ public class OrderApiControllerDocsTest extends RestDocsSupport {
                         .description("주문 수량")
                 )
             ));
+    }
 
+    @DisplayName("주문 내역 삭제 API")
+    @Test
+    void removeOrder() throws Exception {
+        mockMvc.perform(
+                delete(BASE_URL + "/orders/{orderId}", 1)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("remove-order",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("orderId")
+                        .description("주문 식별키")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.orderId").type(JsonFieldType.NUMBER)
+                        .description("주문 식별키"),
+                    fieldWithPath("data.storeName").type(JsonFieldType.STRING)
+                        .description("주문한 매장명"),
+                    fieldWithPath("data.orderStatus").type(JsonFieldType.STRING)
+                        .description("주문 상태"),
+                    fieldWithPath("data.totalPrice").type(JsonFieldType.NUMBER)
+                        .description("총 주문 금액"),
+                    fieldWithPath("data.orderDateTime").type(JsonFieldType.ARRAY)
+                        .description("주문 일시")
+                )
+            ));
     }
 }

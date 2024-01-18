@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.foodwallet.server.domain.member.MemberRole.BUSINESS;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -52,5 +54,13 @@ public class Member extends BaseEntity {
         this.role = role;
         this.account = account;
         this.token = token;
+    }
+
+    public boolean isBusinessMember() {
+        return role == BUSINESS;
+    }
+
+    public boolean isExistAccount() {
+        return account != null;
     }
 }

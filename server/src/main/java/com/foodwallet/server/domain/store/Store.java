@@ -57,4 +57,20 @@ public class Store extends BaseEntity {
         this.operationalInfo = operationalInfo;
         this.member = member;
     }
+
+    public static Store createStore(StoreType type, String name, String description, Member member) {
+        return Store.builder()
+            .status(StoreStatus.CLOSE)
+            .type(type)
+            .name(name)
+            .description(description)
+            .reviewInfo(
+                ReviewInfo.builder()
+                    .reviewCount(0)
+                    .avgRate(0.0)
+                    .build()
+            )
+            .member(member)
+            .build();
+    }
 }

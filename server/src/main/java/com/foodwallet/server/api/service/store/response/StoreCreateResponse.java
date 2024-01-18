@@ -1,5 +1,6 @@
 package com.foodwallet.server.api.service.store.response;
 
+import com.foodwallet.server.domain.store.Store;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,5 +20,14 @@ public class StoreCreateResponse {
         this.name = name;
         this.description = description;
         this.createdDateTime = createdDateTime;
+    }
+
+    public static StoreCreateResponse of(Store store) {
+        return StoreCreateResponse.builder()
+            .type(store.getType().getText())
+            .name(store.getName())
+            .description(store.getDescription())
+            .createdDateTime(store.getCreatedDateTime())
+            .build();
     }
 }

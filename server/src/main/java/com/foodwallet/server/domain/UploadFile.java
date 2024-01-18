@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UploadFile {
 
-    @Column(nullable = false, updatable = false)
+    @Column(length = 200)
     private String uploadFileName;
 
-    @Column(nullable = false, updatable = false)
+    @Column(length = 200)
     private String storeFileName;
 
     @Builder

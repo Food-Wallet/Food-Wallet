@@ -10,7 +10,6 @@ import com.foodwallet.server.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
 
 import static com.foodwallet.server.domain.member.MemberRole.*;
 import static org.assertj.core.api.Assertions.*;
@@ -37,7 +36,7 @@ class StoreServiceTest extends IntegrationTestSupport {
 
         //when //then
         assertThatThrownBy(() -> storeService.createStore(member.getEmail(), request))
-            .isInstanceOf(AuthenticationException.class)
+            .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("사업자 회원만 매장을 등록할 수 있습니다.");
     }
 

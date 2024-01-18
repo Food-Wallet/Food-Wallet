@@ -4,6 +4,7 @@ import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.controller.review.request.ReviewCreateRequest;
 import com.foodwallet.server.api.service.review.response.ReviewCreateResponse;
+import com.foodwallet.server.api.service.review.response.ReviewRemoveResponse;
 import com.foodwallet.server.api.service.review.response.ReviewResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,14 @@ public class ReviewApiController {
 
         SliceResponse<ReviewResponse> data = SliceResponse.of(slice);
         return ApiResponse.ok(data);
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ApiResponse<ReviewRemoveResponse> removeReview(@PathVariable Long reviewId) {
+        ReviewRemoveResponse response = ReviewRemoveResponse.builder()
+            .reviewId(1L)
+            .removedDateTime(LocalDateTime.of(2024, 1, 18, 16, 0))
+            .build();
+        return ApiResponse.ok(response);
     }
 }

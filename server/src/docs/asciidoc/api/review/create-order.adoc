@@ -1,0 +1,13 @@
+[[create-review]]
+=== 리뷰 생성 API
+
+==== HTTP Request
+
+include::{snippets}/create-review/http-request.adoc[]
+include::{snippets}/create-review/request-headers.adoc[]
+include::{snippets}/create-review/request-parts.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/create-review/http-response.adoc[]
+include::{snippets}/create-review/response-fields.adoc[]

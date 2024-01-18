@@ -81,7 +81,7 @@ class StoreServiceTest extends IntegrationTestSupport {
 
     private Member createMember(MemberRole role, Account account) {
         Member member = Member.builder()
-            .email("dong82")
+            .email("dong82@naver.com")
             .pwd(passwordEncoder.encode("dong1234!"))
             .name("동팔이")
             .age(10)

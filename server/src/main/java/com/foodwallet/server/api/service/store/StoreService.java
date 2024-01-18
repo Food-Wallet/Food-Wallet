@@ -1,8 +1,9 @@
 package com.foodwallet.server.api.service.store;
 
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.domain.store.Store;
@@ -33,9 +34,13 @@ public class StoreService {
 
         StoreType type = StoreType.of(request.getType());
 
-        Store store = Store.createStore(type, request.getName(), request.getName(), member);
+        Store store = Store.createStore(type, request.getName(), request.getDescription(), member);
         Store savedStore = storeRepository.save(store);
 
         return StoreCreateResponse.of(savedStore);
+    }
+
+    public StoreModifyResponse modifyStoreInfo(String email, Long storeId, StoreModifyServiceRequest request) {
+        return null;
     }
 }

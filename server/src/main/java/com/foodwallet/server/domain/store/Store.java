@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static org.springframework.util.StringUtils.*;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -75,7 +77,7 @@ public class Store extends BaseEntity {
     }
 
     private String validLength(String target, int maxLength) {
-        if (target.length() > maxLength) {
+        if (hasText(target) && target.length() > maxLength) {
             throw new IllegalArgumentException(String.format("길이는 최대 %d자 입니다.", maxLength));
         }
         return target;

@@ -21,3 +21,6 @@ logging:
   level:
     org.hibernate.SQL: debug
     com.foodwallet.virtualbank: debug
+
+jwt:
+  secret: temptemptemptemptemptemptemptemptemptemptemp

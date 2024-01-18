@@ -74,5 +74,6 @@ include::api/order/remove-order.adoc[]
 == Review API
 
 include::api/review/create-review.adoc[]
+include::api/review/reply-review.adoc[]
 include::api/review/search-reviews.adoc[]
 include::api/review/remove-review.adoc[]

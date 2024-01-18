@@ -20,7 +20,7 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
-    com.foodwallet.virtualbank: debug
+    com.foodwallet.server: debug
 
 jwt:
   secret: temptemptemptemptemptemptemptemptemptemptemp

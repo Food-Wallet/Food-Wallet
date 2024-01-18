@@ -1,7 +1,7 @@
 package com.foodwallet.server.docs.review;
 
 import com.foodwallet.server.api.controller.review.ReviewApiController;
-import com.foodwallet.server.api.controller.review.request.ReviewCreateRequest;
+import com.foodwallet.server.api.controller.review.request.ReviewReplyRequest;
 import com.foodwallet.server.docs.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,6 +92,54 @@ public class ReviewApiControllerDocsTest extends RestDocsSupport {
                         .description("리뷰 식별키"),
                     fieldWithPath("data.createdDateTime").type(JsonFieldType.ARRAY)
                         .description("리뷰 등록 일시")
+                )
+            ));
+    }
+
+    @DisplayName("리뷰 답글 등록 API")
+    @Test
+    void replyReview() throws Exception {
+        ReviewReplyRequest request = ReviewReplyRequest.builder()
+            .replyContent("맛있게 드셔주셔서 감사합니다!")
+            .build();
+        mockMvc.perform(
+                post(BASE_URL + "/{reviewId}/reply", 1)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isCreated())
+            .andDo(document("reply-review",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("reviewId")
+                        .description("리뷰 식별키")
+                ),
+                requestFields(
+                    fieldWithPath("replyContent").type(JsonFieldType.STRING)
+                        .description("답글 내용")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.reviewId").type(JsonFieldType.NUMBER)
+                        .description("리뷰 식별키"),
+                    fieldWithPath("data.replyContent").type(JsonFieldType.STRING)
+                        .description("답글 내용"),
+                    fieldWithPath("data.replyCreatedDateTime").type(JsonFieldType.ARRAY)
+                        .description("답글 등록 일시")
                 )
             ));
     }

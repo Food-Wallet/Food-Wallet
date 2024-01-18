@@ -6,7 +6,9 @@ import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -223,6 +225,19 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
             .name("나리닭강정")
             .description("대한민국에서 1등 닭강정!")
             .build();
+
+        StoreModifyResponse response = StoreModifyResponse.builder()
+            .type("치킨")
+            .name("나리닭강정")
+            .description("대한민국에서 1등 닭강정!")
+            .modifiedDateTime(LocalDateTime.of(2024, 1, 16, 9, 15))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(storeService.modifyStoreInfo(anyString(), anyLong(), any(StoreModifyServiceRequest.class)))
+            .willReturn(response);
 
         mockMvc.perform(
                 patch(BASE_URL + "/{storeId}", 1)

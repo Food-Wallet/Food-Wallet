@@ -66,12 +66,10 @@ public class StoreApiController {
         @PathVariable Long storeId,
         @Valid @RequestBody StoreModifyRequest request
     ) {
-        StoreModifyResponse response = StoreModifyResponse.builder()
-            .type("치킨")
-            .name("나리닭강정")
-            .description("대한민국에서 1등 닭강정!")
-            .modifiedDateTime(LocalDateTime.of(2024, 1, 16, 9, 15))
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreModifyResponse response = storeService.modifyStoreInfo(email, storeId, request.toServiceRequest());
+
         return ApiResponse.ok(response);
     }
 

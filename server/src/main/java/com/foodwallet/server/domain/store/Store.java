@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static org.springframework.util.StringUtils.*;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -74,8 +76,18 @@ public class Store extends BaseEntity {
             .build();
     }
 
+    public void modifyInfo(StoreType type, String name, String description) {
+        this.type = type;
+        this.name = name;
+        this.description = description;
+    }
+
+    public boolean isMine(Member member) {
+        return this.member.getId().equals(member.getId());
+    }
+
     private String validLength(String target, int maxLength) {
-        if (target.length() > maxLength) {
+        if (hasText(target) && target.length() > maxLength) {
             throw new IllegalArgumentException(String.format("길이는 최대 %d자 입니다.", maxLength));
         }
         return target;

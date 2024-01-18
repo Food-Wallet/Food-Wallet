@@ -2,16 +2,23 @@ package com.foodwallet.server.api.service.store;
 
 import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
 import com.foodwallet.server.domain.member.Account;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
+import com.foodwallet.server.domain.store.Store;
+import com.foodwallet.server.domain.store.StoreStatus;
+import com.foodwallet.server.domain.store.repository.StoreRepository;
+import com.foodwallet.server.common.exception.AuthenticationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.foodwallet.server.domain.member.MemberRole.*;
+import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
 import static org.assertj.core.api.Assertions.*;
 
 class StoreServiceTest extends IntegrationTestSupport {
@@ -22,12 +29,15 @@ class StoreServiceTest extends IntegrationTestSupport {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private StoreRepository storeRepository;
+
     @DisplayName("신규 매장을 생성시 사업자 회원이 아니라면 예외가 발생한다.")
     @Test
     void createStoreNotBusinessMember() {
         //given
         Account account = createAccount();
-        Member member = createMember(USER, account);
+        Member member = createMember(USER, account, "dong82@naver.com");
 
         StoreCreateServiceRequest request = StoreCreateServiceRequest.builder()
             .type("CHICKEN")
@@ -44,7 +54,7 @@ class StoreServiceTest extends IntegrationTestSupport {
     @Test
     void createStoreWithoutAccount() {
         //given
-        Member member = createMember(BUSINESS, null);
+        Member member = createMember(BUSINESS, null, "dong82@naver.com");
 
         StoreCreateServiceRequest request = StoreCreateServiceRequest.builder()
             .type("CHICKEN")
@@ -62,7 +72,7 @@ class StoreServiceTest extends IntegrationTestSupport {
     void createStore() {
         //given
         Account account = createAccount();
-        Member member = createMember(BUSINESS, account);
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
 
         StoreCreateServiceRequest request = StoreCreateServiceRequest.builder()
             .type("CHICKEN")
@@ -78,9 +88,63 @@ class StoreServiceTest extends IntegrationTestSupport {
             .contains("치킨", "나리닭강정");
     }
 
-    private Member createMember(MemberRole role, Account account) {
+    @DisplayName("매장 정보 수정시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void modifyStoreInfoWithoutAuth() {
+        //given
+        Account account = createAccount();
+        Member member1 = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member1);
+
+        Member member2 = createMember(BUSINESS, account, "do72@naver.com");
+
+        StoreModifyServiceRequest request = StoreModifyServiceRequest.builder()
+            .type("CHICKEN")
+            .name("나리닭강정")
+            .description("국내 1등 닭강정")
+            .build();
+
+        //when //then
+        assertThatThrownBy(() -> storeService.modifyStoreInfo(member2.getEmail(), store.getId(), request))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("사업자 회원 이메일, 매장 식별키, 매장 정보를 입력 받아 매장 정보를 수정한다.")
+    @Test
+    void modifyStoreInfo() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member);
+
+        StoreModifyServiceRequest request = StoreModifyServiceRequest.builder()
+            .type("CHICKEN")
+            .name("나리닭강정")
+            .description("국내 1등 닭강정")
+            .build();
+
+        //when
+        StoreModifyResponse response = storeService.modifyStoreInfo(member.getEmail(), store.getId(), request);
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore)
+            .extracting("type", "name", "description")
+            .contains(CHICKEN, "나리닭강정", "국내 1등 닭강정");
+    }
+
+    private Account createAccount() {
+        return Account.builder()
+            .bankCode("088")
+            .accountNumber("110111222222")
+            .accountPwd("1234")
+            .build();
+    }
+
+    private Member createMember(MemberRole role, Account account, String email) {
         Member member = Member.builder()
-            .email("dong82@naver.com")
+            .email(email)
             .pwd(passwordEncoder.encode("dong1234!"))
             .name("동팔이")
             .age(10)
@@ -92,11 +156,13 @@ class StoreServiceTest extends IntegrationTestSupport {
         return memberRepository.save(member);
     }
 
-    private Account createAccount() {
-        return Account.builder()
-            .bankCode("088")
-            .accountNumber("110111222222")
-            .accountPwd("1234")
+    private Store createStore(Member member) {
+        Store store = Store.builder()
+            .status(StoreStatus.CLOSE)
+            .type(CHICKEN)
+            .name("나리닭강정")
+            .member(member)
             .build();
+        return storeRepository.save(store);
     }
 }

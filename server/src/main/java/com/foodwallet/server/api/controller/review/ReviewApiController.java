@@ -3,8 +3,10 @@ package com.foodwallet.server.api.controller.review;
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.controller.review.request.ReviewCreateRequest;
+import com.foodwallet.server.api.controller.review.request.ReviewReplyRequest;
 import com.foodwallet.server.api.service.review.response.ReviewCreateResponse;
 import com.foodwallet.server.api.service.review.response.ReviewRemoveResponse;
+import com.foodwallet.server.api.service.review.response.ReviewReplyResponse;
 import com.foodwallet.server.api.service.review.response.ReviewResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,17 @@ public class ReviewApiController {
         ReviewCreateResponse response = ReviewCreateResponse.builder()
             .reviewId(1L)
             .createdDateTime(LocalDateTime.of(2024, 1, 17, 19, 43))
+            .build();
+        return ApiResponse.created(response);
+    }
+
+    @PostMapping("/{reviewId}/reply")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<ReviewReplyResponse> replyReview(@PathVariable Long reviewId, @Valid @RequestBody ReviewReplyRequest request) {
+        ReviewReplyResponse response = ReviewReplyResponse.builder()
+            .reviewId(1L)
+            .replyContent("맛있게 드셔주셔서 감사합니다!")
+            .replyCreatedDateTime(LocalDateTime.of(2024, 1, 17, 20, 0))
             .build();
         return ApiResponse.created(response);
     }

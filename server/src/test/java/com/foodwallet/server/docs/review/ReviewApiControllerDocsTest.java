@@ -32,9 +32,9 @@ public class ReviewApiControllerDocsTest extends RestDocsSupport {
         return new ReviewApiController();
     }
 
-    @DisplayName("주문 내역 삭제 API")
+    @DisplayName("리뷰 등록 API")
     @Test
-    void removeOrder() throws Exception {
+    void createReview() throws Exception {
         MockMultipartFile image1 = new MockMultipartFile(
             "images",
             "store-review-image1.jpg",
@@ -49,14 +49,8 @@ public class ReviewApiControllerDocsTest extends RestDocsSupport {
             "<<image data>>".getBytes()
         );
 
-        ReviewCreateRequest request = ReviewCreateRequest.builder()
-            .orderId(1L)
-            .rate(5)
-            .content("소문대로 정말 맛있어요!")
-            .build();
-
         mockMvc.perform(
-                multipart(BASE_URL, 1)
+                multipart(BASE_URL)
                     .file(image1)
                     .file(image2)
                     .part(new MockPart("orderId", "1".getBytes()))
@@ -98,6 +92,64 @@ public class ReviewApiControllerDocsTest extends RestDocsSupport {
                         .description("리뷰 식별키"),
                     fieldWithPath("data.createdDateTime").type(JsonFieldType.ARRAY)
                         .description("리뷰 등록 일시")
+                )
+            ));
+    }
+
+    @DisplayName("리뷰 조회 API")
+    @Test
+    void searchReviews() throws Exception {
+        mockMvc.perform(
+                get(BASE_URL)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .queryParam("page", "1")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("search-reviews",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                queryParameters(
+                    parameterWithName("page")
+                        .optional()
+                        .description("페이지 번호")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.content").type(JsonFieldType.ARRAY)
+                        .description("매장 데이터"),
+                    fieldWithPath("data.content[].reviewId").type(JsonFieldType.NUMBER)
+                        .description("리뷰 식별키"),
+                    fieldWithPath("data.content[].storeName").type(JsonFieldType.STRING)
+                        .description("리뷰 작성한 매장명"),
+                    fieldWithPath("data.content[].rate").type(JsonFieldType.NUMBER)
+                        .description("리뷰 평점"),
+                    fieldWithPath("data.content[].content").type(JsonFieldType.STRING)
+                        .description("리뷰 내용"),
+                    fieldWithPath("data.content[].reviewImages").type(JsonFieldType.ARRAY)
+                        .description("리뷰 이미지 URL"),
+                    fieldWithPath("data.content[].createdDateTime").type(JsonFieldType.ARRAY)
+                        .description("리뷰 작성일"),
+                    fieldWithPath("data.currentPage").type(JsonFieldType.NUMBER)
+                        .description("현재 페이지 번호"),
+                    fieldWithPath("data.size").type(JsonFieldType.NUMBER)
+                        .description("데이터 요청 갯수"),
+                    fieldWithPath("data.isFirst").type(JsonFieldType.BOOLEAN)
+                        .description("첫 페이지 여부"),
+                    fieldWithPath("data.isLast").type(JsonFieldType.BOOLEAN)
+                        .description("마지막 페이지 여부")
                 )
             ));
     }

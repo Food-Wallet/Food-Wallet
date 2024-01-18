@@ -1,0 +1,13 @@
+[[search-reviews]]
+=== 리뷰 조회 API
+
+==== HTTP Request
+
+include::{snippets}/search-reviews/http-request.adoc[]
+include::{snippets}/search-reviews/request-headers.adoc[]
+include::{snippets}/search-reviews/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search-reviews/http-response.adoc[]
+include::{snippets}/search-reviews/response-fields.adoc[]

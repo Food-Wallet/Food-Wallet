@@ -69,3 +69,11 @@ include::api/order/create-order.adoc[]
 include::api/order/search-orders.adoc[]
 include::api/order/search-order.adoc[]
 include::api/order/remove-order.adoc[]
+
+[[Review-API]]
+== Review API
+
+include::api/review/create-review.adoc[]
+include::api/review/reply-review.adoc[]
+include::api/review/search-reviews.adoc[]
+include::api/review/remove-review.adoc[]

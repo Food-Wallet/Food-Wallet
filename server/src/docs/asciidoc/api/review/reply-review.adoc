@@ -1,0 +1,14 @@
+[[reply-review]]
+=== 리뷰 생성 API
+
+==== HTTP Request
+
+include::{snippets}/reply-review/http-request.adoc[]
+include::{snippets}/reply-review/path-parameters.adoc[]
+include::{snippets}/reply-review/request-headers.adoc[]
+include::{snippets}/reply-review/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reply-review/http-response.adoc[]
+include::{snippets}/reply-review/response-fields.adoc[]

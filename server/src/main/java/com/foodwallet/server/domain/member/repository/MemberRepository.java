@@ -1,13 +1,10 @@
 package com.foodwallet.server.domain.member.repository;
 
 import com.foodwallet.server.domain.member.Member;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+public interface MemberRepository {
 
-@Repository
-public interface MemberRepository extends JpaRepository<Member, Long> {
+    Member save(Member member);
 
-    Optional<Member> findByEmail(String email);
+    Member findByEmail(String email);
 }

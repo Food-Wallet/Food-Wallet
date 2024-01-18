@@ -5,4 +5,6 @@ import com.foodwallet.server.domain.store.Store;
 public interface StoreRepository {
 
     Store save(Store store);
+
+    Store findById(Long storeId);
 }

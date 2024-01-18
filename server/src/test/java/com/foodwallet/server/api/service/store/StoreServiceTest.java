@@ -12,6 +12,7 @@ import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
+import com.foodwallet.server.common.exception.AuthenticationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,7 @@ class StoreServiceTest extends IntegrationTestSupport {
 
         //when //then
         assertThatThrownBy(() -> storeService.modifyStoreInfo(member2.getEmail(), store.getId(), request))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(AuthenticationException.class)
             .hasMessage("접근 권한이 없습니다.");
     }
 

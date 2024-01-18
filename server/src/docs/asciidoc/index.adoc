@@ -75,3 +75,4 @@ include::api/order/remove-order.adoc[]
 
 include::api/review/create-review.adoc[]
 include::api/review/search-reviews.adoc[]
+include::api/review/remove-review.adoc[]

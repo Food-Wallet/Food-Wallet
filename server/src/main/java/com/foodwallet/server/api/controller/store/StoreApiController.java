@@ -7,7 +7,9 @@ import com.foodwallet.server.api.controller.store.request.StoreModifyImageReques
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.menu.response.MenuResponse;
+import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.*;
+import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -23,15 +25,15 @@ import java.util.List;
 @RequestMapping("/api/v1/stores")
 public class StoreApiController {
 
+    private final StoreService storeService;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<StoreCreateResponse> createStore(@Valid @RequestBody StoreCreateRequest request) {
-        StoreCreateResponse response = StoreCreateResponse.builder()
-            .type("치킨")
-            .name("나리닭강정")
-            .description(null)
-            .createdDateTime(LocalDateTime.of(2024, 1, 16, 18, 0))
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreCreateResponse response = storeService.createStore(email, request.toServiceRequest());
+
         return ApiResponse.created(response);
     }
 

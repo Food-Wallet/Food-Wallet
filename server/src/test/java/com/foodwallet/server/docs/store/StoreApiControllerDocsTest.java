@@ -4,7 +4,11 @@ import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.api.service.store.StoreService;
+import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
+import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import java.time.LocalDateTime;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -28,9 +38,11 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
 
     private static final String BASE_URL = "/api/v1/stores";
 
+    private final StoreService storeService = mock(StoreService.class);
+
     @Override
     protected Object initController() {
-        return new StoreApiController();
+        return new StoreApiController(storeService);
     }
 
     @DisplayName("매장 등록 API")
@@ -40,6 +52,19 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
             .type("치킨")
             .name("나리닭강정")
             .build();
+
+        StoreCreateResponse response = StoreCreateResponse.builder()
+            .type("치킨")
+            .name("나리닭강정")
+            .description(null)
+            .createdDateTime(LocalDateTime.of(2024, 1, 16, 18, 0))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(storeService.createStore(anyString(), any(StoreCreateServiceRequest.class)))
+            .willReturn(response);
 
         mockMvc.perform(
                 post(BASE_URL)

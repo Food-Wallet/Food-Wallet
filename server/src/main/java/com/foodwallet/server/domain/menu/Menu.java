@@ -72,6 +72,10 @@ public class Menu extends BaseEntity {
         this.image = image;
     }
 
+    public void modifySellingStatus(SellingStatus status) {
+        this.status = status;
+    }
+
     private String validLength(String target, int maxLength) {
         if (hasText(target) && target.length() > maxLength) {
             throw new IllegalArgumentException(String.format("길이는 최대 %d자 입니다.", maxLength));

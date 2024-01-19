@@ -48,4 +48,15 @@ public class Menu extends BaseEntity {
         this.image = image;
         this.store = store;
     }
+
+    public static Menu createMenu(String name, String description, int price, UploadFile image, Store store) {
+        return Menu.builder()
+            .name(name)
+            .description(description)
+            .price(price)
+            .status(SellingStatus.SELLING)
+            .image(image)
+            .store(store)
+            .build();
+    }
 }

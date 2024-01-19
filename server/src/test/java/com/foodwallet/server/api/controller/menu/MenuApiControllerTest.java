@@ -49,7 +49,6 @@ class MenuApiControllerTest extends ControllerTestSupport {
         //when //then
         mockMvc.perform(
                 multipart(BASE_URL, 1)
-                    .part(new MockPart("name", request.getName().getBytes()))
                     .part(new MockPart("price", request.getPrice().toString().getBytes()))
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .with(csrf())

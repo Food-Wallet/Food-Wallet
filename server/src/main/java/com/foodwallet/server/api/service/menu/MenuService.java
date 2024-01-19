@@ -43,6 +43,16 @@ public class MenuService {
     }
 
     public MenuModifyResponse modifyMenuInfo(String email, Long menuId, MenuModifyServiceRequest request) {
-        return null;
+        Member member = memberRepository.findByEmail(email);
+
+        Menu menu = menuRepository.findJoinStoreById(menuId);
+
+        if (!menu.getStore().isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        menu.modifyInfo(request.getName(), request.getDescription(), request.getPrice());
+
+        return MenuModifyResponse.of(menu);
     }
 }

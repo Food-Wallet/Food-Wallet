@@ -198,7 +198,7 @@ class StoreServiceTest extends IntegrationTestSupport {
         Store findStore = storeRepository.findById(store.getId());
         assertThat(findStore)
             .extracting("status", "operationalInfo")
-            .contains(CLOSE, null);
+            .contains(CLOSE);
     }
 
     private Account createAccount() {

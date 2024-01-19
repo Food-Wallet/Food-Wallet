@@ -10,6 +10,7 @@ import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
 import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
+import com.foodwallet.server.domain.store.OperationalInfo;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
@@ -71,6 +72,18 @@ public class StoreService {
     }
 
     public StoreCloseResponse closeStore(String email, Long storeId) {
-        return null;
+        Store store = storeRepository.findById(storeId);
+
+        Member member = memberRepository.findByEmail(email);
+
+        if (!store.isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        OperationalInfo operationalInfo = store.getOperationalInfo();
+
+        store.close();
+
+        return StoreCloseResponse.of(store.getName(), operationalInfo);
     }
 }

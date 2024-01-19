@@ -219,6 +219,9 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
         given(SecurityUtils.getCurrentEmail())
             .willReturn("dong82@naver.com");
 
+        given(fileStore.storeFile(any()))
+            .willReturn(UploadFile.builder().build());
+
         given(menuService.modifyMenuImage(anyString(), anyLong(), any(UploadFile.class)))
             .willReturn(response);
 

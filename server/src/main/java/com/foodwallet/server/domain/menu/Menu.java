@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static org.springframework.util.StringUtils.hasText;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -41,8 +43,8 @@ public class Menu extends BaseEntity {
 
     @Builder
     private Menu(String name, String description, int price, SellingStatus status, UploadFile image, Store store) {
-        this.name = name;
-        this.description = description;
+        this.name = validLength(name, 20);
+        this.description = validLength(description, 200);
         this.price = price;
         this.status = status;
         this.image = image;
@@ -58,5 +60,12 @@ public class Menu extends BaseEntity {
             .image(image)
             .store(store)
             .build();
+    }
+
+    private String validLength(String target, int maxLength) {
+        if (hasText(target) && target.length() > maxLength) {
+            throw new IllegalArgumentException(String.format("길이는 최대 %d자 입니다.", maxLength));
+        }
+        return target;
     }
 }

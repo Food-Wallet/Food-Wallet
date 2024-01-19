@@ -47,13 +47,10 @@ public class StoreApiController {
 
     @PatchMapping("/{storeId}/close")
     public ApiResponse<StoreCloseResponse> closeStore(@PathVariable Long storeId) {
-        StoreCloseResponse response = StoreCloseResponse.builder()
-            .name("나리닭강정")
-            .address("서울 중구 세종대로 110")
-            .latitude(37.566352778)
-            .longitude(126.977952778)
-            .closedDateTime(LocalDateTime.of(2023, 1, 16, 22, 0))
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreCloseResponse response = storeService.closeStore(email, storeId);
+
         return ApiResponse.ok(response);
     }
 

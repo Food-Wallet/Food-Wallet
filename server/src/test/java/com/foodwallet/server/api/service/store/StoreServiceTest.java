@@ -4,6 +4,7 @@ import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
+import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
 import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
@@ -11,6 +12,7 @@ import com.foodwallet.server.domain.member.Account;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
+import com.foodwallet.server.domain.store.OperationalInfo;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.foodwallet.server.domain.member.MemberRole.*;
+import static com.foodwallet.server.domain.store.StoreStatus.CLOSE;
 import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
 import static org.assertj.core.api.Assertions.*;
@@ -97,7 +100,7 @@ class StoreServiceTest extends IntegrationTestSupport {
         //given
         Account account = createAccount();
         Member member1 = createMember(BUSINESS, account, "dong82@naver.com");
-        Store store = createStore(member1);
+        Store store = createStore(member1, StoreStatus.CLOSE, null);
 
         Member member2 = createMember(BUSINESS, account, "do72@naver.com");
 
@@ -119,7 +122,7 @@ class StoreServiceTest extends IntegrationTestSupport {
         //given
         Account account = createAccount();
         Member member = createMember(BUSINESS, account, "dong82@naver.com");
-        Store store = createStore(member);
+        Store store = createStore(member, StoreStatus.CLOSE, null);
 
         StoreModifyServiceRequest request = StoreModifyServiceRequest.builder()
             .type("CHICKEN")
@@ -143,7 +146,7 @@ class StoreServiceTest extends IntegrationTestSupport {
         //given
         Account account = createAccount();
         Member member = createMember(BUSINESS, account, "dong82@naver.com");
-        Store store = createStore(member);
+        Store store = createStore(member, StoreStatus.CLOSE, null);
 
         StoreOpenServiceRequest request = StoreOpenServiceRequest.builder()
             .address("서울 중구 세종대로 110")
@@ -160,6 +163,42 @@ class StoreServiceTest extends IntegrationTestSupport {
         assertThat(findStore)
             .extracting("status", "operationalInfo.address", "operationalInfo.openTime", "operationalInfo.latitude", "operationalInfo.longitude")
             .contains(OPEN, "서울 중구 세종대로 110", "오전 10:00 ~ 오후 8:00", 37.566352778, 126.977952778);
+    }
+
+    @DisplayName("매장 운영을 종료시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void closeStoreWithoutAuth() {
+        //given
+        Account account = createAccount();
+        Member member1 = createMember(BUSINESS, account, "dong82@naver.com");
+        OperationalInfo operationalInfo = createOperationalInfo();
+        Store store = createStore(member1, OPEN, operationalInfo);
+
+        Member member2 = createMember(BUSINESS, account, "do72@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> storeService.closeStore(member2.getEmail(), store.getId()))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("사업자 회원 이메일을 입력 받아 매장 운영을 종료한다.")
+    @Test
+    void closeStore() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        OperationalInfo operationalInfo = createOperationalInfo();
+        Store store = createStore(member, OPEN, operationalInfo);
+
+        //when
+        StoreCloseResponse response = storeService.closeStore("dong82@naver.com", store.getId());
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore)
+            .extracting("status", "operationalInfo")
+            .contains(CLOSE);
     }
 
     private Account createAccount() {
@@ -184,12 +223,22 @@ class StoreServiceTest extends IntegrationTestSupport {
         return memberRepository.save(member);
     }
 
-    private Store createStore(Member member) {
+    private OperationalInfo createOperationalInfo() {
+        return OperationalInfo.builder()
+            .address("서울 중구 세종대로 110")
+            .openTime("오전 10:00 ~ 오후 8:00")
+            .latitude(37.566352778)
+            .longitude(126.977952778)
+            .build();
+    }
+
+    private Store createStore(Member member, StoreStatus status, OperationalInfo operationalInfo) {
         Store store = Store.builder()
-            .status(StoreStatus.CLOSE)
+            .status(status)
             .type(CHICKEN)
             .name("나리닭강정")
             .member(member)
+            .operationalInfo(operationalInfo)
             .build();
         return storeRepository.save(store);
     }

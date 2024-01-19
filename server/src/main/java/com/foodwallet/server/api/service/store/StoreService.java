@@ -4,11 +4,13 @@ import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
+import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
 import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
+import com.foodwallet.server.domain.store.OperationalInfo;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
@@ -67,5 +69,21 @@ public class StoreService {
         store.open(request.getAddress(), request.getOpenTime(), request.getLatitude(), request.getLongitude());
 
         return StoreOpenResponse.of(store);
+    }
+
+    public StoreCloseResponse closeStore(String email, Long storeId) {
+        Store store = storeRepository.findById(storeId);
+
+        Member member = memberRepository.findByEmail(email);
+
+        if (!store.isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        OperationalInfo operationalInfo = store.getOperationalInfo();
+
+        store.close();
+
+        return StoreCloseResponse.of(store.getName(), operationalInfo);
     }
 }

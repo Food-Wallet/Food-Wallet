@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.foodwallet.server.domain.store.StoreStatus.CLOSE;
 import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 import static org.springframework.util.StringUtils.*;
 
@@ -91,6 +92,11 @@ public class Store extends BaseEntity {
             .latitude(latitude)
             .longitude(longitude)
             .build();
+    }
+
+    public void close() {
+        status = CLOSE;
+        operationalInfo = null;
     }
 
     public boolean isMine(Member member) {

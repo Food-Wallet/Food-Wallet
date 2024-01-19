@@ -5,6 +5,7 @@ import com.foodwallet.server.api.controller.menu.request.MenuCreateRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyImageRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest;
+import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.api.service.menu.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/v1/stores/{storeId}/menus")
 public class MenuApiController {
+
+    private final MenuService menuService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

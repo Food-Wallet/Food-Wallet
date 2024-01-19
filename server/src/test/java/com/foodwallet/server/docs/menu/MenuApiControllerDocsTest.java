@@ -3,6 +3,7 @@ package com.foodwallet.server.docs.menu;
 import com.foodwallet.server.api.controller.menu.MenuApiController;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest;
+import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.docs.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -28,9 +30,11 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
 
     private static final String BASE_URL = "/api/v1/stores/{storeId}/menus";
 
+    private final MenuService menuService = mock(MenuService.class);
+
     @Override
     protected Object initController() {
-        return new MenuApiController();
+        return new MenuApiController(menuService);
     }
 
     @DisplayName("메뉴 등록 API")

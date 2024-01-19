@@ -47,12 +47,10 @@ public class MenuApiController {
         @PathVariable Long menuId,
         @Valid @RequestBody MenuModifyRequest request
     ) {
-        MenuModifyResponse response = MenuModifyResponse.builder()
-            .name("간장닭강정")
-            .description("우리 매장 시그니처 메뉴입니다!")
-            .price(8000)
-            .modifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        MenuModifyResponse response = menuService.modifyMenuInfo(email, menuId, request.toServiceRequest());
+
         return ApiResponse.ok(response);
     }
 

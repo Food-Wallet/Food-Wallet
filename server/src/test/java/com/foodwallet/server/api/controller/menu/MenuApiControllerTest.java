@@ -1,6 +1,5 @@
 package com.foodwallet.server.api.controller.menu;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.foodwallet.server.ControllerTestSupport;
 import com.foodwallet.server.api.controller.menu.request.MenuCreateRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;

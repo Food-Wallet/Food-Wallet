@@ -221,6 +221,38 @@ class StoreServiceTest extends IntegrationTestSupport {
             .contains("upload-file-name.png", "s3-store-file-url.png");
     }
 
+    @DisplayName("매장 삭제시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void removeStoreWithoutAuth() {
+        //given
+        Account account = createAccount();
+        Member member1 = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member1, CLOSE, null);
+
+        Member member2 = createMember(BUSINESS, account, "do72@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> storeService.removeStore("do72@naver.com", store.getId()))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("회원 이메일과 매장 식별키를 입력 받아 매장을 삭제한다.")
+    @Test
+    void removeStore() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member, CLOSE, null);
+
+        //when
+        StoreRemoveResponse response = storeService.removeStore("dong82@naver.com", store.getId());
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore.isDeleted()).isTrue();
+    }
+
     private Account createAccount() {
         return Account.builder()
             .bankCode("088")

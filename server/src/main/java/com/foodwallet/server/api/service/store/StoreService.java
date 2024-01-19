@@ -92,4 +92,8 @@ public class StoreService {
 
         return StoreModifyImageResponse.of(store);
     }
+
+    public StoreRemoveResponse removeStore(String email, Long storeId) {
+        return null;
+    }
 }

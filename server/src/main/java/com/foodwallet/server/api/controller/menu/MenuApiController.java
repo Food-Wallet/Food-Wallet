@@ -59,11 +59,13 @@ public class MenuApiController {
         @PathVariable Long storeId,
         @PathVariable Long menuId,
         @Valid @ModelAttribute MenuModifyImageRequest request
-    ) {
-        MenuModifyImageResponse response = MenuModifyImageResponse.builder()
-            .name("간장닭강정")
-            .modifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
-            .build();
+    ) throws IOException {
+        String email = SecurityUtils.getCurrentEmail();
+
+        UploadFile image = fileStore.storeFile(request.getImage());
+
+        MenuModifyImageResponse response = menuService.modifyMenuImage(email, menuId, image);
+
         return ApiResponse.ok(response);
     }
 

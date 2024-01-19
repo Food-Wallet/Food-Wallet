@@ -4,8 +4,10 @@ import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.menu.request.MenuCreateServiceRequest;
 import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
 import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
+import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
+import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
@@ -140,6 +142,50 @@ class MenuServiceTest extends IntegrationTestSupport {
         assertThat(findMenu)
             .extracting("name", "description", "price")
             .contains("간장닭강정", "우리 매장 시그니처 메뉴입니다!", 9000);
+    }
+
+    @DisplayName("메뉴 이미지 수정시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void modifyMenuImageWithoutAuth() {
+        //given
+        Member member1 = createMember("dong82@naver.com");
+        Store store = createStore(member1);
+        Menu menu = createMenu(store);
+
+        Member member2 = createMember("do72@naver.com");
+
+        UploadFile image = UploadFile.builder()
+            .uploadFileName("upload-file-name.jpg")
+            .storeFileName("s3-store-file-url.jpg")
+            .build();
+
+        //when //then
+        assertThatThrownBy(() -> menuService.modifyMenuImage("do72@naver.com", menu.getId(), image))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("사업자 회원 이메일, 매장 식별키, 파일 정보를 입력 받아 메뉴 이미지를 수정한다.")
+    @Test
+    void modifyMenuImage() {
+        //given
+        Member member = createMember("dong82@naver.com");
+        Store store = createStore(member);
+        Menu menu = createMenu(store);
+
+        UploadFile image = UploadFile.builder()
+            .uploadFileName("upload-file-name.jpg")
+            .storeFileName("s3-store-file-url.jpg")
+            .build();
+
+        //when
+        MenuModifyImageResponse response = menuService.modifyMenuImage("dong82@naver.com", menu.getId(), image);
+
+        //then
+        Menu findMenu = menuRepository.findById(menu.getId());
+        assertThat(findMenu.getImage())
+            .extracting("uploadFileName", "storeFileName")
+            .contains("upload-file-name.jpg", "s3-store-file-url.jpg");
     }
 
     private Member createMember(String email) {

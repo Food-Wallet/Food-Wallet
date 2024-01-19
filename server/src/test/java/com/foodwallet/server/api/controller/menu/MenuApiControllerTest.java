@@ -5,7 +5,9 @@ import com.foodwallet.server.api.controller.menu.request.MenuCreateRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
@@ -153,5 +155,28 @@ class MenuApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.message").value("메뉴 가격은 양수여야 합니다."))
             .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("메뉴 이미지를 수정한다.")
+    @Test
+    void modifyMenuImage() throws Exception {
+        //given
+        MockMultipartFile image = new MockMultipartFile(
+            "image",
+            "my-store-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
+        //when //then
+        mockMvc.perform(
+                multipart(BASE_URL + "/{menuId}/image", 1, 1)
+                    .file(image)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 }

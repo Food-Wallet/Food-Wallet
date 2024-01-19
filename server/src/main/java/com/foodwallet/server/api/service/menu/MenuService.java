@@ -3,8 +3,10 @@ package com.foodwallet.server.api.service.menu;
 import com.foodwallet.server.api.service.menu.request.MenuCreateServiceRequest;
 import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
 import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
+import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
+import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.domain.menu.Menu;
@@ -54,5 +56,19 @@ public class MenuService {
         menu.modifyInfo(request.getName(), request.getDescription(), request.getPrice());
 
         return MenuModifyResponse.of(menu);
+    }
+
+    public MenuModifyImageResponse modifyMenuImage(String email, Long menuId, UploadFile image) {
+        Member member = memberRepository.findByEmail(email);
+
+        Menu menu = menuRepository.findJoinStoreById(menuId);
+
+        if (!menu.getStore().isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        menu.modifyImage(image);
+
+        return MenuModifyImageResponse.of(menu);
     }
 }

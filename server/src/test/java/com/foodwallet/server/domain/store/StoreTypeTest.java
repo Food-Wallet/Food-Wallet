@@ -1,6 +1,5 @@
 package com.foodwallet.server.domain.store;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

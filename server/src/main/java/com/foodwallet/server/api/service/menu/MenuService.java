@@ -5,11 +5,13 @@ import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
 import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
+import com.foodwallet.server.api.service.menu.response.MenuModifyStatusResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.domain.menu.Menu;
+import com.foodwallet.server.domain.menu.SellingStatus;
 import com.foodwallet.server.domain.menu.repository.MenuRepository;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
@@ -70,5 +72,21 @@ public class MenuService {
         menu.modifyImage(image);
 
         return MenuModifyImageResponse.of(menu);
+    }
+
+    public MenuModifyStatusResponse modifyMenuStatus(String email, Long menuId, String status) {
+        Member member = memberRepository.findByEmail(email);
+
+        Menu menu = menuRepository.findJoinStoreById(menuId);
+
+        if (!menu.getStore().isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        SellingStatus sellingStatus = SellingStatus.of(status);
+
+        menu.modifySellingStatus(sellingStatus);
+
+        return MenuModifyStatusResponse.of(menu);
     }
 }

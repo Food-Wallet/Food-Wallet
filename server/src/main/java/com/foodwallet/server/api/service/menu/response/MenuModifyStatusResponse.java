@@ -1,5 +1,6 @@
 package com.foodwallet.server.api.service.menu.response;
 
+import com.foodwallet.server.domain.menu.Menu;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,5 +18,13 @@ public class MenuModifyStatusResponse {
         this.name = name;
         this.status = status;
         this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public static MenuModifyStatusResponse of(Menu menu) {
+        return MenuModifyStatusResponse.builder()
+            .name(menu.getName())
+            .status(menu.getStatus().getText())
+            .modifiedDateTime(LocalDateTime.now())
+            .build();
     }
 }

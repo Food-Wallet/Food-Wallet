@@ -6,6 +6,7 @@ import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
 import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
+import com.foodwallet.server.api.service.menu.response.MenuModifyStatusResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
@@ -186,6 +187,38 @@ class MenuServiceTest extends IntegrationTestSupport {
         assertThat(findMenu.getImage())
             .extracting("uploadFileName", "storeFileName")
             .contains("upload-file-name.jpg", "s3-store-file-url.jpg");
+    }
+
+    @DisplayName("메뉴 판매 상태 수정시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void modifyMenuStatusWithoutAuth() {
+        //given
+        Member member1 = createMember("dong82@naver.com");
+        Store store = createStore(member1);
+        Menu menu = createMenu(store);
+
+        Member member2 = createMember("do72@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> menuService.modifyMenuStatus("do72@naver.com", menu.getId(), "STOP_SELLING"))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("사업자 회원 이메일, 매장 식별키, 상태 정보를 입력 받아 메뉴 판매 상태를 수정한다.")
+    @Test
+    void modifyMenuStatus() {
+        //given
+        Member member = createMember("dong82@naver.com");
+        Store store = createStore(member);
+        Menu menu = createMenu(store);
+
+        //when
+        MenuModifyStatusResponse response = menuService.modifyMenuStatus("dong82@naver.com", menu.getId(), "STOP_SELLING");
+
+        //then
+        Menu findMenu = menuRepository.findById(menu.getId());
+        assertThat(findMenu.getStatus()).isEqualByComparingTo(SellingStatus.STOP_SELLING);
     }
 
     private Member createMember(String email) {

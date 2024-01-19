@@ -62,6 +62,10 @@ public class StoreService {
     }
 
     public StoreOpenResponse openStore(Long storeId, StoreOpenServiceRequest request) {
-        return null;
+        Store store = storeRepository.findById(storeId);
+
+        store.open(request.getAddress(), request.getOpenTime(), request.getLatitude(), request.getLongitude());
+
+        return StoreOpenResponse.of(store);
     }
 }

@@ -22,10 +22,10 @@ public class OperationalInfo {
     private Double latitude;
 
     @Column(insertable = false)
-    private double longitude;
+    private Double longitude;
 
     @Builder
-    private OperationalInfo(String address, String openTime, Double latitude, double longitude) {
+    private OperationalInfo(String address, String openTime, Double latitude, Double longitude) {
         this.address = address;
         this.openTime = openTime;
         this.latitude = latitude;

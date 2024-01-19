@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 import static org.springframework.util.StringUtils.*;
 
 @Getter
@@ -80,6 +81,16 @@ public class Store extends BaseEntity {
         this.type = type;
         this.name = name;
         this.description = description;
+    }
+
+    public void open(String address, String openTime, double latitude, double longitude) {
+        status = OPEN;
+        operationalInfo = OperationalInfo.builder()
+            .address(address)
+            .openTime(openTime)
+            .latitude(latitude)
+            .longitude(longitude)
+            .build();
     }
 
     public boolean isMine(Member member) {

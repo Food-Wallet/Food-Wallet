@@ -39,13 +39,9 @@ public class StoreApiController {
 
     @PatchMapping("/{storeId}/open")
     public ApiResponse<StoreOpenResponse> openStore(@Valid @RequestBody StoreOpenRequest request, @PathVariable Long storeId) {
-        StoreOpenResponse response = StoreOpenResponse.builder()
-            .name("나리닭강정")
-            .address("서울 중구 세종대로 110")
-            .latitude(37.566352778)
-            .longitude(126.977952778)
-            .openDateTime(LocalDateTime.of(2023, 1, 16, 14, 0))
-            .build();
+
+        StoreOpenResponse response = storeService.openStore(storeId, request.toServiceRequest());
+
         return ApiResponse.ok(response);
     }
 

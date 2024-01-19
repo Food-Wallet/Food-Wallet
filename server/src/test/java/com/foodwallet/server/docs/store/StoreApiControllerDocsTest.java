@@ -523,6 +523,9 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
             .imageModifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
             .build();
 
+        given(fileStore.storeFile(any()))
+            .willReturn(UploadFile.builder().build());
+
         given(storeService.modifyStoreImage(anyLong(), any(UploadFile.class)))
             .willReturn(response);
 
@@ -547,6 +550,7 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                 ),
                 requestParts(
                     partWithName("image")
+                        .optional()
                         .description("첨부파일")
                 ),
                 responseFields(

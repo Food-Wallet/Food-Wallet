@@ -292,24 +292,6 @@ class StoreApiControllerTest extends ControllerTestSupport {
             .andExpect(status().isOk());
     }
 
-    @DisplayName("매장 이미지를 수정할 때 이미지 파일을 필수값이다.")
-    @Test
-    void modifyStoreImageWithoutImage() throws Exception {
-        //given //when //then
-        mockMvc.perform(
-                multipart(BASE_URL + "/{storeId}/image", 1)
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
-                    .with(csrf())
-            )
-            .andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code").value("400"))
-            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.message").value("이미지는 필수입니다."))
-            .andExpect(jsonPath("$.data").isEmpty());
-    }
-
     @DisplayName("매장 이미지를 수정한다.")
     @Test
     void modifyStoreImage() throws Exception {

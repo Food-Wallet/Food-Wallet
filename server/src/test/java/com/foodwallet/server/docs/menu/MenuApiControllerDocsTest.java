@@ -1,9 +1,14 @@
 package com.foodwallet.server.docs.menu;
 
+import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.controller.menu.MenuApiController;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest;
+import com.foodwallet.server.api.service.menu.MenuService;
+import com.foodwallet.server.api.service.menu.request.MenuCreateServiceRequest;
+import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +17,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import java.time.LocalDateTime;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -28,9 +38,12 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
 
     private static final String BASE_URL = "/api/v1/stores/{storeId}/menus";
 
+    private final MenuService menuService = mock(MenuService.class);
+    private final FileStore fileStore = mock(FileStore.class);
+
     @Override
     protected Object initController() {
-        return new MenuApiController();
+        return new MenuApiController(menuService, fileStore);
     }
 
     @DisplayName("메뉴 등록 API")
@@ -42,6 +55,18 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
             "image/jpg",
             "<<image data>>".getBytes()
         );
+
+        MenuCreateResponse response = MenuCreateResponse.builder()
+            .name("간장닭강정")
+            .price(8000)
+            .createdDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(menuService.createMenu(anyString(), anyLong(), any(MenuCreateServiceRequest.class)))
+            .willReturn(response);
 
         mockMvc.perform(
                 multipart(BASE_URL, 1)

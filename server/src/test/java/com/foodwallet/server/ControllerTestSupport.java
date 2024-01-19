@@ -2,7 +2,9 @@ package com.foodwallet.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foodwallet.server.api.FileStore;
+import com.foodwallet.server.api.controller.menu.MenuApiController;
 import com.foodwallet.server.api.controller.store.StoreApiController;
+import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.interceptor.query.ApiQueryCounter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WithMockUser
-@WebMvcTest(controllers = {StoreApiController.class})
+@WebMvcTest(controllers = {StoreApiController.class, MenuApiController.class})
 public abstract class ControllerTestSupport {
 
     @Autowired
@@ -29,4 +31,7 @@ public abstract class ControllerTestSupport {
 
     @MockBean
     protected StoreService storeService;
+
+    @MockBean
+    protected MenuService menuService;
 }

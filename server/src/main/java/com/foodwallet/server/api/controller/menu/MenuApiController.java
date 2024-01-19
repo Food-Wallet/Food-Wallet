@@ -1,16 +1,21 @@
 package com.foodwallet.server.api.controller.menu;
 
 import com.foodwallet.server.api.ApiResponse;
+import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.controller.menu.request.MenuCreateRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyImageRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest;
+import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.api.service.menu.response.*;
+import com.foodwallet.server.domain.UploadFile;
+import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
@@ -18,17 +23,21 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/v1/stores/{storeId}/menus")
 public class MenuApiController {
 
+    private final MenuService menuService;
+    private final FileStore fileStore;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<MenuCreateResponse> createMenu(
         @PathVariable Long storeId,
         @Valid @ModelAttribute MenuCreateRequest request
-    ) {
-        MenuCreateResponse response = MenuCreateResponse.builder()
-            .name("간장닭강정")
-            .price(8000)
-            .createdDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
-            .build();
+    ) throws IOException {
+        String email = SecurityUtils.getCurrentEmail();
+
+        UploadFile uploadFile = fileStore.storeFile(request.getImage());
+
+        MenuCreateResponse response = menuService.createMenu(email, storeId, request.toServiceRequest(uploadFile));
+
         return ApiResponse.created(response);
     }
 

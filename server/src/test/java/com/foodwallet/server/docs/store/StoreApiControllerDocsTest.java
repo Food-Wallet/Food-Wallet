@@ -8,6 +8,7 @@ import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
+import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
 import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
@@ -198,6 +199,21 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
     @DisplayName("매장 종료 API")
     @Test
     void closeStore() throws Exception {
+        StoreCloseResponse response = StoreCloseResponse.builder()
+            .name("나리닭강정")
+            .address("서울 중구 세종대로 110")
+            .openTime("오전 10:00 ~ 오후 8:00")
+            .latitude(37.566352778)
+            .longitude(126.977952778)
+            .closedDateTime(LocalDateTime.of(2023, 1, 16, 22, 0))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(storeService.closeStore(anyString(), anyLong()))
+            .willReturn(response);
+
         mockMvc.perform(
                 patch(BASE_URL + "/{storeId}/close", 1)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
@@ -229,6 +245,8 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                         .description("매장 이름"),
                     fieldWithPath("data.address").type(JsonFieldType.STRING)
                         .description("매장 운영 주소"),
+                    fieldWithPath("data.openTime").type(JsonFieldType.STRING)
+                        .description("매장 운영 시간"),
                     fieldWithPath("data.latitude").type(JsonFieldType.NUMBER)
                         .description("매장 운영 위도"),
                     fieldWithPath("data.longitude").type(JsonFieldType.NUMBER)

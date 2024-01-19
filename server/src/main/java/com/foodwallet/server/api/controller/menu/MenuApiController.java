@@ -75,11 +75,10 @@ public class MenuApiController {
         @PathVariable Long menuId,
         @Valid @RequestBody MenuModifyStatusRequest request
     ) {
-        MenuModifyStatusResponse response = MenuModifyStatusResponse.builder()
-            .name("간장닭강정")
-            .status("STOP_SELLING")
-            .modifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        MenuModifyStatusResponse response = menuService.modifyMenuStatus(email, menuId, request.getStatus());
+
         return ApiResponse.ok(response);
     }
 

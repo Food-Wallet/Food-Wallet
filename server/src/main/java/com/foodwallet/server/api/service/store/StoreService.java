@@ -4,10 +4,8 @@ import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
-import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
-import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
-import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
+import com.foodwallet.server.api.service.store.response.*;
+import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.domain.store.OperationalInfo;
@@ -85,5 +83,9 @@ public class StoreService {
         store.close();
 
         return StoreCloseResponse.of(store.getName(), operationalInfo);
+    }
+
+    public StoreModifyImageResponse modifyStoreImage(Long storeId, UploadFile uploadFile) {
+        return null;
     }
 }

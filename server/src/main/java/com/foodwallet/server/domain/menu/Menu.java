@@ -62,6 +62,12 @@ public class Menu extends BaseEntity {
             .build();
     }
 
+    public void modifyInfo(String name, String description, int price) {
+        this.name = validLength(name, 20);
+        this.description = validLength(description, 200);
+        this.price = price;
+    }
+
     private String validLength(String target, int maxLength) {
         if (hasText(target) && target.length() > maxLength) {
             throw new IllegalArgumentException(String.format("길이는 최대 %d자 입니다.", maxLength));

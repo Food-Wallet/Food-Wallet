@@ -2,12 +2,14 @@ package com.foodwallet.server.api.controller.menu;
 
 import com.foodwallet.server.ControllerTestSupport;
 import com.foodwallet.server.api.controller.menu.request.MenuCreateRequest;
+import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockPart;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -77,6 +79,73 @@ class MenuApiControllerTest extends ControllerTestSupport {
                     .part(new MockPart("price", request.getPrice().toString().getBytes()))
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("메뉴 가격은 양수여야 합니다."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("메뉴 정보를 수정한다.")
+    @Test
+    void modifyMenuInfo() throws Exception {
+        //given
+        MenuModifyRequest request = MenuModifyRequest.builder()
+            .name("간장닭강정")
+            .price(9000)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                patch(BASE_URL + "/{menuId}", 1, 1)
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("메뉴 정보를 수정할 때 메뉴명은 필수값이다.")
+    @Test
+    void modifyMenuInfoWithoutName() throws Exception {
+        //given
+        MenuModifyRequest request = MenuModifyRequest.builder()
+            .price(9000)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                patch(BASE_URL + "/{menuId}", 1, 1)
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("메뉴명은 필수입니다."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("메뉴 정보를 수정할 때 가격은 양수이다.")
+    @Test
+    void modifyMenuInfoWithZeroPrice() throws Exception {
+        //given
+        MenuModifyRequest request = MenuModifyRequest.builder()
+            .name("간장닭강정")
+            .price(0)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                patch(BASE_URL + "/{menuId}", 1, 1)
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
             .andExpect(status().isBadRequest())

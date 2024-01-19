@@ -1,7 +1,9 @@
 package com.foodwallet.server.api.service.menu;
 
 import com.foodwallet.server.api.service.menu.request.MenuCreateServiceRequest;
+import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
 import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
+import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
@@ -38,5 +40,19 @@ public class MenuService {
         Menu menu = Menu.createMenu(request.getName(), request.getDescription(), request.getPrice(), request.getImage(), store);
         Menu savedMenu = menuRepository.save(menu);
         return MenuCreateResponse.of(savedMenu);
+    }
+
+    public MenuModifyResponse modifyMenuInfo(String email, Long menuId, MenuModifyServiceRequest request) {
+        Member member = memberRepository.findByEmail(email);
+
+        Menu menu = menuRepository.findJoinStoreById(menuId);
+
+        if (!menu.getStore().isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        menu.modifyInfo(request.getName(), request.getDescription(), request.getPrice());
+
+        return MenuModifyResponse.of(menu);
     }
 }

@@ -28,7 +28,21 @@ public class OperationalInfo {
     private OperationalInfo(String address, String openTime, Double latitude, Double longitude) {
         this.address = address;
         this.openTime = openTime;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.latitude = validLatitude(latitude);
+        this.longitude = validLongitude(longitude);
+    }
+
+    private Double validLatitude(Double target) {
+        if ((target == null) || (33 <= target && target <= 43)) {
+            return target;
+        }
+        throw new IllegalArgumentException("위도는 최소 33에서 최대 43이다.");
+    }
+
+    private Double validLongitude(Double target) {
+        if ((target == null) || (124 <= target && target <= 132)) {
+            return target;
+        }
+        throw new IllegalArgumentException("경도는 최소 124에서 최대 132이다.");
     }
 }

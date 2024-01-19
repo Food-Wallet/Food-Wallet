@@ -86,6 +86,10 @@ public class StoreService {
     }
 
     public StoreModifyImageResponse modifyStoreImage(Long storeId, UploadFile uploadFile) {
-        return null;
+        Store store = storeRepository.findById(storeId);
+
+        store.modifyImage(uploadFile);
+
+        return StoreModifyImageResponse.of(store);
     }
 }

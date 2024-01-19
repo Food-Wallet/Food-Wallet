@@ -59,6 +59,16 @@ public class MenuService {
     }
 
     public MenuModifyImageResponse modifyMenuImage(String email, Long menuId, UploadFile image) {
-        return null;
+        Member member = memberRepository.findByEmail(email);
+
+        Menu menu = menuRepository.findJoinStoreById(menuId);
+
+        if (!menu.getStore().isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        menu.modifyImage(image);
+
+        return MenuModifyImageResponse.of(menu);
     }
 }

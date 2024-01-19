@@ -7,8 +7,10 @@ import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
+import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -119,9 +121,25 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
     void openStore() throws Exception {
         StoreOpenRequest request = StoreOpenRequest.builder()
             .address("서울 중구 세종대로 110")
+            .openTime("오전 10:00 ~ 오후 8:00")
             .latitude(37.566352778)
             .longitude(126.977952778)
             .build();
+
+        StoreOpenResponse response = StoreOpenResponse.builder()
+            .name("나리닭강정")
+            .address("서울 중구 세종대로 110")
+            .openTime("오전 10:00 ~ 오후 8:00")
+            .latitude(37.566352778)
+            .longitude(126.977952778)
+            .openDateTime(LocalDateTime.of(2023, 1, 16, 14, 0))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(storeService.openStore(anyLong(), any(StoreOpenServiceRequest.class)))
+            .willReturn(response);
 
         mockMvc.perform(
                 patch(BASE_URL + "/{storeId}/open", 1)
@@ -145,6 +163,8 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                 requestFields(
                     fieldWithPath("address").type(JsonFieldType.STRING)
                         .description("현재 위치 도로명 주소"),
+                    fieldWithPath("openTime").type(JsonFieldType.STRING)
+                        .description("매장 운영 시간"),
                     fieldWithPath("latitude").type(JsonFieldType.NUMBER)
                         .description("현재 위치 위도"),
                     fieldWithPath("longitude").type(JsonFieldType.NUMBER)
@@ -163,6 +183,8 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                         .description("매장 이름"),
                     fieldWithPath("data.address").type(JsonFieldType.STRING)
                         .description("매장 운영 주소"),
+                    fieldWithPath("data.openTime").type(JsonFieldType.STRING)
+                        .description("매장 운영 시간"),
                     fieldWithPath("data.latitude").type(JsonFieldType.NUMBER)
                         .description("매장 운영 위도"),
                     fieldWithPath("data.longitude").type(JsonFieldType.NUMBER)

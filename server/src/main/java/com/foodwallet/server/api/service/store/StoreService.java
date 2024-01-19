@@ -1,6 +1,5 @@
 package com.foodwallet.server.api.service.store;
 
-import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
@@ -91,5 +90,19 @@ public class StoreService {
         store.modifyImage(uploadFile);
 
         return StoreModifyImageResponse.of(store);
+    }
+
+    public StoreRemoveResponse removeStore(String email, Long storeId) {
+        Store store = storeRepository.findById(storeId);
+
+        Member member = memberRepository.findByEmail(email);
+
+        if (!store.isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        store.remove();
+
+        return StoreRemoveResponse.of(store);
     }
 }

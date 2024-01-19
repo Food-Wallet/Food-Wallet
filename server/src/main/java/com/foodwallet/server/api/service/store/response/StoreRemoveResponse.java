@@ -1,5 +1,6 @@
 package com.foodwallet.server.api.service.store.response;
 
+import com.foodwallet.server.domain.store.Store;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,5 +18,13 @@ public class StoreRemoveResponse {
         this.type = type;
         this.name = name;
         this.removedDateTime = removedDateTime;
+    }
+
+    public static StoreRemoveResponse of(Store store) {
+        return StoreRemoveResponse.builder()
+            .type(store.getType().getText())
+            .name(store.getName())
+            .removedDateTime(LocalDateTime.now())
+            .build();
     }
 }

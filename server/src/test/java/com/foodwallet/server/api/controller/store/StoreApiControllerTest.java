@@ -12,8 +12,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -310,6 +309,19 @@ class StoreApiControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
                     .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("매장을 삭제한다.")
+    @Test
+    void removeStore() throws Exception {
+        //given //when //then
+        mockMvc.perform(
+                delete(BASE_URL + "/{storeId}", 1)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
             .andExpect(status().isOk());

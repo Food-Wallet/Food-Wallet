@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -72,11 +71,10 @@ public class StoreApiController {
 
     @DeleteMapping("/{storeId}")
     public ApiResponse<StoreRemoveResponse> removeStore(@PathVariable Long storeId) {
-        StoreRemoveResponse response = StoreRemoveResponse.builder()
-            .type("치킨")
-            .name("나리닭강정")
-            .removedDateTime(LocalDateTime.of(2024, 1, 16, 20, 0))
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreRemoveResponse response = storeService.removeStore(email, storeId);
+
         return ApiResponse.ok(response);
     }
 

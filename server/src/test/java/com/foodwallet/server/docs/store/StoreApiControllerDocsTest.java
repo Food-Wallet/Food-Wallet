@@ -332,6 +332,15 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
     @DisplayName("매장 삭제 API")
     @Test
     void removeStore() throws Exception {
+        StoreRemoveResponse response = StoreRemoveResponse.builder()
+            .type("치킨")
+            .name("나리닭강정")
+            .removedDateTime(LocalDateTime.of(2024, 1, 16, 20, 0))
+            .build();
+
+        given(storeService.removeStore(anyString(), anyLong()))
+            .willReturn(response);
+
         mockMvc.perform(
                 delete(BASE_URL + "/{storeId}", 1)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")

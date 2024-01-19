@@ -2,10 +2,7 @@ package com.foodwallet.server.api.service.menu;
 
 import com.foodwallet.server.api.service.menu.request.MenuCreateServiceRequest;
 import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
-import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyStatusResponse;
+import com.foodwallet.server.api.service.menu.response.*;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
@@ -88,5 +85,9 @@ public class MenuService {
         menu.modifySellingStatus(sellingStatus);
 
         return MenuModifyStatusResponse.of(menu);
+    }
+
+    public MenuRemoveResponse removeMenu(String email, Long menuId) {
+        return null;
     }
 }

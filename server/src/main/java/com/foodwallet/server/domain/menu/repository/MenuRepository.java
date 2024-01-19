@@ -7,4 +7,6 @@ public interface MenuRepository {
     Menu save(Menu menu);
 
     Menu findById(Long menuId);
+
+    Menu findJoinStoreById(Long menuId);
 }

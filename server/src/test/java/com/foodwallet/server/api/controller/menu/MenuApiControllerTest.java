@@ -3,6 +3,7 @@ package com.foodwallet.server.api.controller.menu;
 import com.foodwallet.server.ControllerTestSupport;
 import com.foodwallet.server.api.controller.menu.request.MenuCreateRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
+import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -178,5 +179,46 @@ class MenuApiControllerTest extends ControllerTestSupport {
             )
             .andDo(print())
             .andExpect(status().isOk());
+    }
+
+    @DisplayName("메뉴 판매 상태를 수정한다.")
+    @Test
+    void modifyMenuStatus() throws Exception {
+        //given
+        MenuModifyStatusRequest request = MenuModifyStatusRequest.builder()
+            .status("STOP_SELLING")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                patch(BASE_URL + "/{menuId}/status", 1, 1)
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("메뉴 판매 상태를 수정할 때 판매 상태는 필수값이다.")
+    @Test
+    void modifyMenuStatusWithoutStatus() throws Exception {
+        //given
+        MenuModifyStatusRequest request = MenuModifyStatusRequest.builder()
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                patch(BASE_URL + "/{menuId}/status", 1, 1)
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("판매 상태는 필수입니다."))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 }

@@ -10,6 +10,7 @@ import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
 import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
+import com.foodwallet.server.api.service.menu.response.MenuModifyStatusResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
@@ -273,6 +274,18 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
         MenuModifyStatusRequest request = MenuModifyStatusRequest.builder()
             .status("STOP_SELLING")
             .build();
+
+        MenuModifyStatusResponse response = MenuModifyStatusResponse.builder()
+            .name("간장닭강정")
+            .status("STOP_SELLING")
+            .modifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(menuService.modifyMenuStatus(anyString(), anyLong(), anyString()))
+            .willReturn(response);
 
         mockMvc.perform(
                 patch(BASE_URL + "/{menuId}/status", 1, 1)

@@ -7,10 +7,7 @@ import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest
 import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.api.service.menu.request.MenuCreateServiceRequest;
 import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
-import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyStatusResponse;
+import com.foodwallet.server.api.service.menu.response.*;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
@@ -334,6 +331,17 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
     @DisplayName("메뉴 삭제 API")
     @Test
     void removeMenu() throws Exception {
+        MenuRemoveResponse response = MenuRemoveResponse.builder()
+            .name("간장닭강정")
+            .removedDateTime(LocalDateTime.of(2024, 1, 17, 23, 0))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(menuService.removeMenu(anyString(), anyLong()))
+            .willReturn(response);
+
         mockMvc.perform(
                 delete(BASE_URL + "/{menuId}", 1, 1)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")

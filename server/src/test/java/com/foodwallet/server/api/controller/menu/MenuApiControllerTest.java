@@ -11,8 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -220,5 +219,18 @@ class MenuApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.message").value("판매 상태는 필수입니다."))
             .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("메뉴를 삭제한다.")
+    @Test
+    void removeMenu() throws Exception {
+        //given //when //then
+        mockMvc.perform(
+                delete(BASE_URL + "/{menuId}", 1, 1)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 }

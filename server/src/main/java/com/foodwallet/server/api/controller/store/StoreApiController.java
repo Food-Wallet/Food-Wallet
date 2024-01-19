@@ -1,6 +1,7 @@
 package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
+import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
@@ -9,6 +10,7 @@ import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.menu.response.MenuResponse;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.*;
+import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,6 +29,7 @@ import java.util.List;
 public class StoreApiController {
 
     private final StoreService storeService;
+    private final FileStore fileStore;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -136,12 +140,11 @@ public class StoreApiController {
     public ApiResponse<StoreModifyImageResponse> modifyStoreImage(
         @PathVariable Long storeId,
         @Valid @ModelAttribute StoreModifyImageRequest request
-    ) {
-        StoreModifyImageResponse response = StoreModifyImageResponse.builder()
-            .type("치킨")
-            .name("나리닭강정")
-            .imageModifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
-            .build();
+    ) throws IOException {
+        UploadFile uploadFile = fileStore.storeFile(request.getImage());
+
+        StoreModifyImageResponse response = storeService.modifyStoreImage(storeId, uploadFile);
+
         return ApiResponse.ok(response);
     }
 }

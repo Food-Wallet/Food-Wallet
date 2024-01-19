@@ -24,3 +24,16 @@ logging:
 
 jwt:
   secret: temptemptemptemptemptemptemptemptemptemptemp
+
+cloud:
+  aws:
+    credentials:
+      accessKey: temp-access-key
+      secretKey: temp-secret-key
+    s3:
+      bucket: temp-bucket
+    stack:
+      auto: false
+    region:
+      static: temp
+

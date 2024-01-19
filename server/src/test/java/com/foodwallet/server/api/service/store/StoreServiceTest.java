@@ -4,10 +4,8 @@ import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
-import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
-import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
-import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
+import com.foodwallet.server.api.service.store.response.*;
+import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Account;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
@@ -199,6 +197,28 @@ class StoreServiceTest extends IntegrationTestSupport {
         assertThat(findStore)
             .extracting("status", "operationalInfo")
             .contains(CLOSE);
+    }
+
+    @DisplayName("매장 식별키와 업로드 파일 객체를 입력 받아 매장 이미지를 수정한다.")
+    @Test
+    void modifyStoreImage() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member, CLOSE, null);
+        UploadFile uploadFile = UploadFile.builder()
+            .uploadFileName("upload-file-name.png")
+            .storeFileName("s3-store-file-url.png")
+            .build();
+
+        //when
+        StoreModifyImageResponse response = storeService.modifyStoreImage(store.getId(), uploadFile);
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore.getImage())
+            .extracting("uploadFileName", "storeFileName")
+            .contains("upload-file-name.png", "s3-store-file-url.png");
     }
 
     private Account createAccount() {

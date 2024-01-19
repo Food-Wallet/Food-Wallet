@@ -1,6 +1,7 @@
 package com.foodwallet.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.interceptor.query.ApiQueryCounter;
@@ -22,6 +23,9 @@ public abstract class ControllerTestSupport {
 
     @MockBean
     protected ApiQueryCounter apiQueryCounter;
+
+    @MockBean
+    protected FileStore fileStore;
 
     @MockBean
     protected StoreService storeService;

@@ -87,10 +87,10 @@ public class MenuApiController {
         @PathVariable Long storeId,
         @PathVariable Long menuId
     ) {
-        MenuRemoveResponse response = MenuRemoveResponse.builder()
-            .name("간장닭강정")
-            .removedDateTime(LocalDateTime.of(2024, 1, 17, 23, 0))
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        MenuRemoveResponse response = menuService.removeMenu(email, menuId);
+
         return ApiResponse.ok(response);
     }
 }

@@ -3,10 +3,7 @@ package com.foodwallet.server.api.service.menu;
 import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.menu.request.MenuCreateServiceRequest;
 import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
-import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
-import com.foodwallet.server.api.service.menu.response.MenuModifyStatusResponse;
+import com.foodwallet.server.api.service.menu.response.*;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
@@ -219,6 +216,38 @@ class MenuServiceTest extends IntegrationTestSupport {
         //then
         Menu findMenu = menuRepository.findById(menu.getId());
         assertThat(findMenu.getStatus()).isEqualByComparingTo(SellingStatus.STOP_SELLING);
+    }
+
+    @DisplayName("메뉴 삭제시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void removeMenuWithoutAuth() {
+        //given
+        Member member1 = createMember("dong82@naver.com");
+        Store store = createStore(member1);
+        Menu menu = createMenu(store);
+
+        Member member2 = createMember("do72@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> menuService.removeMenu("do72@naver.com", menu.getId()))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("사업자 회원 이메일과 매장 식별키를 입력 받아 메뉴를 삭제한다.")
+    @Test
+    void removeMenu() {
+        //given
+        Member member = createMember("dong82@naver.com");
+        Store store = createStore(member);
+        Menu menu = createMenu(store);
+
+        //when
+        MenuRemoveResponse response = menuService.removeMenu("dong82@naver.com", menu.getId());
+
+        //then
+        Menu findMenu = menuRepository.findById(menu.getId());
+        assertThat(findMenu.isDeleted()).isTrue();
     }
 
     private Member createMember(String email) {

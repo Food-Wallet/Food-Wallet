@@ -24,3 +24,16 @@ logging:
 
 jwt:
   secret: ${jwt.secret}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${s3.accessKey}
+      secretKey: ${s3.secretKey}
+    s3:
+      bucket: food-wallet
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+

@@ -94,6 +94,16 @@ public class StoreService {
     }
 
     public StoreRemoveResponse removeStore(String email, Long storeId) {
-        return null;
+        Store store = storeRepository.findById(storeId);
+
+        Member member = memberRepository.findByEmail(email);
+
+        if (!store.isMine(member)) {
+            throw new AuthenticationException("접근 권한이 없습니다.");
+        }
+
+        store.remove();
+
+        return StoreRemoveResponse.of(store);
     }
 }

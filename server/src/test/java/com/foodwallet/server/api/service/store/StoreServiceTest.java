@@ -3,8 +3,10 @@ package com.foodwallet.server.api.service.store;
 import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
+import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import com.foodwallet.server.domain.member.Account;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.foodwallet.server.domain.member.MemberRole.*;
+import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
 import static org.assertj.core.api.Assertions.*;
 
@@ -132,6 +135,31 @@ class StoreServiceTest extends IntegrationTestSupport {
         assertThat(findStore)
             .extracting("type", "name", "description")
             .contains(CHICKEN, "나리닭강정", "국내 1등 닭강정");
+    }
+
+    @DisplayName("매장 식별키와 운영 장소를 입력 받아 매장을 오픈할 수 있다.")
+    @Test
+    void openStore() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member);
+
+        StoreOpenServiceRequest request = StoreOpenServiceRequest.builder()
+            .address("서울 중구 세종대로 110")
+            .openTime("오전 10:00 ~ 오후 8:00")
+            .latitude(37.566352778)
+            .longitude(126.977952778)
+            .build();
+
+        //when
+        StoreOpenResponse response = storeService.openStore(store.getId(), request);
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore)
+            .extracting("status", "operationalInfo.address", "operationalInfo.openTime", "operationalInfo.latitude", "operationalInfo.longitude")
+            .contains(OPEN, "서울 중구 세종대로 110", "오전 10:00 ~ 오후 8:00", 37.566352778, 126.977952778);
     }
 
     private Account createAccount() {

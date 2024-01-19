@@ -1,9 +1,12 @@
 package com.foodwallet.server.api.service.store;
 
+import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
+import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.domain.store.Store;
@@ -56,5 +59,13 @@ public class StoreService {
         store.modifyInfo(type, request.getName(), request.getDescription());
 
         return StoreModifyResponse.of(store);
+    }
+
+    public StoreOpenResponse openStore(Long storeId, StoreOpenServiceRequest request) {
+        Store store = storeRepository.findById(storeId);
+
+        store.open(request.getAddress(), request.getOpenTime(), request.getLatitude(), request.getLongitude());
+
+        return StoreOpenResponse.of(store);
     }
 }

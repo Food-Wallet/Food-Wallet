@@ -1,5 +1,6 @@
 package com.foodwallet.server.docs.store;
 
+import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
@@ -8,11 +9,9 @@ import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
-import com.foodwallet.server.api.service.store.response.StoreCloseResponse;
-import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyResponse;
-import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
+import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,10 +43,11 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
     private static final String BASE_URL = "/api/v1/stores";
 
     private final StoreService storeService = mock(StoreService.class);
+    private final FileStore fileStore = mock(FileStore.class);
 
     @Override
     protected Object initController() {
-        return new StoreApiController(storeService);
+        return new StoreApiController(storeService, fileStore);
     }
 
     @DisplayName("매장 등록 API")
@@ -516,6 +516,15 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
             "image/jpg",
             "<<image data>>".getBytes()
         );
+
+        StoreModifyImageResponse response = StoreModifyImageResponse.builder()
+            .type("치킨")
+            .name("나리닭강정")
+            .imageModifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
+            .build();
+
+        given(storeService.modifyStoreImage(anyLong(), any(UploadFile.class)))
+            .willReturn(response);
 
         mockMvc.perform(
                 multipart(BASE_URL + "/{storeId}/image", 1)

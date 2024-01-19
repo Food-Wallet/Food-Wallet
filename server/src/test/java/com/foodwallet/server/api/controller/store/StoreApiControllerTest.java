@@ -6,8 +6,11 @@ import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -284,6 +287,47 @@ class StoreApiControllerTest extends ControllerTestSupport {
                 patch(BASE_URL + "/{storeId}/close", 1)
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("매장 이미지를 수정할 때 이미지 파일을 필수값이다.")
+    @Test
+    void modifyStoreImageWithoutImage() throws Exception {
+        //given //when //then
+        mockMvc.perform(
+                multipart(BASE_URL + "/{storeId}/image", 1)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("이미지는 필수입니다."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("매장 이미지를 수정한다.")
+    @Test
+    void modifyStoreImage() throws Exception {
+        //given
+        MockMultipartFile image = new MockMultipartFile(
+            "image",
+            "my-store-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
+        //when //then
+        mockMvc.perform(
+                multipart(BASE_URL + "/{storeId}/image", 1)
+                    .file(image)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
             )
             .andDo(print())
             .andExpect(status().isOk());

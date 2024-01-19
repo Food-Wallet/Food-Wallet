@@ -1,6 +1,7 @@
 package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
+import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
@@ -26,6 +27,7 @@ import java.util.List;
 public class StoreApiController {
 
     private final StoreService storeService;
+    private final FileStore fileStore;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

@@ -8,8 +8,10 @@ import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.api.service.menu.request.MenuCreateServiceRequest;
 import com.foodwallet.server.api.service.menu.request.MenuModifyServiceRequest;
 import com.foodwallet.server.api.service.menu.response.MenuCreateResponse;
+import com.foodwallet.server.api.service.menu.response.MenuModifyImageResponse;
 import com.foodwallet.server.api.service.menu.response.MenuModifyResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -208,6 +210,17 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
             "image/jpg",
             "<<image data>>".getBytes()
         );
+
+        MenuModifyImageResponse response = MenuModifyImageResponse.builder()
+            .name("간장닭강정")
+            .modifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(menuService.modifyMenuImage(anyString(), anyLong(), any(UploadFile.class)))
+            .willReturn(response);
 
         mockMvc.perform(
                 multipart(BASE_URL + "/{menuId}/image", 1, 1)

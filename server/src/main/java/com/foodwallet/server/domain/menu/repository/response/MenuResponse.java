@@ -1,5 +1,6 @@
 package com.foodwallet.server.domain.menu.repository.response;
 
+import com.foodwallet.server.domain.menu.SellingStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,12 +15,12 @@ public class MenuResponse {
     private final String menuImage;
 
     @Builder
-    private MenuResponse(Long menuId, String name, String description, int price, String status, String menuImage) {
+    public MenuResponse(Long menuId, String name, String description, int price, SellingStatus status, String menuImage) {
         this.menuId = menuId;
         this.name = name;
         this.description = description;
         this.price = price;
-        this.status = status;
+        this.status = status.getText();
         this.menuImage = menuImage;
     }
 }

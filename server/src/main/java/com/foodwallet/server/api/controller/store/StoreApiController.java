@@ -6,6 +6,7 @@ import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.domain.menu.SellingStatus;
 import com.foodwallet.server.domain.menu.repository.response.MenuResponse;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.*;
@@ -82,7 +83,7 @@ public class StoreApiController {
             .name("간장닭강정")
             .description("우리 매장 시그니처 메뉴입니다!")
             .price(8000)
-            .status("SELLING")
+            .status(SellingStatus.SELLING)
             .menuImage("s3-store-menu-img-url")
             .build();
         MenuResponse menu2 = MenuResponse.builder()
@@ -90,7 +91,7 @@ public class StoreApiController {
             .name("양념닭강정")
             .description(null)
             .price(9000)
-            .status("HOLD")
+            .status(SellingStatus.HOLD)
             .menuImage("s3-store-menu-img-url")
             .build();
         StoreDetailResponse response = StoreDetailResponse.builder()

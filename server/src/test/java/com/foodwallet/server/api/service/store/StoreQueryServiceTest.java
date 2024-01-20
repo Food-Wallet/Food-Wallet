@@ -2,6 +2,10 @@ package com.foodwallet.server.api.service.store;
 
 import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.SliceResponse;
+import com.foodwallet.server.api.service.store.response.StoreDetailResponse;
+import com.foodwallet.server.domain.menu.Menu;
+import com.foodwallet.server.domain.menu.SellingStatus;
+import com.foodwallet.server.domain.menu.repository.MenuRepository;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.StoreType;
@@ -13,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
+import static com.foodwallet.server.domain.menu.SellingStatus.*;
 import static com.foodwallet.server.domain.store.StoreStatus.*;
 import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
@@ -26,6 +31,9 @@ class StoreQueryServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private StoreRepository storeRepository;
+
+    @Autowired
+    private MenuRepository menuRepository;
 
     @DisplayName("매장 타입, 매장명, 페이지 정보를 입력 받아 매장 목록을 조회할 수 있다.")
     @Test
@@ -57,6 +65,30 @@ class StoreQueryServiceTest extends IntegrationTestSupport {
             );
     }
 
+    @DisplayName("매장 식별키를 입력 받아 매장 상제 조회를 할 수 있다.")
+    @Test
+    void searchStore() {
+        //given
+        Store store = createStore(OPEN, CHICKEN, "나리닭강정");
+        Menu menu1 = createMenu("간장닭강정", 8000, SELLING, store);
+        Menu menu2 = createMenu("양념닭강정", 9000, HOLD, store);
+        Menu menu3 = createMenu("마약닭강정", 10000, STOP_SELLING, store);
+
+        //when
+        StoreDetailResponse response = storeQueryService.searchStore(store.getId());
+
+        //then
+        assertThat(response)
+            .extracting("type", "name", "status")
+            .contains(CHICKEN.getText(), "나리닭강정", OPEN.getText());
+        assertThat(response.getMenus()).hasSize(2)
+            .extracting("name", "price", "status")
+            .containsExactlyInAnyOrder(
+                tuple("간장닭강정", 8000, SELLING.getText()),
+                tuple("양념닭강정", 9000, HOLD.getText())
+            );
+    }
+
     private Store createStore(StoreStatus status, StoreType type, String name) {
         Store store = Store.builder()
             .status(status)
@@ -64,5 +96,15 @@ class StoreQueryServiceTest extends IntegrationTestSupport {
             .name(name)
             .build();
         return storeRepository.save(store);
+    }
+
+    private Menu createMenu(String name, int price, SellingStatus status, Store store) {
+        Menu menu = Menu.builder()
+            .name(name)
+            .price(price)
+            .status(status)
+            .store(store)
+            .build();
+        return menuRepository.save(menu);
     }
 }

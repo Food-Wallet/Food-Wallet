@@ -1,6 +1,7 @@
 package com.foodwallet.server.api.service.store;
 
 import com.foodwallet.server.api.SliceResponse;
+import com.foodwallet.server.api.service.store.response.StoreDetailResponse;
 import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.StoreQueryRepository;
 import com.foodwallet.server.domain.store.repository.dto.StoreSearchCond;
@@ -34,5 +35,9 @@ public class StoreQueryService {
         Slice<StoreResponse> content = storeQueryRepository.findAllByCond(cond, pageable);
 
         return SliceResponse.of(content);
+    }
+
+    public StoreDetailResponse searchStore(Long storeId) {
+        return null;
     }
 }

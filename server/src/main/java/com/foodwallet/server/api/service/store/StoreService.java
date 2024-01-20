@@ -16,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.foodwallet.server.common.message.ExceptionMessageConst.*;
+import static com.foodwallet.server.common.message.ExceptionMessageConst.NOT_AUTHORIZED;
+import static com.foodwallet.server.common.message.ExceptionMessageConst.NO_ACCOUNT_INFORMATION;
+
 
 @RequiredArgsConstructor
 @Service
@@ -29,11 +33,11 @@ public class StoreService {
         Member member = memberRepository.findByEmail(email);
 
         if (!member.isBusinessMember()) {
-            throw new IllegalArgumentException("사업자 회원만 매장을 등록할 수 있습니다.");
+            throw new IllegalArgumentException(IS_NOT_BUSINESS_MEMBER);
         }
 
         if (!member.isExistAccount()) {
-            throw new IllegalArgumentException("매장을 등록하기 위해서 계좌를 등록해야 합니다.");
+            throw new IllegalArgumentException(NO_ACCOUNT_INFORMATION);
         }
 
         StoreType type = StoreType.of(request.getType());
@@ -94,7 +98,7 @@ public class StoreService {
         Store store = storeRepository.findById(storeId);
 
         if (!store.isMine(member)) {
-            throw new AuthenticationException("접근 권한이 없습니다.");
+            throw new AuthenticationException(NOT_AUTHORIZED);
         }
 
         return store;

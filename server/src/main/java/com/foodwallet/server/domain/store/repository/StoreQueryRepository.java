@@ -6,6 +6,7 @@ import com.foodwallet.server.domain.store.repository.dto.StoreDetailDto;
 import com.foodwallet.server.domain.store.repository.response.StoreResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Pageable;
@@ -62,7 +63,24 @@ public class StoreQueryRepository {
     }
 
     public StoreDetailDto findStoreDetailById(Long storeId) {
-        return null;
+        StoreDetailDto content = queryFactory
+            .select(
+                Projections.constructor(StoreDetailDto.class,
+                    Expressions.asNumber(storeId),
+                    store.type,
+                    store.name,
+                    store.description,
+                    store.image.uploadFileName,
+                    store.reviewInfo.avgRate,
+                    store.status,
+                    store.operationalInfo.address,
+                    store.operationalInfo.openTime
+                )
+            )
+            .from(store)
+            .where(store.id.eq(storeId))
+            .fetchFirst();
+        return content;
     }
 
     private BooleanExpression eqType(StoreType type) {

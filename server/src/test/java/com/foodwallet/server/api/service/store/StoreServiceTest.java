@@ -154,7 +154,7 @@ class StoreServiceTest extends IntegrationTestSupport {
             .build();
 
         //when
-        StoreOpenResponse response = storeService.openStore(store.getId(), request);
+        StoreOpenResponse response = storeService.openStore("dong82@naver.com", store.getId(), request);
 
         //then
         Store findStore = storeRepository.findById(store.getId());
@@ -212,7 +212,7 @@ class StoreServiceTest extends IntegrationTestSupport {
             .build();
 
         //when
-        StoreModifyImageResponse response = storeService.modifyStoreImage(store.getId(), uploadFile);
+        StoreModifyImageResponse response = storeService.modifyStoreImage("dong82@naver.com", store.getId(), uploadFile);
 
         //then
         Store findStore = storeRepository.findById(store.getId());

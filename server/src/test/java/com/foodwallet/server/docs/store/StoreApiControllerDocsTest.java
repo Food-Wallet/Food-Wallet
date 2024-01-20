@@ -145,7 +145,7 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
         given(SecurityUtils.getCurrentEmail())
             .willReturn("dong82@naver.com");
 
-        given(storeService.openStore(anyLong(), any(StoreOpenServiceRequest.class)))
+        given(storeService.openStore(anyString(), anyLong(), any(StoreOpenServiceRequest.class)))
             .willReturn(response);
 
         mockMvc.perform(
@@ -403,7 +403,7 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
         given(fileStore.storeFile(any()))
             .willReturn(UploadFile.builder().build());
 
-        given(storeService.modifyStoreImage(anyLong(), any(UploadFile.class)))
+        given(storeService.modifyStoreImage(anyString(), anyLong(), any(UploadFile.class)))
             .willReturn(response);
 
         mockMvc.perform(

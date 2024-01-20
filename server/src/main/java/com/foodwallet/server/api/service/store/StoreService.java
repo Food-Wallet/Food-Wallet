@@ -45,13 +45,7 @@ public class StoreService {
     }
 
     public StoreModifyResponse modifyStoreInfo(String email, Long storeId, StoreModifyServiceRequest request) {
-        Member member = memberRepository.findByEmail(email);
-
-        Store store = storeRepository.findById(storeId);
-
-        if (!store.isMine(member)) {
-            throw new AuthenticationException("접근 권한이 없습니다.");
-        }
+        Store store = getMyStore(email, storeId);
 
         StoreType type = StoreType.of(request.getType());
 
@@ -60,8 +54,16 @@ public class StoreService {
         return StoreModifyResponse.of(store);
     }
 
-    public StoreOpenResponse openStore(Long storeId, StoreOpenServiceRequest request) {
-        Store store = storeRepository.findById(storeId);
+    public StoreModifyImageResponse modifyStoreImage(String email, Long storeId, UploadFile uploadFile) {
+        Store store = getMyStore(email, storeId);
+
+        store.modifyImage(uploadFile);
+
+        return StoreModifyImageResponse.of(store);
+    }
+
+    public StoreOpenResponse openStore(String email, Long storeId, StoreOpenServiceRequest request) {
+        Store store = getMyStore(email, storeId);
 
         store.open(request.getAddress(), request.getOpenTime(), request.getLatitude(), request.getLongitude());
 
@@ -69,13 +71,7 @@ public class StoreService {
     }
 
     public StoreCloseResponse closeStore(String email, Long storeId) {
-        Store store = storeRepository.findById(storeId);
-
-        Member member = memberRepository.findByEmail(email);
-
-        if (!store.isMine(member)) {
-            throw new AuthenticationException("접근 권한이 없습니다.");
-        }
+        Store store = getMyStore(email, storeId);
 
         OperationalInfo operationalInfo = store.getOperationalInfo();
 
@@ -84,25 +80,23 @@ public class StoreService {
         return StoreCloseResponse.of(store.getName(), operationalInfo);
     }
 
-    public StoreModifyImageResponse modifyStoreImage(Long storeId, UploadFile uploadFile) {
-        Store store = storeRepository.findById(storeId);
+    public StoreRemoveResponse removeStore(String email, Long storeId) {
+        Store store = getMyStore(email, storeId);
 
-        store.modifyImage(uploadFile);
+        store.remove();
 
-        return StoreModifyImageResponse.of(store);
+        return StoreRemoveResponse.of(store);
     }
 
-    public StoreRemoveResponse removeStore(String email, Long storeId) {
-        Store store = storeRepository.findById(storeId);
-
+    private Store getMyStore(String email, Long storeId) {
         Member member = memberRepository.findByEmail(email);
+
+        Store store = storeRepository.findById(storeId);
 
         if (!store.isMine(member)) {
             throw new AuthenticationException("접근 권한이 없습니다.");
         }
 
-        store.remove();
-
-        return StoreRemoveResponse.of(store);
+        return store;
     }
 }

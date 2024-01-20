@@ -72,7 +72,9 @@ public class StoreApiController {
         @PathVariable Long storeId,
         @Valid @RequestBody StoreOpenRequest request
     ) {
-        StoreOpenResponse response = storeService.openStore(storeId, request.toServiceRequest());
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreOpenResponse response = storeService.openStore(email, storeId, request.toServiceRequest());
 
         return ApiResponse.ok(response);
     }
@@ -105,9 +107,11 @@ public class StoreApiController {
         @PathVariable Long storeId,
         @Valid @ModelAttribute StoreModifyImageRequest request
     ) throws IOException {
+        String email = SecurityUtils.getCurrentEmail();
+
         UploadFile uploadFile = fileStore.storeFile(request.getImage());
 
-        StoreModifyImageResponse response = storeService.modifyStoreImage(storeId, uploadFile);
+        StoreModifyImageResponse response = storeService.modifyStoreImage(email, storeId, uploadFile);
 
         return ApiResponse.ok(response);
     }

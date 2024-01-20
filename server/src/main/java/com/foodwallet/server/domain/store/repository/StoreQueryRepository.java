@@ -2,6 +2,7 @@ package com.foodwallet.server.domain.store.repository;
 
 import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.dto.StoreSearchCond;
+import com.foodwallet.server.domain.store.repository.dto.StoreDetailDto;
 import com.foodwallet.server.domain.store.repository.response.StoreResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -58,6 +59,10 @@ public class StoreQueryRepository {
         }
 
         return new SliceImpl<>(contents, pageable, hasNext);
+    }
+
+    public StoreDetailDto findStoreDetailById(Long storeId) {
+        return null;
     }
 
     private BooleanExpression eqType(StoreType type) {

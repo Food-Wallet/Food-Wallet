@@ -4,6 +4,7 @@ import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.StoreType;
+import com.foodwallet.server.domain.store.repository.dto.StoreDetailDto;
 import com.foodwallet.server.domain.store.repository.dto.StoreSearchCond;
 import com.foodwallet.server.domain.store.repository.response.StoreResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -147,6 +148,21 @@ class StoreQueryRepositoryTest extends IntegrationTestSupport {
                 tuple("치킨", "전기통치킨"),
                 tuple("간식", "황금붕어빵")
             );
+    }
+
+    @DisplayName("매장 식별키로 매장 정보를 조회한다.")
+    @Test
+    void findStoreDetailById() {
+        //given
+        Store store = createStore(OPEN, CHICKEN, "나리닭강정");
+
+        //when
+        StoreDetailDto findStore = storeQueryRepository.findStoreDetailById(store.getId());
+
+        //then
+        assertThat(findStore)
+            .extracting("storeId", "status", "type", "name")
+            .contains(store.getId(), OPEN.getText(), CHICKEN.getText(), "나리닭강정");
     }
 
     private Store createStore(StoreStatus status, StoreType type, String name) {

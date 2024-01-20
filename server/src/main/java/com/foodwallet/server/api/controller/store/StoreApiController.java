@@ -6,7 +6,7 @@ import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
-import com.foodwallet.server.api.service.menu.response.MenuResponse;
+import com.foodwallet.server.domain.menu.repository.response.MenuResponse;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.domain.UploadFile;

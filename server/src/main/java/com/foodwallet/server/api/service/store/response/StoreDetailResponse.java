@@ -1,6 +1,6 @@
 package com.foodwallet.server.api.service.store.response;
 
-import com.foodwallet.server.api.service.menu.response.MenuResponse;
+import com.foodwallet.server.domain.menu.repository.response.MenuResponse;
 import lombok.Builder;
 import lombok.Getter;
 

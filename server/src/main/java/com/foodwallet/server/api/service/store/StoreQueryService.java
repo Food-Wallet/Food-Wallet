@@ -28,15 +28,9 @@ public class StoreQueryService {
     private final MenuQueryRepository menuQueryRepository;
 
     public SliceResponse<StoreResponse> searchStores(String storeType, String query, Pageable pageable) {
-        StoreType type = null;
-        if (hasText(storeType)) {
-            type = StoreType.of(storeType);
-        }
+        StoreType type = toStoreType(storeType);
 
-        StoreSearchCond cond = StoreSearchCond.builder()
-            .type(type)
-            .query(query)
-            .build();
+        StoreSearchCond cond = StoreSearchCond.create(type, query);
 
         Slice<StoreResponse> content = storeQueryRepository.findAllByCond(cond, pageable);
 
@@ -49,5 +43,12 @@ public class StoreQueryService {
         List<MenuResponse> menus = menuQueryRepository.findByStoreId(storeId);
 
         return StoreDetailResponse.of(store, menus);
+    }
+
+    private StoreType toStoreType(String storeType) {
+        if (hasText(storeType)) {
+            return StoreType.of(storeType);
+        }
+        return null;
     }
 }

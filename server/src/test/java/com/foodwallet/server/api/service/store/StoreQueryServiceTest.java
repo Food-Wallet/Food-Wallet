@@ -47,7 +47,7 @@ class StoreQueryServiceTest extends IntegrationTestSupport {
         //then
         assertThat(response)
             .extracting("currentPage", "size", "isFirst", "isLast")
-            .contains(0, 10, true, true);
+            .contains(1, 10, true, true);
         assertThat(response.getContent()).hasSize(3)
             .extracting("type", "name")
             .containsExactlyInAnyOrder(

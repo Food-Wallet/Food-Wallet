@@ -56,7 +56,7 @@ class StoreServiceTest extends IntegrationTestSupport {
 
         //when //then
         assertThatThrownBy(() -> storeService.createStore(member.getEmail(), request))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(AuthenticationException.class)
             .hasMessage("사업자 회원만 매장을 등록할 수 있습니다.");
     }
 

@@ -34,11 +34,20 @@ public class StoreService {
     private final MemberRepository memberRepository;
     private final FileStore fileStore;
 
+    /**
+     * 매장 정보를 입력 받아 신규 매장을 등록한다.
+     *
+     * @param email   신규 매장을 등록할 회원의 이메일
+     * @param request 신규 매장의 정보
+     * @return 신규 등록된 매장의 정보
+     * @throws AuthenticationException  등록을 시도한 회원이 사업자 권한이 없는 경우
+     * @throws IllegalArgumentException 회원의 계좌 정보가 존재하지 않는 경우
+     */
     public StoreCreateResponse createStore(String email, StoreCreateServiceRequest request) {
         Member member = memberRepository.findByEmail(email);
 
         if (!member.isBusinessMember()) {
-            throw new IllegalArgumentException(IS_NOT_BUSINESS_MEMBER);
+            throw new AuthenticationException(IS_NOT_BUSINESS_MEMBER);
         }
 
         if (!member.isExistAccount()) {
@@ -53,6 +62,15 @@ public class StoreService {
         return StoreCreateResponse.of(savedStore);
     }
 
+    /**
+     * 매장 정보를 입력 받아 매장 정보를 수정한다.
+     *
+     * @param email   정보 수정을 요청한 회원의 이메일
+     * @param storeId 정보 수정할 매장의 식별키
+     * @param request 수정할 매장 정보
+     * @return 수정된 매장의 정보
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     */
     public StoreModifyResponse modifyStoreInfo(String email, Long storeId, StoreModifyServiceRequest request) {
         Store store = getMyStore(email, storeId);
 
@@ -63,6 +81,16 @@ public class StoreService {
         return StoreModifyResponse.of(store);
     }
 
+    /**
+     * 이미지 파일을 입력 받아 매장 이미지를 수정한다.
+     *
+     * @param email   이미지 수정을 요청한 회원의 이메일
+     * @param storeId 이미지 수정할 매장의 식별키
+     * @param image   수정할 이미지 파일
+     * @return 수정된 매장의 정보
+     * @throws IOException             이미지 업로드에 실패한 경우
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     */
     public StoreModifyImageResponse modifyStoreImage(String email, Long storeId, MultipartFile image) throws IOException {
         Store store = getMyStore(email, storeId);
 
@@ -73,6 +101,15 @@ public class StoreService {
         return StoreModifyImageResponse.of(store);
     }
 
+    /**
+     * 현재 위치 정보를 입력 받아 매장 운영을 시작한다.
+     *
+     * @param email   운영 시작을 요청한 회원의 이메일
+     * @param storeId 운영 시작할 매장의 식별키
+     * @param request 운영 시작할 매장의 현재 위치 정보
+     * @return 운영 시작한 매장의 정보
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     */
     public StoreOpenResponse openStore(String email, Long storeId, StoreOpenServiceRequest request) {
         Store store = getMyStore(email, storeId);
 
@@ -81,6 +118,14 @@ public class StoreService {
         return StoreOpenResponse.of(store);
     }
 
+    /**
+     * 매장 운영을 종료한다.
+     *
+     * @param email   운영 종료를 요청한 회원의 이메일
+     * @param storeId 운영 종료할 매징의 식별키
+     * @return 운영 종료한 매장의 정보
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     */
     public StoreCloseResponse closeStore(String email, Long storeId) {
         Store store = getMyStore(email, storeId);
 
@@ -91,6 +136,14 @@ public class StoreService {
         return StoreCloseResponse.of(store.getName(), operationalInfo);
     }
 
+    /**
+     * 매장을 영구 삭제한다.
+     *
+     * @param email   영구 삭제를 요청한 회원의 이메일
+     * @param storeId 영구 삭제할 매장의 식별키
+     * @return 영구 삭제된 매장의 정보
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     */
     public StoreRemoveResponse removeStore(String email, Long storeId) {
         Store store = getMyStore(email, storeId);
 
@@ -99,6 +152,14 @@ public class StoreService {
         return StoreRemoveResponse.of(store);
     }
 
+    /**
+     * 회원과 매장을 조회한다. 조회된 회원과 매장을 등록한 회원이 같으면 매장을 반환한다.
+     *
+     * @param email   조회할 회원의 이메일
+     * @param storeId 조회할 매장의 식별키
+     * @return 조회된 매장 엔티티
+     * @throws AuthenticationException 조회된 회원과 매장을 등록한 회원이 다른 경우
+     */
     private Store getMyStore(String email, Long storeId) {
         Member member = memberRepository.findByEmail(email);
 

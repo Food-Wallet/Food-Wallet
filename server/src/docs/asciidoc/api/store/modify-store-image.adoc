@@ -1,5 +1,5 @@
 [[modify-store-image]]
-=== 매장 등록 API
+=== 매장 이미지 수정 API
 
 ==== HTTP Request
 

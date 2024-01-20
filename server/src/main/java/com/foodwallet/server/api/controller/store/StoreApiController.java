@@ -2,7 +2,6 @@ package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.FileStore;
-import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
@@ -14,8 +13,6 @@ import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,29 +73,6 @@ public class StoreApiController {
         StoreRemoveResponse response = storeService.removeStore(email, storeId);
 
         return ApiResponse.ok(response);
-    }
-
-    @GetMapping
-    public ApiResponse<SliceResponse<StoreResponse>> searchStores(
-        @RequestParam String type,
-        @RequestParam String query,
-        @RequestParam Integer page
-    ) {
-        StoreResponse response = StoreResponse.builder()
-            .storeId(1L)
-            .type("치킨")
-            .name("나리닭강정")
-            .address("서울 중구 세종대로 110")
-            .openTime("오전 11:00 ~ 오후 8:00")
-            .storeImage("s3-store-img-url")
-            .avgRate(5.0)
-            .build();
-        PageRequest pageable = PageRequest.of(0, 10);
-        SliceImpl<StoreResponse> slice = new SliceImpl<>(List.of(response), pageable, false);
-
-        SliceResponse<StoreResponse> data = SliceResponse.of(slice);
-
-        return ApiResponse.ok(data);
     }
 
     @GetMapping("/{storeId}")

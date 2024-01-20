@@ -20,9 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-import static com.foodwallet.server.common.message.ExceptionMessageConst.*;
-import static com.foodwallet.server.common.message.ExceptionMessageConst.NOT_AUTHORIZED;
-import static com.foodwallet.server.common.message.ExceptionMessageConst.NO_ACCOUNT_INFORMATION;
+import static com.foodwallet.server.common.message.ExceptionMessage.*;
+import static com.foodwallet.server.common.message.ExceptionMessage.NOT_AUTHORIZED;
+import static com.foodwallet.server.common.message.ExceptionMessage.NO_ACCOUNT_INFORMATION;
 
 
 @RequiredArgsConstructor

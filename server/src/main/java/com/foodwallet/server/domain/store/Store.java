@@ -54,8 +54,8 @@ public class Store extends BaseEntity {
     private Store(StoreStatus status, StoreType type, String name, String description, UploadFile image, ReviewInfo reviewInfo, OperationalInfo operationalInfo, Member member) {
         this.status = status;
         this.type = type;
-        this.name = validLength(name, 20);
-        this.description = validLength(description, 200);
+        this.name = name;
+        this.description = description;
         this.image = image;
         this.reviewInfo = reviewInfo;
         this.operationalInfo = operationalInfo;
@@ -63,25 +63,26 @@ public class Store extends BaseEntity {
     }
 
     public static Store createStore(StoreType type, String name, String description, Member member) {
+        ReviewInfo reviewInfo = ReviewInfo.createReviewInfo();
+
         return Store.builder()
             .status(StoreStatus.CLOSE)
             .type(type)
-            .name(name)
-            .description(description)
-            .reviewInfo(
-                ReviewInfo.builder()
-                    .reviewCount(0)
-                    .avgRate(0.0)
-                    .build()
-            )
+            .name(validLength(name, 20))
+            .description(validLength(description, 200))
+            .reviewInfo(reviewInfo)
             .member(member)
             .build();
     }
 
     public void modifyInfo(StoreType type, String name, String description) {
         this.type = type;
-        this.name = name;
-        this.description = description;
+        this.name = validLength(name, 20);
+        this.description = validLength(description, 200);
+    }
+
+    public void modifyImage(UploadFile image) {
+        this.image = image;
     }
 
     public void open(String address, String openTime, double latitude, double longitude) {
@@ -99,15 +100,11 @@ public class Store extends BaseEntity {
         operationalInfo = null;
     }
 
-    public void modifyImage(UploadFile image) {
-        this.image = image;
-    }
-
     public boolean isMine(Member member) {
         return this.member.getId().equals(member.getId());
     }
 
-    private String validLength(String target, int maxLength) {
+    private static String validLength(String target, int maxLength) {
         if (hasText(target) && target.length() > maxLength) {
             throw new IllegalArgumentException(String.format("길이는 최대 %d자 입니다.", maxLength));
         }

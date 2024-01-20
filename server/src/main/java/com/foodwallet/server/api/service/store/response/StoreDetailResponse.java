@@ -1,6 +1,7 @@
 package com.foodwallet.server.api.service.store.response;
 
 import com.foodwallet.server.domain.menu.repository.response.MenuResponse;
+import com.foodwallet.server.domain.store.repository.dto.StoreDetailDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -32,5 +33,20 @@ public class StoreDetailResponse {
         this.address = address;
         this.openTime = openTime;
         this.menus = menus;
+    }
+
+    public static StoreDetailResponse of(StoreDetailDto store, List<MenuResponse> menus) {
+        return StoreDetailResponse.builder()
+            .storeId(store.getStoreId())
+            .type(store.getType())
+            .name(store.getName())
+            .description(store.getDescription())
+            .storeImage(store.getStoreImage())
+            .avgRate(store.getAvgRate())
+            .status(store.getStatus())
+            .address(store.getAddress())
+            .openTime(store.getOpenTime())
+            .menus(menus)
+            .build();
     }
 }

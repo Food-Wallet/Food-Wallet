@@ -54,4 +54,19 @@ class StoreQueryApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.message").value("페이지 번호는 양수여야 합니다."))
             .andExpect(jsonPath("$.data").isEmpty());
     }
+
+    @DisplayName("매장을 상세 조회한다.")
+    @Test
+    void searchStore() throws Exception {
+        //given
+
+        //when //then
+        mockMvc.perform(
+                get(BASE_URL + "/{storeId}", 1)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
 }

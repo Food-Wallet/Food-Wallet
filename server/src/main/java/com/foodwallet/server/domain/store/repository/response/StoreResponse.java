@@ -1,7 +1,9 @@
-package com.foodwallet.server.api.service.store.response;
+package com.foodwallet.server.domain.store.repository.response;
 
+import com.foodwallet.server.domain.store.StoreType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 public class StoreResponse {
@@ -15,9 +17,9 @@ public class StoreResponse {
     private final double avgRate;
 
     @Builder
-    private StoreResponse(Long storeId, String type, String name, String address, String openTime, String storeImage, double avgRate) {
+    public StoreResponse(Long storeId, StoreType type, String name, String address, String openTime, String storeImage, double avgRate) {
         this.storeId = storeId;
-        this.type = type;
+        this.type = type.getText();
         this.name = name;
         this.address = address;
         this.openTime = openTime;

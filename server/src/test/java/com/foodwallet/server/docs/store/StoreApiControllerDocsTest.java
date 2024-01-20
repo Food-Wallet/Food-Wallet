@@ -24,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,11 +50,10 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
     private static final String BASE_URL = "/api/v1/stores";
 
     private final StoreService storeService = mock(StoreService.class);
-    private final FileStore fileStore = mock(FileStore.class);
 
     @Override
     protected Object initController() {
-        return new StoreApiController(storeService, fileStore);
+        return new StoreApiController(storeService);
     }
 
     @DisplayName("매장 등록 API")
@@ -400,10 +400,7 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
             .imageModifiedDateTime(LocalDateTime.of(2024, 1, 17, 9, 0))
             .build();
 
-        given(fileStore.storeFile(any()))
-            .willReturn(UploadFile.builder().build());
-
-        given(storeService.modifyStoreImage(anyString(), anyLong(), any(UploadFile.class)))
+        given(storeService.modifyStoreImage(anyString(), anyLong(), any(MultipartFile.class)))
             .willReturn(response);
 
         mockMvc.perform(

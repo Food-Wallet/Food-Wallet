@@ -1,14 +1,12 @@
 package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
-import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.*;
-import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,6 @@ import java.io.IOException;
 public class StoreApiController {
 
     private final StoreService storeService;
-    private final FileStore fileStore;
 
     /**
      * 신규 매장 등록 API
@@ -109,9 +106,7 @@ public class StoreApiController {
     ) throws IOException {
         String email = SecurityUtils.getCurrentEmail();
 
-        UploadFile uploadFile = fileStore.storeFile(request.getImage());
-
-        StoreModifyImageResponse response = storeService.modifyStoreImage(email, storeId, uploadFile);
+        StoreModifyImageResponse response = storeService.modifyStoreImage(email, storeId, request.getImage());
 
         return ApiResponse.ok(response);
     }

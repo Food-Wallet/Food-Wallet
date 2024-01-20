@@ -17,13 +17,19 @@ import com.foodwallet.server.domain.store.repository.StoreRepository;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.foodwallet.server.domain.member.MemberRole.*;
 import static com.foodwallet.server.domain.store.StoreStatus.CLOSE;
 import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 class StoreServiceTest extends IntegrationTestSupport {
 
@@ -201,18 +207,28 @@ class StoreServiceTest extends IntegrationTestSupport {
 
     @DisplayName("매장 식별키와 업로드 파일 객체를 입력 받아 매장 이미지를 수정한다.")
     @Test
-    void modifyStoreImage() {
+    void modifyStoreImage() throws IOException {
         //given
         Account account = createAccount();
         Member member = createMember(BUSINESS, account, "dong82@naver.com");
         Store store = createStore(member, CLOSE, null);
+        MockMultipartFile image = new MockMultipartFile(
+            "image",
+            "my-store-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
         UploadFile uploadFile = UploadFile.builder()
             .uploadFileName("upload-file-name.png")
             .storeFileName("s3-store-file-url.png")
             .build();
 
+        BDDMockito.given(fileStore.storeFile(any(MultipartFile.class)))
+            .willReturn(uploadFile);
+
         //when
-        StoreModifyImageResponse response = storeService.modifyStoreImage("dong82@naver.com", store.getId(), uploadFile);
+        StoreModifyImageResponse response = storeService.modifyStoreImage("dong82@naver.com", store.getId(), image);
 
         //then
         Store findStore = storeRepository.findById(store.getId());

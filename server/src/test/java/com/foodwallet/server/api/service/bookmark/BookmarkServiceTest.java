@@ -37,7 +37,7 @@ class BookmarkServiceTest extends IntegrationTestSupport {
     void createBookmark() {
         //given
         Member member = createMember();
-        Store store = createStore();
+        Store store = createStore(0);
 
         //when
         BookmarkCreateResponse response = bookmarkService.createBookmark("dong82@naver.com", store.getId());
@@ -54,7 +54,7 @@ class BookmarkServiceTest extends IntegrationTestSupport {
     void cancelBookmark() {
         //given
         Member member = createMember();
-        Store store = createStore();
+        Store store = createStore(1);
         Bookmark bookmark = createBookmark(member, store);
 
         //when
@@ -63,8 +63,8 @@ class BookmarkServiceTest extends IntegrationTestSupport {
         //then
         assertThat(response.getStoreName()).isEqualTo("나리닭강정");
 
-        Bookmark findBookmark = bookmarkRepository.findById(member.getId(), store.getId());
-        assertThat(findBookmark.isDeleted()).isTrue();
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore.getBookmarkCount()).isZero();
     }
 
     private Member createMember() {
@@ -80,11 +80,12 @@ class BookmarkServiceTest extends IntegrationTestSupport {
         return memberRepository.save(member);
     }
 
-    private Store createStore() {
+    private Store createStore(int bookmarkCount) {
         Store store = Store.builder()
             .status(CLOSE)
             .type(CHICKEN)
             .name("나리닭강정")
+            .bookmarkCount(bookmarkCount)
             .build();
         return storeRepository.save(store);
     }

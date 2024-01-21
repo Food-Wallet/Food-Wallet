@@ -40,9 +40,10 @@ public class BookmarkApiController {
 
     @DeleteMapping("/{storeId}")
     public ApiResponse<BookmarkCancelResponse> cancelBookmark(@PathVariable Long storeId) {
-        BookmarkCancelResponse response = BookmarkCancelResponse.builder()
-            .storeName("나리닭강정")
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        BookmarkCancelResponse response = bookmarkService.cancelBookmark(email, storeId);
+
         return ApiResponse.ok(response);
     }
 

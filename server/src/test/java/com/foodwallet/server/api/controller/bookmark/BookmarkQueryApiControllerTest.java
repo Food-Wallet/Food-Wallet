@@ -31,7 +31,7 @@ class BookmarkQueryApiControllerTest extends ControllerTestSupport {
             .andExpect(status().isOk());
     }
 
-    @DisplayName("회원이 즐겨찾기한 매장의 정보를 조회한다.")
+    @DisplayName("회원이 즐겨찾기한 매장의 정보를 조회할 때 페이지 번호는 양수이다.")
     @Test
     void searchStoresWithZeroPage() throws Exception {
         //given

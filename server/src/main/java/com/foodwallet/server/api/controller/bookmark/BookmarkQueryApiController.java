@@ -2,10 +2,12 @@ package com.foodwallet.server.api.controller.bookmark;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.SliceResponse;
+import com.foodwallet.server.api.controller.bookmark.request.BookmarkSearchRequest;
 import com.foodwallet.server.api.service.bookmark.BookmarkQueryService;
 import com.foodwallet.server.domain.bookmark.repository.response.BookmarkResponse;
 import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.StoreType;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
@@ -27,9 +29,7 @@ public class BookmarkQueryApiController {
     private final BookmarkQueryService bookmarkQueryService;
 
     @GetMapping
-    public ApiResponse<SliceResponse<BookmarkResponse>> searchBookmarks(
-        @RequestParam Integer page
-    ) {
+    public ApiResponse<SliceResponse<BookmarkResponse>> searchBookmarks(@Valid BookmarkSearchRequest request) {
         BookmarkResponse response = BookmarkResponse.builder()
             .storeId(1L)
             .status(OPEN)

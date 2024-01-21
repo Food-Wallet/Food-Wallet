@@ -5,21 +5,15 @@ import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.controller.bookmark.request.BookmarkSearchRequest;
 import com.foodwallet.server.api.service.bookmark.BookmarkQueryService;
 import com.foodwallet.server.domain.bookmark.repository.response.BookmarkResponse;
-import com.foodwallet.server.domain.store.StoreStatus;
-import com.foodwallet.server.domain.store.StoreType;
+import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
-import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
+import static com.foodwallet.server.common.constant.CommonConst.PAGE_SIZE;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,20 +24,12 @@ public class BookmarkQueryApiController {
 
     @GetMapping
     public ApiResponse<SliceResponse<BookmarkResponse>> searchBookmarks(@Valid BookmarkSearchRequest request) {
-        BookmarkResponse response = BookmarkResponse.builder()
-            .storeId(1L)
-            .status(OPEN)
-            .type(CHICKEN)
-            .storeName("나리닭강정")
-            .avgRate(5.0)
-            .reviewCount(100)
-            .storeImageUrl("s3-store-image-url")
-            .build();
-        PageRequest pageable = PageRequest.of(0, 10);
-        SliceImpl<BookmarkResponse> slice = new SliceImpl<>(List.of(response), pageable, false);
+        String email = SecurityUtils.getCurrentEmail();
 
-        SliceResponse<BookmarkResponse> data = SliceResponse.of(slice);
+        PageRequest pageRequest = PageRequest.of(request.getPage(), PAGE_SIZE);
 
-        return ApiResponse.ok(data);
+        SliceResponse<BookmarkResponse> response = bookmarkQueryService.searchBookmarks(email, pageRequest);
+
+        return ApiResponse.ok(response);
     }
 }

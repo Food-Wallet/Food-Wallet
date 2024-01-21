@@ -4,6 +4,7 @@ import com.foodwallet.server.api.controller.bookmark.BookmarkApiController;
 import com.foodwallet.server.api.service.bookmark.BookmarkService;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -43,6 +44,9 @@ public class BookmarkApiControllerDocsTest extends RestDocsSupport {
         BookmarkCreateResponse response = BookmarkCreateResponse.builder()
             .storeName("나리닭강정")
             .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
 
         given(bookmarkService.createBookmark(anyString(), anyLong()))
             .willReturn(response);

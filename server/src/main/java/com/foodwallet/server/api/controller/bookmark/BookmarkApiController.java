@@ -6,6 +6,7 @@ import com.foodwallet.server.api.service.bookmark.BookmarkService;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkResponse;
+import com.foodwallet.server.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
@@ -21,12 +22,19 @@ public class BookmarkApiController {
 
     private final BookmarkService bookmarkService;
 
+    /**
+     * 매장 즐겨찾기 등록 API
+     *
+     * @param storeId 즐겨찾기 등록할 매장의 식별키
+     * @return 즐겨찾기 등록된 매장의 정보
+     */
     @PostMapping("/{storeId}")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<BookmarkCreateResponse> createBookmark(@PathVariable Long storeId) {
-        BookmarkCreateResponse response = BookmarkCreateResponse.builder()
-            .storeName("나리닭강정")
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        BookmarkCreateResponse response = bookmarkService.createBookmark(email, storeId);
+
         return ApiResponse.ok(response);
     }
 

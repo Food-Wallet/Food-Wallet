@@ -1,5 +1,6 @@
 package com.foodwallet.server.api.service.bookmark;
 
+import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
 import com.foodwallet.server.domain.bookmark.Bookmark;
 import com.foodwallet.server.domain.bookmark.repository.BookmarkRepository;
@@ -41,5 +42,9 @@ public class BookmarkService {
         store.increaseBookmarkCount();
 
         return BookmarkCreateResponse.of(savedBookmark.getStore());
+    }
+
+    public BookmarkCancelResponse cancelBookmark(String email, Long storeId) {
+        return null;
     }
 }

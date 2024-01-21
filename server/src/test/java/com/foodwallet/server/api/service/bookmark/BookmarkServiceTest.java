@@ -1,15 +1,14 @@
 package com.foodwallet.server.api.service.bookmark;
 
 import com.foodwallet.server.IntegrationTestSupport;
+import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
+import com.foodwallet.server.domain.bookmark.Bookmark;
 import com.foodwallet.server.domain.bookmark.repository.BookmarkRepository;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
-import com.foodwallet.server.domain.store.OperationalInfo;
 import com.foodwallet.server.domain.store.Store;
-import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +49,24 @@ class BookmarkServiceTest extends IntegrationTestSupport {
         assertThat(findStore.getBookmarkCount()).isEqualTo(1);
     }
 
+    @DisplayName("회원 이메일과 매장 식별키를 입력 받아 즐겨찾기를 취소한다.")
+    @Test
+    void cancelBookmark() {
+        //given
+        Member member = createMember();
+        Store store = createStore();
+        Bookmark bookmark = createBookmark(member, store);
+
+        //when
+        BookmarkCancelResponse response = bookmarkService.cancelBookmark("dong82@naver.com", store.getId());
+
+        //then
+        assertThat(response.getStoreName()).isEqualTo("나리닭강정");
+
+        Bookmark findBookmark = bookmarkRepository.findById(member.getId(), store.getId());
+        assertThat(findBookmark.isDeleted()).isTrue();
+    }
+
     private Member createMember() {
         Member member = Member.builder()
             .email("dong82@naver.com")
@@ -70,5 +87,13 @@ class BookmarkServiceTest extends IntegrationTestSupport {
             .name("나리닭강정")
             .build();
         return storeRepository.save(store);
+    }
+
+    private Bookmark createBookmark(Member member, Store store) {
+        Bookmark bookmark = Bookmark.builder()
+            .member(member)
+            .store(store)
+            .build();
+        return bookmarkRepository.save(bookmark);
     }
 }

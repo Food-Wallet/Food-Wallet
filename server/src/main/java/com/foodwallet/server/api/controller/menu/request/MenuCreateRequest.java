@@ -10,16 +10,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.foodwallet.server.common.message.ErrorMessage.NOT_BLANK_MENU_NAME;
+import static com.foodwallet.server.common.message.ErrorMessage.POSITIVE_MENU_PRICE;
+
 @Getter @Setter
 @NoArgsConstructor
 public class MenuCreateRequest {
 
-    @NotBlank(message = "메뉴명은 필수입니다.")
+    @NotBlank(message = NOT_BLANK_MENU_NAME)
     private String name;
 
     private String description;
 
-    @Positive(message = "메뉴 가격은 양수여야 합니다.")
+    @Positive(message = POSITIVE_MENU_PRICE)
     private Integer price;
 
     private MultipartFile image;

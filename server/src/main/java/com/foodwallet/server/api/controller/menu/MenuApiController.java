@@ -1,7 +1,6 @@
 package com.foodwallet.server.api.controller.menu;
 
 import com.foodwallet.server.api.ApiResponse;
-import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.controller.menu.request.MenuCreateRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyImageRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;

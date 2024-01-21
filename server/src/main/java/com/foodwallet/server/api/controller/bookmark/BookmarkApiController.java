@@ -38,6 +38,12 @@ public class BookmarkApiController {
         return ApiResponse.ok(response);
     }
 
+    /**
+     * 매장 즐겨찾기 취소 API
+     *
+     * @param storeId 즐겨찾기 취소할 매장의 식별키
+     * @return 즐겨찾기 취소된 매장의 정보
+     */
     @DeleteMapping("/{storeId}")
     public ApiResponse<BookmarkCancelResponse> cancelBookmark(@PathVariable Long storeId) {
         String email = SecurityUtils.getCurrentEmail();

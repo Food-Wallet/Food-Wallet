@@ -105,6 +105,10 @@ public class Store extends BaseEntity {
         operationalInfo = null;
     }
 
+    public void increaseBookmarkCount() {
+        bookmarkCount += 1;
+    }
+
     public boolean isMine(Member member) {
         return this.member.getId().equals(member.getId());
     }

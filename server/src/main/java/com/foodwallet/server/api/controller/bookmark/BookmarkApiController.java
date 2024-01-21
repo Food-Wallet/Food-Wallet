@@ -5,7 +5,7 @@ import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.service.bookmark.BookmarkService;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
-import com.foodwallet.server.api.service.bookmark.response.BookmarkResponse;
+import com.foodwallet.server.domain.bookmark.repository.response.BookmarkResponse;
 import com.foodwallet.server.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -59,11 +59,8 @@ public class BookmarkApiController {
     ) {
         BookmarkResponse response = BookmarkResponse.builder()
             .storeId(1L)
-            .type("치킨")
-            .name("나리닭강정")
-            .address("서울 중구 세종대로 110")
-            .openTime("오전 11:00 ~ 오후 8:00")
-            .storeImage("s3-store-img-url")
+//            .type("치킨")
+//            .storeName("나리닭강정")
             .avgRate(5.0)
             .build();
         PageRequest pageable = PageRequest.of(0, 10);

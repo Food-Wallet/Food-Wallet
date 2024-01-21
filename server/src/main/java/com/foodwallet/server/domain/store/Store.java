@@ -40,6 +40,9 @@ public class Store extends BaseEntity {
     @Embedded
     private UploadFile image;
 
+    @Column(nullable = false, insertable = false, columnDefinition = "int default 0")
+    private int bookmarkCount;
+
     @Embedded
     private ReviewInfo reviewInfo;
 
@@ -51,12 +54,13 @@ public class Store extends BaseEntity {
     private Member member;
 
     @Builder
-    private Store(StoreStatus status, StoreType type, String name, String description, UploadFile image, ReviewInfo reviewInfo, OperationalInfo operationalInfo, Member member) {
+    private Store(StoreStatus status, StoreType type, String name, String description, UploadFile image, int bookmarkCount, ReviewInfo reviewInfo, OperationalInfo operationalInfo, Member member) {
         this.status = status;
         this.type = type;
         this.name = name;
         this.description = description;
         this.image = image;
+        this.bookmarkCount = bookmarkCount;
         this.reviewInfo = reviewInfo;
         this.operationalInfo = operationalInfo;
         this.member = member;
@@ -66,10 +70,11 @@ public class Store extends BaseEntity {
         ReviewInfo reviewInfo = ReviewInfo.createReviewInfo();
 
         return Store.builder()
-            .status(StoreStatus.CLOSE)
+            .status(CLOSE)
             .type(type)
             .name(validLength(name, 20))
             .description(validLength(description, 200))
+            .bookmarkCount(0)
             .reviewInfo(reviewInfo)
             .member(member)
             .build();
@@ -98,6 +103,10 @@ public class Store extends BaseEntity {
     public void close() {
         status = CLOSE;
         operationalInfo = null;
+    }
+
+    public void increaseBookmarkCount() {
+        bookmarkCount += 1;
     }
 
     public boolean isMine(Member member) {

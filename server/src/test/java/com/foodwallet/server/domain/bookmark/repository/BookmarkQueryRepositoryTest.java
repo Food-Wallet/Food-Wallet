@@ -1,10 +1,11 @@
 package com.foodwallet.server.domain.bookmark.repository;
 
 import com.foodwallet.server.IntegrationTestSupport;
-import com.foodwallet.server.api.service.bookmark.response.BookmarkResponse;
 import com.foodwallet.server.domain.bookmark.Bookmark;
+import com.foodwallet.server.domain.bookmark.repository.response.BookmarkResponse;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
+import com.foodwallet.server.domain.store.ReviewInfo;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.StoreType;
@@ -12,6 +13,7 @@ import com.foodwallet.server.domain.store.repository.StoreRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 
 import static com.foodwallet.server.domain.member.MemberRole.USER;
@@ -50,16 +52,18 @@ class BookmarkQueryRepositoryTest extends IntegrationTestSupport {
         Bookmark bookmark3 = createBookmark(member, store3);
         Bookmark bookmark4 = createBookmark(member, store4);
 
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
         //when
-        Slice<BookmarkResponse> response = bookmarkQueryRepository.findByMemberId(member.getId());
+        Slice<BookmarkResponse> response = bookmarkQueryRepository.findByMemberId(member.getId(), pageRequest);
 
         //then
         assertThat(response.getContent()).hasSize(3)
-            .extracting("status", "type", "name")
+            .extracting("status", "type", "storeName")
             .containsExactly(
-                tuple(REST, SNACK, "대왕 타코야끼"),
-                tuple(OPEN, SNACK, "황금붕어빵"),
-                tuple(CLOSE, CHICKEN, "나리닭강정")
+                tuple(REST.getText(), SNACK.getText(), "대왕 타코야끼"),
+                tuple(OPEN.getText(), SNACK.getText(), "황금붕어빵"),
+                tuple(CLOSE.getText(), CHICKEN.getText(), "나리닭강정")
             );
     }
 
@@ -81,6 +85,7 @@ class BookmarkQueryRepositoryTest extends IntegrationTestSupport {
             .status(status)
             .type(type)
             .name(name)
+            .reviewInfo(ReviewInfo.createReviewInfo())
             .build();
         return storeRepository.save(store);
     }

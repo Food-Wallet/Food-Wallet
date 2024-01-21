@@ -2,22 +2,27 @@ package com.foodwallet.server.api.controller.bookmark;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.SliceResponse;
+import com.foodwallet.server.api.service.bookmark.BookmarkService;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/bookmarks")
 public class BookmarkApiController {
 
-    @PostMapping("/stores/{storeId}/bookmark")
+    private final BookmarkService bookmarkService;
+
+    @PostMapping("/{storeId}")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<BookmarkCreateResponse> createBookmark(@PathVariable Long storeId) {
         BookmarkCreateResponse response = BookmarkCreateResponse.builder()
             .storeName("나리닭강정")
@@ -25,7 +30,7 @@ public class BookmarkApiController {
         return ApiResponse.ok(response);
     }
 
-    @DeleteMapping("/stores/{storeId}/bookmark")
+    @DeleteMapping("/{storeId}")
     public ApiResponse<BookmarkCancelResponse> cancelBookmark(@PathVariable Long storeId) {
         BookmarkCancelResponse response = BookmarkCancelResponse.builder()
             .storeName("나리닭강정")
@@ -33,7 +38,7 @@ public class BookmarkApiController {
         return ApiResponse.ok(response);
     }
 
-    @GetMapping("/bookmarks")
+    @GetMapping
     public ApiResponse<SliceResponse<BookmarkResponse>> searchBookmarks(
         @RequestParam Integer page
     ) {

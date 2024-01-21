@@ -1,13 +1,20 @@
 package com.foodwallet.server.docs.bookmark;
 
 import com.foodwallet.server.api.controller.bookmark.BookmarkApiController;
+import com.foodwallet.server.api.service.bookmark.BookmarkService;
+import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -22,23 +29,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class BookmarkApiControllerDocsTest extends RestDocsSupport {
 
-    private static final String BASE_URL = "/api/v1";
+    private static final String BASE_URL = "/api/v1/bookmarks";
+    private final BookmarkService bookmarkService = mock(BookmarkService.class);
 
     @Override
     protected Object initController() {
-        return new BookmarkApiController();
+        return new BookmarkApiController(bookmarkService);
     }
 
     @DisplayName("매장 즐겨찾기 등록 API")
     @Test
     void createBookmark() throws Exception {
+        BookmarkCreateResponse response = BookmarkCreateResponse.builder()
+            .storeName("나리닭강정")
+            .build();
+
+        given(bookmarkService.createBookmark(anyString(), anyLong()))
+            .willReturn(response);
+
         mockMvc.perform(
-                post(BASE_URL + "/stores/{storeId}/bookmark", 1)
+                post(BASE_URL + "/{storeId}", 1)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isCreated())
             .andDo(document("create-bookmark",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
@@ -69,7 +84,7 @@ public class BookmarkApiControllerDocsTest extends RestDocsSupport {
     @Test
     void cancelBookmark() throws Exception {
         mockMvc.perform(
-                delete(BASE_URL + "/stores/{storeId}/bookmark", 1)
+                delete(BASE_URL + "/{storeId}", 1)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
                     .contentType(MediaType.APPLICATION_JSON)
             )
@@ -105,7 +120,7 @@ public class BookmarkApiControllerDocsTest extends RestDocsSupport {
     @Test
     void searchStores() throws Exception {
         mockMvc.perform(
-                get(BASE_URL + "/bookmarks")
+                get(BASE_URL)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
                     .param("page", "1")
             )

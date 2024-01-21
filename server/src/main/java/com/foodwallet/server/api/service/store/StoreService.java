@@ -10,10 +10,12 @@ import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.domain.store.OperationalInfo;
 import com.foodwallet.server.domain.store.Store;
+import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import static com.foodwallet.server.common.message.ExceptionMessage.*;
 import static com.foodwallet.server.common.message.ExceptionMessage.NOT_AUTHORIZED;
 import static com.foodwallet.server.common.message.ExceptionMessage.NO_ACCOUNT_INFORMATION;
+import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 
 
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
     private final FileStore fileStore;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     /**
      * 매장 정보를 입력 받아 신규 매장을 등록한다.
@@ -144,8 +148,17 @@ public class StoreService {
      * @return 영구 삭제된 매장의 정보
      * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
      */
-    public StoreRemoveResponse removeStore(String email, Long storeId) {
+    public StoreRemoveResponse removeStore(String email, Long storeId, String pwd) {
         Store store = getMyStore(email, storeId);
+
+        if (store.getStatus().equals(OPEN)) {
+            throw new IllegalArgumentException("운영중인 매장은 삭제할 수 없습니다.");
+        }
+
+        Member member = memberRepository.findByEmail(email);
+        if (!passwordEncoder.matches(pwd, member.getPwd())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
 
         store.remove();
 

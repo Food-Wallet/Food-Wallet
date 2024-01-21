@@ -5,6 +5,8 @@ package com.foodwallet.server.common.message;
  */
 public abstract class ErrorMessage {
 
+    public static final String NOT_BLANK_PASSWORD = "비밀번호는 필수입니다.";
+
     public static final String NOT_BLANK_STORE_TYPE = "매장 타입은 필수입니다.";
     public static final String NOT_BLANK_STORE_NAME = "매장명은 필수입니다.";
     public static final String NOT_BLANK_STORE_ADDRESS = "주소는 필수입니다.";

@@ -1,10 +1,7 @@
 package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
-import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
-import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.api.controller.store.request.*;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.security.SecurityUtils;
@@ -117,11 +114,14 @@ public class StoreApiController {
      * @param storeId 영구 삭제할 매장의 식별키
      * @return 영구 삭제된 매장의 정보
      */
-    @DeleteMapping("/{storeId}")
-    public ApiResponse<StoreRemoveResponse> removeStore(@PathVariable Long storeId) {
+    @PostMapping("/{storeId}")
+    public ApiResponse<StoreRemoveResponse> removeStore(
+        @PathVariable Long storeId,
+        @Valid @RequestBody StoreRemoveRequest request
+    ) {
         String email = SecurityUtils.getCurrentEmail();
 
-        StoreRemoveResponse response = storeService.removeStore(email, storeId);
+        StoreRemoveResponse response = storeService.removeStore(email, storeId, request.getPwd());
 
         return ApiResponse.ok(response);
     }

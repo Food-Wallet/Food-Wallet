@@ -32,7 +32,7 @@ public class MenuCreateRequest {
         this.image = image;
     }
 
-    public MenuCreateServiceRequest toServiceRequest(UploadFile image) {
+    public MenuCreateServiceRequest toServiceRequest() {
         return MenuCreateServiceRequest.builder()
             .name(name)
             .description(description)

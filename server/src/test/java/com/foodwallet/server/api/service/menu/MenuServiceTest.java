@@ -19,6 +19,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
+
 import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
 import static org.assertj.core.api.Assertions.*;
 
@@ -77,7 +79,7 @@ class MenuServiceTest extends IntegrationTestSupport {
 
     @DisplayName("사업자 회원 이메일, 매장 식별키, 메뉴 정보를 입력 받아 신규 메뉴를 등록한다.")
     @Test
-    void createMenu() {
+    void createMenu() throws IOException {
         //given
         Member member = createMember("dong82@naver.com");
         Store store = createStore(member);

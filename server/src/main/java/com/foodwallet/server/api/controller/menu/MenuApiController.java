@@ -41,9 +41,7 @@ public class MenuApiController {
     ) throws IOException {
         String email = SecurityUtils.getCurrentEmail();
 
-        UploadFile uploadFile = fileStore.storeFile(request.getImage());
-
-        MenuCreateResponse response = menuService.createMenu(email, storeId, request.toServiceRequest(uploadFile));
+        MenuCreateResponse response = menuService.createMenu(email, storeId, request.toServiceRequest());
 
         return ApiResponse.created(response);
     }

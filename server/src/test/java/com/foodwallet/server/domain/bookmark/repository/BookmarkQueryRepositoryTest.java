@@ -55,7 +55,7 @@ class BookmarkQueryRepositoryTest extends IntegrationTestSupport {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when
-        Slice<BookmarkResponse> response = bookmarkQueryRepository.findByMemberId(member.getId(), pageRequest);
+        Slice<BookmarkResponse> response = bookmarkQueryRepository.findAllByMemberId(member.getId(), pageRequest);
 
         //then
         assertThat(response.getContent()).hasSize(3)

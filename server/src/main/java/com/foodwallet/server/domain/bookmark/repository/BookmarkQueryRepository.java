@@ -22,7 +22,7 @@ public class BookmarkQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Slice<BookmarkResponse> findByMemberId(Long memberId, Pageable pageable) {
+    public Slice<BookmarkResponse> findAllByMemberId(Long memberId, Pageable pageable) {
         List<BookmarkResponse> contents = queryFactory
             .select(
                 Projections.constructor(BookmarkResponse.class,

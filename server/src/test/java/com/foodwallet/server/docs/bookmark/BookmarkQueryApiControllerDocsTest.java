@@ -5,6 +5,7 @@ import com.foodwallet.server.api.controller.bookmark.BookmarkQueryApiController;
 import com.foodwallet.server.api.service.bookmark.BookmarkQueryService;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.domain.bookmark.repository.response.BookmarkResponse;
+import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -61,6 +62,9 @@ public class BookmarkQueryApiControllerDocsTest extends RestDocsSupport {
         SliceImpl<BookmarkResponse> slice = new SliceImpl<>(List.of(bookmark), pageable, false);
 
         SliceResponse<BookmarkResponse> response = SliceResponse.of(slice);
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
 
         given(bookmarkQueryService.searchBookmarks(anyString(), any(Pageable.class)))
             .willReturn(response);

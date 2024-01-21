@@ -19,6 +19,13 @@ public class BookmarkQueryService {
     private final BookmarkQueryRepository bookmarkQueryRepository;
     private final MemberRepository memberRepository;
 
+    /**
+     * 회원 이메일과 페이징 정보를 입력 받아 매장 목록을 조회한다.
+     *
+     * @param email    조회할 회원의 이메일
+     * @param pageable 페이징 정보
+     * @return 조회된 매장 목록 및 슬라이스 정보
+     */
     public SliceResponse<BookmarkResponse> searchBookmarks(String email, Pageable pageable) {
         Member member = memberRepository.findByEmail(email);
 

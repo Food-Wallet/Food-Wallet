@@ -22,6 +22,12 @@ public class BookmarkQueryApiController {
 
     private final BookmarkQueryService bookmarkQueryService;
 
+    /**
+     * 즐겨찾기 등록한 매장 정보 조회 API
+     *
+     * @param request 검색 조건
+     * @return 검색 조건과 일치하는 매장 목록
+     */
     @GetMapping
     public ApiResponse<SliceResponse<BookmarkResponse>> searchBookmarks(@Valid BookmarkSearchRequest request) {
         String email = SecurityUtils.getCurrentEmail();

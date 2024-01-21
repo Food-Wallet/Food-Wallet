@@ -1,19 +1,13 @@
 package com.foodwallet.server.api.controller.bookmark;
 
 import com.foodwallet.server.api.ApiResponse;
-import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.service.bookmark.BookmarkService;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
-import com.foodwallet.server.domain.bookmark.repository.response.BookmarkResponse;
 import com.foodwallet.server.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -51,23 +45,5 @@ public class BookmarkApiController {
         BookmarkCancelResponse response = bookmarkService.cancelBookmark(email, storeId);
 
         return ApiResponse.ok(response);
-    }
-
-    @GetMapping
-    public ApiResponse<SliceResponse<BookmarkResponse>> searchBookmarks(
-        @RequestParam Integer page
-    ) {
-        BookmarkResponse response = BookmarkResponse.builder()
-            .storeId(1L)
-//            .type("치킨")
-//            .storeName("나리닭강정")
-            .avgRate(5.0)
-            .build();
-        PageRequest pageable = PageRequest.of(0, 10);
-        SliceImpl<BookmarkResponse> slice = new SliceImpl<>(List.of(response), pageable, false);
-
-        SliceResponse<BookmarkResponse> data = SliceResponse.of(slice);
-
-        return ApiResponse.ok(data);
     }
 }

@@ -248,9 +248,37 @@ class StoreServiceTest extends IntegrationTestSupport {
         Member member2 = createMember(BUSINESS, account, "do72@naver.com");
 
         //when //then
-        assertThatThrownBy(() -> storeService.removeStore("do72@naver.com", store.getId()))
+        assertThatThrownBy(() -> storeService.removeStore("do72@naver.com", store.getId(), "dong1234!"))
             .isInstanceOf(AuthenticationException.class)
             .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("매장 삭제시 매장이 운영 상태라면 예외가 발생한다.")
+    @Test
+    void removeStoreWithOpen() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member, OPEN, null);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.removeStore("dong82@naver.com", store.getId(), "dong1234!"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("운영중인 매장은 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("매장 삭제시 계정의 현재 비밀번호가 일치하지 않으면 예외가 발생한다.")
+    @Test
+    void removeStoreNotEqualsPwd() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member, CLOSE, null);
+    
+        //when //then
+        assertThatThrownBy(() -> storeService.removeStore("dong82@naver.com", store.getId(), "do5678@!"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("현재 비밀번호가 일치하지 않습니다.");
     }
 
     @DisplayName("회원 이메일과 매장 식별키를 입력 받아 매장을 삭제한다.")
@@ -262,7 +290,7 @@ class StoreServiceTest extends IntegrationTestSupport {
         Store store = createStore(member, CLOSE, null);
 
         //when
-        StoreRemoveResponse response = storeService.removeStore("dong82@naver.com", store.getId());
+        StoreRemoveResponse response = storeService.removeStore("dong82@naver.com", store.getId(), "dong1234!");
 
         //then
         Store findStore = storeRepository.findById(store.getId());

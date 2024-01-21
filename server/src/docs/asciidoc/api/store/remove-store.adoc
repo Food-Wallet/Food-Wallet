@@ -6,6 +6,7 @@
 include::{snippets}/remove-store/http-request.adoc[]
 include::{snippets}/remove-store/path-parameters.adoc[]
 include::{snippets}/remove-store/request-headers.adoc[]
+include::{snippets}/remove-store/request-fields.adoc[]
 
 ==== HTTP Response
 

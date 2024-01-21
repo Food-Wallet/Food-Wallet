@@ -1,33 +1,27 @@
 package com.foodwallet.server.docs.store;
 
-import com.foodwallet.server.api.FileStore;
-import com.foodwallet.server.api.SliceResponse;
 import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.api.controller.store.request.StoreRemoveRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
 import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.docs.RestDocsSupport;
-import com.foodwallet.server.domain.UploadFile;
-import com.foodwallet.server.domain.store.StoreType;
-import com.foodwallet.server.domain.store.repository.response.StoreResponse;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,7 +35,6 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -338,18 +331,26 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
     @DisplayName("매장 삭제 API")
     @Test
     void removeStore() throws Exception {
+        StoreRemoveRequest request = StoreRemoveRequest.builder()
+            .pwd("dong1234!")
+            .build();
+
         StoreRemoveResponse response = StoreRemoveResponse.builder()
             .type("치킨")
             .name("나리닭강정")
             .removedDateTime(LocalDateTime.of(2024, 1, 16, 20, 0))
             .build();
 
-        given(storeService.removeStore(anyString(), anyLong()))
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(storeService.removeStore(anyString(), anyLong(), anyString()))
             .willReturn(response);
 
         mockMvc.perform(
-                delete(BASE_URL + "/{storeId}", 1)
+                post(BASE_URL + "/{storeId}", 1)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .content(objectMapper.writeValueAsString(request))
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
@@ -364,6 +365,10 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                 pathParameters(
                     parameterWithName("storeId")
                         .description("매장 식별키")
+                ),
+                requestFields(
+                    fieldWithPath("pwd").type(JsonFieldType.STRING)
+                        .description("현재 비밀번호")
                 ),
                 responseFields(
                     fieldWithPath("code").type(JsonFieldType.NUMBER)

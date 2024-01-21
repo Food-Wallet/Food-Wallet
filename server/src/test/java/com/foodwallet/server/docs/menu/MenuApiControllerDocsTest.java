@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -41,11 +42,10 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
     private static final String BASE_URL = "/api/v1/stores/{storeId}/menus";
 
     private final MenuService menuService = mock(MenuService.class);
-    private final FileStore fileStore = mock(FileStore.class);
 
     @Override
     protected Object initController() {
-        return new MenuApiController(menuService, fileStore);
+        return new MenuApiController(menuService);
     }
 
     @DisplayName("메뉴 등록 API")
@@ -217,10 +217,7 @@ public class MenuApiControllerDocsTest extends RestDocsSupport {
         given(SecurityUtils.getCurrentEmail())
             .willReturn("dong82@naver.com");
 
-        given(fileStore.storeFile(any()))
-            .willReturn(UploadFile.builder().build());
-
-        given(menuService.modifyMenuImage(anyString(), anyLong(), any(UploadFile.class)))
+        given(menuService.modifyMenuImage(anyString(), anyLong(), any(MultipartFile.class)))
             .willReturn(response);
 
         mockMvc.perform(

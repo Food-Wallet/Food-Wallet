@@ -8,7 +8,6 @@ import com.foodwallet.server.api.controller.menu.request.MenuModifyRequest;
 import com.foodwallet.server.api.controller.menu.request.MenuModifyStatusRequest;
 import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.api.service.menu.response.*;
-import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.io.IOException;
 public class MenuApiController {
 
     private final MenuService menuService;
-    private final FileStore fileStore;
 
     /**
      * 신규 메뉴 등록 API
@@ -84,9 +82,7 @@ public class MenuApiController {
     ) throws IOException {
         String email = SecurityUtils.getCurrentEmail();
 
-        UploadFile image = fileStore.storeFile(request.getImage());
-
-        MenuModifyImageResponse response = menuService.modifyMenuImage(email, menuId, image);
+        MenuModifyImageResponse response = menuService.modifyMenuImage(email, menuId, request.getImage());
 
         return ApiResponse.ok(response);
     }

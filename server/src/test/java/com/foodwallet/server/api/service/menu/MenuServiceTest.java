@@ -17,12 +17,16 @@ import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 class MenuServiceTest extends IntegrationTestSupport {
 
@@ -154,10 +158,12 @@ class MenuServiceTest extends IntegrationTestSupport {
 
         Member member2 = createMember("do72@naver.com");
 
-        UploadFile image = UploadFile.builder()
-            .uploadFileName("upload-file-name.jpg")
-            .storeFileName("s3-store-file-url.jpg")
-            .build();
+        MockMultipartFile image = new MockMultipartFile(
+            "image",
+            "store-menu-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
 
         //when //then
         assertThatThrownBy(() -> menuService.modifyMenuImage("do72@naver.com", menu.getId(), image))
@@ -167,16 +173,26 @@ class MenuServiceTest extends IntegrationTestSupport {
 
     @DisplayName("사업자 회원 이메일, 매장 식별키, 파일 정보를 입력 받아 메뉴 이미지를 수정한다.")
     @Test
-    void modifyMenuImage() {
+    void modifyMenuImage() throws IOException {
         //given
         Member member = createMember("dong82@naver.com");
         Store store = createStore(member);
         Menu menu = createMenu(store);
 
-        UploadFile image = UploadFile.builder()
+        MockMultipartFile image = new MockMultipartFile(
+            "image",
+            "store-menu-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
+        UploadFile uploadFile = UploadFile.builder()
             .uploadFileName("upload-file-name.jpg")
             .storeFileName("s3-store-file-url.jpg")
             .build();
+
+        BDDMockito.given(fileStore.storeFile(any(MultipartFile.class)))
+            .willReturn(uploadFile);
 
         //when
         MenuModifyImageResponse response = menuService.modifyMenuImage("dong82@naver.com", menu.getId(), image);

@@ -16,6 +16,7 @@ import com.foodwallet.server.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -38,8 +39,8 @@ public class MenuService {
      * @param storeId 신규 메뉴를 등록할 매장의 식별키
      * @param request 신규 메뉴의 정보
      * @return 신규 등록된 메뉴의 정보
-     * @throws IOException 이미지 파일 업로드에 실패한 경우
-     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     * @throws IOException              이미지 파일 업로드에 실패한 경우
+     * @throws AuthenticationException  매장을 등록한 회원과 요청한 회원이 다른 경우
      * @throws IllegalArgumentException 영구 삭제된 매장에 메뉴 등록을 요청하는 경우
      */
     public MenuCreateResponse createMenu(String email, Long storeId, MenuCreateServiceRequest request) throws IOException {
@@ -57,42 +58,54 @@ public class MenuService {
         return MenuCreateResponse.of(savedMenu);
     }
 
+    /**
+     * 메뉴 정보를 입력 받아 메뉴 정보를 수정한다.
+     *
+     * @param email   정보 수정을 요청한 회원의 이메일
+     * @param menuId  정보 수정할 메뉴의 식별키
+     * @param request 수정할 메뉴 정보
+     * @return 수정된 메뉴의 정보
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     */
     public MenuModifyResponse modifyMenuInfo(String email, Long menuId, MenuModifyServiceRequest request) {
-        Member member = memberRepository.findByEmail(email);
-
-        Menu menu = menuRepository.findJoinStoreById(menuId);
-
-        if (!menu.getStore().isMine(member)) {
-            throw new AuthenticationException(NOT_AUTHORIZED);
-        }
+        Menu menu = getMyStoreMenu(email, menuId);
 
         menu.modifyInfo(request.getName(), request.getDescription(), request.getPrice());
 
         return MenuModifyResponse.of(menu);
     }
 
-    public MenuModifyImageResponse modifyMenuImage(String email, Long menuId, UploadFile image) {
-        Member member = memberRepository.findByEmail(email);
+    /**
+     * 이미지 파일을 입력 받아 메뉴 이미지를 수정한다.
+     *
+     * @param email  이미지 수정을 요청한 회원의 이메일
+     * @param menuId 이미지 수정할 메뉴의 식별키
+     * @param file   수정할 이미지 파일
+     * @return 이미지가 수정된 메뉴의 정보
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     * @throws IOException             이미지 파일 업로드에 실패한 경우
+     */
+    public MenuModifyImageResponse modifyMenuImage(String email, Long menuId, MultipartFile file) throws IOException {
+        Menu menu = getMyStoreMenu(email, menuId);
 
-        Menu menu = menuRepository.findJoinStoreById(menuId);
-
-        if (!menu.getStore().isMine(member)) {
-            throw new AuthenticationException(NOT_AUTHORIZED);
-        }
+        UploadFile image = fileStore.storeFile(file);
 
         menu.modifyImage(image);
 
         return MenuModifyImageResponse.of(menu);
     }
 
+    /**
+     * 판매 상태를 입력 받아 메뉴 판매 상태를 수정한다.
+     *
+     * @param email  판매 상태 수정을 요청한 회원의 이메일
+     * @param menuId 판매 상태 수정할 메뉴의 식별키
+     * @param status 수정할 판매 상태
+     * @return 판매 상태가 수정된 메뉴의 정보
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     */
     public MenuModifyStatusResponse modifyMenuStatus(String email, Long menuId, String status) {
-        Member member = memberRepository.findByEmail(email);
-
-        Menu menu = menuRepository.findJoinStoreById(menuId);
-
-        if (!menu.getStore().isMine(member)) {
-            throw new AuthenticationException(NOT_AUTHORIZED);
-        }
+        Menu menu = getMyStoreMenu(email, menuId);
 
         SellingStatus sellingStatus = SellingStatus.of(status);
 
@@ -101,14 +114,16 @@ public class MenuService {
         return MenuModifyStatusResponse.of(menu);
     }
 
+    /**
+     * 메뉴를 영구 삭제한다.
+     *
+     * @param email  영구 삭제를 요청한 회원의 이메일
+     * @param menuId 영구 삭제할 메뉴의 식별키
+     * @return 영구 삭제된 메뉴의 정보
+     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
+     */
     public MenuRemoveResponse removeMenu(String email, Long menuId) {
-        Member member = memberRepository.findByEmail(email);
-
-        Menu menu = menuRepository.findJoinStoreById(menuId);
-
-        if (!menu.getStore().isMine(member)) {
-            throw new AuthenticationException(NOT_AUTHORIZED);
-        }
+        Menu menu = getMyStoreMenu(email, menuId);
 
         menu.remove();
 
@@ -133,5 +148,25 @@ public class MenuService {
         }
 
         return store;
+    }
+
+    /**
+     * 회원과 메뉴를 조회한다. 조회된 회원과 메뉴를 판매하는 매장을 등록한 회원이 같으면 메뉴를 반환한다.
+     *
+     * @param email  조회할 회원의 이메일
+     * @param menuId 조회할 메뉴의 식별키
+     * @return 조회된 메뉴 엔티티
+     * @throws AuthenticationException 조회된 회원과 매장을 등록한 회원이 다른 경우
+     */
+    private Menu getMyStoreMenu(String email, Long menuId) {
+        Member member = memberRepository.findByEmail(email);
+
+        Menu menu = menuRepository.findJoinStoreById(menuId);
+
+        if (!menu.getStore().isMine(member)) {
+            throw new AuthenticationException(NOT_AUTHORIZED);
+        }
+
+        return menu;
     }
 }

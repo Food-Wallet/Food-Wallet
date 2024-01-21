@@ -1,10 +1,7 @@
-package com.foodwallet.server.api.service.bookmark;
+package com.foodwallet.server.domain.bookmark.repository;
 
 import com.foodwallet.server.IntegrationTestSupport;
-import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
-import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
 import com.foodwallet.server.domain.bookmark.Bookmark;
-import com.foodwallet.server.domain.bookmark.repository.BookmarkRepository;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.domain.store.Store;
@@ -13,15 +10,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.NoSuchElementException;
+
 import static com.foodwallet.server.domain.member.MemberRole.USER;
 import static com.foodwallet.server.domain.store.StoreStatus.CLOSE;
 import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
 import static org.assertj.core.api.Assertions.*;
 
-class BookmarkServiceTest extends IntegrationTestSupport {
+class BookmarkRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
-    private BookmarkService bookmarkService;
+    private BookmarkRepository bookmarkRepository;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -29,42 +28,28 @@ class BookmarkServiceTest extends IntegrationTestSupport {
     @Autowired
     private StoreRepository storeRepository;
 
-    @Autowired
-    private BookmarkRepository bookmarkRepository;
-
-    @DisplayName("회원 이메일과 매장 식별키를 입력 받아 즐겨찾기에 등록한다.")
+    @DisplayName("회원 식별키와 매장 식별키로 즐겨찾기 조회시 일치하는 데이터가 없으면 예외가 발생한다.")
     @Test
-    void createBookmark() {
-        //given
-        Member member = createMember();
-        Store store = createStore(0);
-
-        //when
-        BookmarkCreateResponse response = bookmarkService.createBookmark("dong82@naver.com", store.getId());
-
-        //then
-        assertThat(response.getStoreName()).isEqualTo("나리닭강정");
-
-        Store findStore = storeRepository.findById(store.getId());
-        assertThat(findStore.getBookmarkCount()).isEqualTo(1);
+    void findByIdWithoutTuple() {
+        //given //when //then
+        assertThatThrownBy(() -> bookmarkRepository.findById(1L, 1L))
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage("존재하지 않는 즐겨찾기입니다.");
     }
 
-    @DisplayName("회원 이메일과 매장 식별키를 입력 받아 즐겨찾기를 취소한다.")
+    @DisplayName("회원 식별키와 매장 식별키로 즐겨찾기를 조회한다.")
     @Test
-    void cancelBookmark() {
+    void findById() {
         //given
         Member member = createMember();
-        Store store = createStore(1);
+        Store store = createStore();
         Bookmark bookmark = createBookmark(member, store);
 
         //when
-        BookmarkCancelResponse response = bookmarkService.cancelBookmark("dong82@naver.com", store.getId());
+        Bookmark findBookmark = bookmarkRepository.findById(member.getId(), store.getId());
 
         //then
-        assertThat(response.getStoreName()).isEqualTo("나리닭강정");
-
-        Store findStore = storeRepository.findById(store.getId());
-        assertThat(findStore.getBookmarkCount()).isZero();
+        assertThat(findBookmark).isNotNull();
     }
 
     private Member createMember() {
@@ -80,12 +65,11 @@ class BookmarkServiceTest extends IntegrationTestSupport {
         return memberRepository.save(member);
     }
 
-    private Store createStore(int bookmarkCount) {
+    private Store createStore() {
         Store store = Store.builder()
             .status(CLOSE)
             .type(CHICKEN)
             .name("나리닭강정")
-            .bookmarkCount(bookmarkCount)
             .build();
         return storeRepository.save(store);
     }

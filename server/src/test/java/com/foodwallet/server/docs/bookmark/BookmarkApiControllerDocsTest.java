@@ -2,6 +2,7 @@ package com.foodwallet.server.docs.bookmark;
 
 import com.foodwallet.server.api.controller.bookmark.BookmarkApiController;
 import com.foodwallet.server.api.service.bookmark.BookmarkService;
+import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.security.SecurityUtils;
@@ -87,6 +88,16 @@ public class BookmarkApiControllerDocsTest extends RestDocsSupport {
     @DisplayName("매장 즐겨찾기 취소 API")
     @Test
     void cancelBookmark() throws Exception {
+        BookmarkCancelResponse response = BookmarkCancelResponse.builder()
+            .storeName("나리닭강정")
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(bookmarkService.cancelBookmark(anyString(), anyLong()))
+            .willReturn(response);
+
         mockMvc.perform(
                 delete(BASE_URL + "/{storeId}", 1)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")

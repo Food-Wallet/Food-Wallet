@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,4 +28,16 @@ class BookmarkApiControllerTest extends ControllerTestSupport {
             .andExpect(status().isCreated());
     }
 
+    @DisplayName("매장 즐겨찾기를 취소한다.")
+    @Test
+    void cancelBookmark() throws Exception {
+        //given //when //then
+        mockMvc.perform(
+                delete(BASE_URL + "/{storeId}", 1)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
 }

@@ -25,6 +25,7 @@ class StoreRepositoryTest extends IntegrationTestSupport {
             .isInstanceOf(NoSuchElementException.class)
             .hasMessage("존재하지 않는 매장입니다.");
     }
+
     @DisplayName("매장 식별키로 매장을 조회한다.")
     @Test
     void findById() {

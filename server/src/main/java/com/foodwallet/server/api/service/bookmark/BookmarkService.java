@@ -1,5 +1,6 @@
 package com.foodwallet.server.api.service.bookmark;
 
+import com.foodwallet.server.api.service.bookmark.response.BookmarkCancelResponse;
 import com.foodwallet.server.api.service.bookmark.response.BookmarkCreateResponse;
 import com.foodwallet.server.domain.bookmark.Bookmark;
 import com.foodwallet.server.domain.bookmark.repository.BookmarkRepository;
@@ -41,5 +42,23 @@ public class BookmarkService {
         store.increaseBookmarkCount();
 
         return BookmarkCreateResponse.of(savedBookmark.getStore());
+    }
+
+    /**
+     * 매장 식별키를 입력 받아 즐겨찾기를 취소한다. 즐겨찾기 취소 후 매장의 즐겨찾기 수는 1만큼 감소한다.
+     *
+     * @param email   즐겨찾기 취소할 회원의 이메일
+     * @param storeId 즐겨찾기 취소할 매장의 식별키
+     * @return 즐겨찾기 취소된 매장의 정보
+     */
+    public BookmarkCancelResponse cancelBookmark(String email, Long storeId) {
+        Member member = memberRepository.findByEmail(email);
+
+        Bookmark bookmark = bookmarkRepository.findById(member.getId(), storeId);
+
+        bookmark.remove();
+        bookmark.getStore().decreaseBookmarkCount();
+
+        return BookmarkCancelResponse.of(bookmark.getStore());
     }
 }

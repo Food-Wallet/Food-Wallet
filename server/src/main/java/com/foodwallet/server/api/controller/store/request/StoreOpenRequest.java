@@ -7,20 +7,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.foodwallet.server.common.message.ErrorMessage.*;
+
 @Getter
 @NoArgsConstructor
 public class StoreOpenRequest {
 
-    @NotBlank(message = "주소는 필수입니다.")
+    @NotBlank(message = NOT_BLANK_STORE_ADDRESS)
     private String address;
 
-    @NotBlank(message = "운영 시간은 필수입니다.")
+    @NotBlank(message = NOT_BLANK_STORE_OPEN_TIME)
     private String openTime;
 
-    @NotNull(message = "위도는 필수입니다.")
+    @NotNull(message = NOT_NULL_STORE_LATITUDE)
     private Double latitude;
 
-    @NotNull(message = "경도는 필수입니다.")
+    @NotNull(message = NOT_NULL_STORE_LONGITUDE)
     private Double longitude;
 
     @Builder

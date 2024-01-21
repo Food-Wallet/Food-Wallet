@@ -15,4 +15,11 @@ public class StoreSearchCond {
         this.type = type;
         this.query = query;
     }
+
+    public static StoreSearchCond create(StoreType type, String query) {
+        return StoreSearchCond.builder()
+            .type(type)
+            .query(query)
+            .build();
+    }
 }

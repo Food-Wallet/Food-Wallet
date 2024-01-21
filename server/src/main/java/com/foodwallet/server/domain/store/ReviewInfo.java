@@ -23,4 +23,8 @@ public class ReviewInfo {
         this.reviewCount = reviewCount;
         this.avgRate = avgRate;
     }
+
+    public static ReviewInfo createReviewInfo() {
+        return new ReviewInfo(0, 0.0);
+    }
 }

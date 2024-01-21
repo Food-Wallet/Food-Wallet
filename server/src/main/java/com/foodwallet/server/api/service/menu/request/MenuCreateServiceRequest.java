@@ -1,8 +1,8 @@
 package com.foodwallet.server.api.service.menu.request;
 
-import com.foodwallet.server.domain.UploadFile;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class MenuCreateServiceRequest {
@@ -10,10 +10,10 @@ public class MenuCreateServiceRequest {
     private final String name;
     private final String description;
     private final int price;
-    private final UploadFile image;
+    private final MultipartFile image;
 
     @Builder
-    private MenuCreateServiceRequest(String name, String description, int price, UploadFile image) {
+    private MenuCreateServiceRequest(String name, String description, int price, MultipartFile image) {
         this.name = name;
         this.description = description;
         this.price = price;

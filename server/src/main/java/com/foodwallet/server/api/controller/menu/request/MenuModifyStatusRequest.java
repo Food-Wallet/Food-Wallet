@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.foodwallet.server.common.message.ErrorMessage.NOT_BLANK_MENU_SELLING_STATUS;
+
 @Getter
 @NoArgsConstructor
 public class MenuModifyStatusRequest {
 
-    @NotBlank(message = "판매 상태는 필수입니다.")
+    @NotBlank(message = NOT_BLANK_MENU_SELLING_STATUS)
     private String status;
 
     @Builder

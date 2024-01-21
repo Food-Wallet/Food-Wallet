@@ -17,13 +17,19 @@ import com.foodwallet.server.domain.store.repository.StoreRepository;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.foodwallet.server.domain.member.MemberRole.*;
 import static com.foodwallet.server.domain.store.StoreStatus.CLOSE;
 import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 import static com.foodwallet.server.domain.store.StoreType.CHICKEN;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 class StoreServiceTest extends IntegrationTestSupport {
 
@@ -50,7 +56,7 @@ class StoreServiceTest extends IntegrationTestSupport {
 
         //when //then
         assertThatThrownBy(() -> storeService.createStore(member.getEmail(), request))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(AuthenticationException.class)
             .hasMessage("사업자 회원만 매장을 등록할 수 있습니다.");
     }
 
@@ -154,7 +160,7 @@ class StoreServiceTest extends IntegrationTestSupport {
             .build();
 
         //when
-        StoreOpenResponse response = storeService.openStore(store.getId(), request);
+        StoreOpenResponse response = storeService.openStore("dong82@naver.com", store.getId(), request);
 
         //then
         Store findStore = storeRepository.findById(store.getId());
@@ -201,18 +207,28 @@ class StoreServiceTest extends IntegrationTestSupport {
 
     @DisplayName("매장 식별키와 업로드 파일 객체를 입력 받아 매장 이미지를 수정한다.")
     @Test
-    void modifyStoreImage() {
+    void modifyStoreImage() throws IOException {
         //given
         Account account = createAccount();
         Member member = createMember(BUSINESS, account, "dong82@naver.com");
         Store store = createStore(member, CLOSE, null);
+        MockMultipartFile image = new MockMultipartFile(
+            "image",
+            "my-store-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
         UploadFile uploadFile = UploadFile.builder()
             .uploadFileName("upload-file-name.png")
             .storeFileName("s3-store-file-url.png")
             .build();
 
+        BDDMockito.given(fileStore.storeFile(any(MultipartFile.class)))
+            .willReturn(uploadFile);
+
         //when
-        StoreModifyImageResponse response = storeService.modifyStoreImage(store.getId(), uploadFile);
+        StoreModifyImageResponse response = storeService.modifyStoreImage("dong82@naver.com", store.getId(), image);
 
         //then
         Store findStore = storeRepository.findById(store.getId());
@@ -232,9 +248,37 @@ class StoreServiceTest extends IntegrationTestSupport {
         Member member2 = createMember(BUSINESS, account, "do72@naver.com");
 
         //when //then
-        assertThatThrownBy(() -> storeService.removeStore("do72@naver.com", store.getId()))
+        assertThatThrownBy(() -> storeService.removeStore("do72@naver.com", store.getId(), "dong1234!"))
             .isInstanceOf(AuthenticationException.class)
             .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("매장 삭제시 매장이 운영 상태라면 예외가 발생한다.")
+    @Test
+    void removeStoreWithOpen() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member, OPEN, null);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.removeStore("dong82@naver.com", store.getId(), "dong1234!"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("운영중인 매장은 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("매장 삭제시 계정의 현재 비밀번호가 일치하지 않으면 예외가 발생한다.")
+    @Test
+    void removeStoreNotEqualsPwd() {
+        //given
+        Account account = createAccount();
+        Member member = createMember(BUSINESS, account, "dong82@naver.com");
+        Store store = createStore(member, CLOSE, null);
+    
+        //when //then
+        assertThatThrownBy(() -> storeService.removeStore("dong82@naver.com", store.getId(), "do5678@!"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("현재 비밀번호가 일치하지 않습니다.");
     }
 
     @DisplayName("회원 이메일과 매장 식별키를 입력 받아 매장을 삭제한다.")
@@ -246,7 +290,7 @@ class StoreServiceTest extends IntegrationTestSupport {
         Store store = createStore(member, CLOSE, null);
 
         //when
-        StoreRemoveResponse response = storeService.removeStore("dong82@naver.com", store.getId());
+        StoreRemoveResponse response = storeService.removeStore("dong82@naver.com", store.getId(), "dong1234!");
 
         //then
         Store findStore = storeRepository.findById(store.getId());

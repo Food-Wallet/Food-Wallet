@@ -1,16 +1,9 @@
 package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
-import com.foodwallet.server.api.FileStore;
-import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyRequest;
-import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
-import com.foodwallet.server.domain.menu.SellingStatus;
-import com.foodwallet.server.domain.menu.repository.response.MenuResponse;
+import com.foodwallet.server.api.controller.store.request.*;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.*;
-import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,8 +18,13 @@ import java.util.List;
 public class StoreApiController {
 
     private final StoreService storeService;
-    private final FileStore fileStore;
 
+    /**
+     * 신규 매장 등록 API
+     *
+     * @param request 신규 매장 등록을 위한 매장 정보
+     * @return 등록된 신규 매장의 정보
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<StoreCreateResponse> createStore(@Valid @RequestBody StoreCreateRequest request) {
@@ -38,23 +35,13 @@ public class StoreApiController {
         return ApiResponse.created(response);
     }
 
-    @PatchMapping("/{storeId}/open")
-    public ApiResponse<StoreOpenResponse> openStore(@Valid @RequestBody StoreOpenRequest request, @PathVariable Long storeId) {
-
-        StoreOpenResponse response = storeService.openStore(storeId, request.toServiceRequest());
-
-        return ApiResponse.ok(response);
-    }
-
-    @PatchMapping("/{storeId}/close")
-    public ApiResponse<StoreCloseResponse> closeStore(@PathVariable Long storeId) {
-        String email = SecurityUtils.getCurrentEmail();
-
-        StoreCloseResponse response = storeService.closeStore(email, storeId);
-
-        return ApiResponse.ok(response);
-    }
-
+    /**
+     * 매장 정보 수정 API
+     *
+     * @param storeId 정보를 수정할 매장의 식별키
+     * @param request 정보 수정을 위한 매장 정보
+     * @return 수정된 매장의 정보
+     */
     @PatchMapping("/{storeId}")
     public ApiResponse<StoreModifyResponse> modifyStoreInfo(
         @PathVariable Long storeId,
@@ -67,23 +54,74 @@ public class StoreApiController {
         return ApiResponse.ok(response);
     }
 
-    @DeleteMapping("/{storeId}")
-    public ApiResponse<StoreRemoveResponse> removeStore(@PathVariable Long storeId) {
+    /**
+     * 매장 운영 시작 API
+     *
+     * @param storeId 운영을 시작할 매장의 식별키
+     * @param request 운영 시작시 등록되야 하는 위치와 시간 정보
+     * @return 운영 시작한 매장의 정보
+     */
+    @PatchMapping("/{storeId}/open")
+    public ApiResponse<StoreOpenResponse> openStore(
+        @PathVariable Long storeId,
+        @Valid @RequestBody StoreOpenRequest request
+    ) {
         String email = SecurityUtils.getCurrentEmail();
 
-        StoreRemoveResponse response = storeService.removeStore(email, storeId);
+        StoreOpenResponse response = storeService.openStore(email, storeId, request.toServiceRequest());
 
         return ApiResponse.ok(response);
     }
 
+    /**
+     * 매장 운영 종료 API
+     *
+     * @param storeId 운영을 종료할 매장의 식별키
+     * @return 운영 종료한 매장의 정보
+     */
+    @PatchMapping("/{storeId}/close")
+    public ApiResponse<StoreCloseResponse> closeStore(@PathVariable Long storeId) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreCloseResponse response = storeService.closeStore(email, storeId);
+
+        return ApiResponse.ok(response);
+    }
+
+    /**
+     * 매장 이미지 수정 API
+     *
+     * @param storeId 이미지를 수정할 매장의 식별키
+     * @param request 이미지 수정을 위한 매장 이미지 파일
+     * @return 이미지가 수정된 매장의 정보
+     * @throws IOException 이미지 파일 업로드 실패시 발생
+     */
     @PostMapping("/{storeId}/image")
     public ApiResponse<StoreModifyImageResponse> modifyStoreImage(
         @PathVariable Long storeId,
         @Valid @ModelAttribute StoreModifyImageRequest request
     ) throws IOException {
-        UploadFile uploadFile = fileStore.storeFile(request.getImage());
+        String email = SecurityUtils.getCurrentEmail();
 
-        StoreModifyImageResponse response = storeService.modifyStoreImage(storeId, uploadFile);
+        StoreModifyImageResponse response = storeService.modifyStoreImage(email, storeId, request.getImage());
+
+        return ApiResponse.ok(response);
+    }
+
+    /**
+     * 매장 영구 삭제 API
+     *
+     * @param storeId 영구 삭제할 매장의 식별키
+     * @return 영구 삭제된 매장의 정보
+     */
+    @PostMapping("/{storeId}")
+    public ApiResponse<StoreRemoveResponse> removeStore(
+        @PathVariable Long storeId,
+        @Valid @RequestBody StoreRemoveRequest request
+    ) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreRemoveResponse response = storeService.removeStore(email, storeId, request.getPwd());
 
         return ApiResponse.ok(response);
     }

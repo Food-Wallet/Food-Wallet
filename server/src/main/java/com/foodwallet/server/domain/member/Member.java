@@ -56,6 +56,17 @@ public class Member extends BaseEntity {
         this.token = token;
     }
 
+    public static Member create(String email, String pwd, String name, int birthYear, String gender, MemberRole role) {
+        return Member.builder()
+            .email(email)
+            .pwd(pwd)
+            .name(name)
+            .birthYear(birthYear)
+            .gender(gender)
+            .role(role)
+            .build();
+    }
+
     public boolean isBusinessMember() {
         return role == BUSINESS;
     }

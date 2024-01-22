@@ -41,7 +41,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         //when //then
         assertThatThrownBy(() -> memberService.createMember(request, currentDate))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("이미 사용중인 이메일입니다.");
+            .hasMessage("이미 가입된 이메일 주소입니다.");
     }
 
     @DisplayName("신규 회원 등록시 입력 받은 이메일의 형식이 맞지 않으면 예외가 발생한다.")
@@ -121,7 +121,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         //when //then
         assertThatThrownBy(() -> memberService.createMember(request, currentDate))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("비밀번호에 숫자, 영문, 특수문자가 반드시 포함되어야 합니다.");
+            .hasMessage("비밀번호를 올바르게 입력해주세요.");
     }
 
     @DisplayName("신규 회원 등록시 입력 받은 회원의 이름에 한글 이외의 문자가 포함되어 있으면 예외가 발생한다.")
@@ -141,10 +141,10 @@ class MemberServiceTest extends IntegrationTestSupport {
         //when //then
         assertThatThrownBy(() -> memberService.createMember(request, currentDate))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("이름은 한글만 입력이 가능합니다.");
+            .hasMessage("이름을 올바르게 입력해주세요.");
     }
 
-    @DisplayName("신규 회원 등록시 입력 받은 출생년도가 미래인 경우 예외가 발생한다.")
+    @DisplayName("신규 회원 등록시 입력 받은 출생연도가 미래인 경우 예외가 발생한다.")
     @Test
     void createMemberWithFutureYear() {
         //given
@@ -161,7 +161,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         //when //then
         assertThatThrownBy(() -> memberService.createMember(request, currentDate))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("현재 연도보다 미래를 입력할 수 없습니다.");
+            .hasMessage("출생연도를 올바르게 입력해주세요.");
     }
 
     @DisplayName("신규 회원 등록시 입력 받은 성별이 M, F이 아니라면 예외가 발생한다.")
@@ -181,7 +181,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         //when //then
         assertThatThrownBy(() -> memberService.createMember(request, currentDate))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("잘못된 성별이 입력됬습니다.");
+            .hasMessage("성별을 올바르게 입력해주세요.");
     }
 
 

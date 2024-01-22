@@ -47,9 +47,9 @@ public class AccountApiController {
 
     @PostMapping("/email")
     public ApiResponse<CheckEmailDuplicationResponse> checkEmailDuplication(@Valid @RequestBody CheckEmailDuplicationRequest request) {
-        CheckEmailDuplicationResponse response = CheckEmailDuplicationResponse.builder()
-            .isDuplicated(true)
-            .build();
+
+        CheckEmailDuplicationResponse response = memberQueryService.checkEmailDuplication(request.getEmail());
+
         return ApiResponse.ok(response);
     }
 

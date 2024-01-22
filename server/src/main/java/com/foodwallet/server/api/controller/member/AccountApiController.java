@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
@@ -25,11 +26,10 @@ public class AccountApiController {
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<MemberCreateResponse> signup(@Valid @RequestBody MemberCreateRequest request) {
-        MemberCreateResponse response = MemberCreateResponse.builder()
-            .email("dong82@naver.com")
-            .name("동팔이")
-            .signupDateTime(LocalDateTime.of(2024, 1, 16, 9, 0))
-            .build();
+        LocalDate currentDate = LocalDate.now();
+
+        MemberCreateResponse response = memberService.createMember(request.toServiceRequest(), currentDate);
+
         return ApiResponse.created(response);
     }
 

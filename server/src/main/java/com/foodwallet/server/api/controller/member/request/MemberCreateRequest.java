@@ -1,5 +1,6 @@
 package com.foodwallet.server.api.controller.member.request;
 
+import com.foodwallet.server.api.service.member.request.MemberCreateServiceRequest;
 import com.foodwallet.server.domain.member.MemberRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -38,5 +39,16 @@ public class MemberCreateRequest {
         this.birthYear = birthYear;
         this.gender = gender;
         this.role = role;
+    }
+
+    public MemberCreateServiceRequest toServiceRequest() {
+        return MemberCreateServiceRequest.builder()
+            .email(email)
+            .pwd(pwd)
+            .name(name)
+            .birthYear(birthYear)
+            .gender(gender)
+            .role(role)
+            .build();
     }
 }

@@ -13,6 +13,12 @@ public class MemberQueryService {
 
     private final MemberQueryRepository memberQueryRepository;
 
+    /**
+     * 이메일을 입력 받아 이메일 사용 여부를 확인한다.
+     *
+     * @param email 검증할 이메일
+     * @return 이메일 사용 여부 검증 결과 정보
+     */
     public CheckEmailDuplicationResponse checkEmailDuplication(String email) {
         boolean isDuplicated = memberQueryRepository.existEmail(email);
 

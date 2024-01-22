@@ -36,8 +36,8 @@ class MemberRepositoryTest extends IntegrationTestSupport {
 
         //then
         assertThat(findMember)
-            .extracting("email", "name", "age", "gender", "role")
-            .contains("dong82@naver.com", "동팔이", 10, "F", USER);
+            .extracting("email", "name", "birthYear", "gender", "role")
+            .contains("dong82@naver.com", "동팔이", 2015, "F", USER);
     }
 
     private Member createMember() {

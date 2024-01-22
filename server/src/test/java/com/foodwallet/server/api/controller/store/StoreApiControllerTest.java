@@ -352,7 +352,7 @@ class StoreApiControllerTest extends ControllerTestSupport {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("400"))
             .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
-            .andExpect(jsonPath("$.message").value("비밀번호는 필수입니다."))
+            .andExpect(jsonPath("$.message").value("비밀번호를 입력하세요."))
             .andExpect(jsonPath("$.data").isEmpty());
     }
 }

@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.foodwallet.server.common.message.ErrorMessage.NOT_BLANK_EMAIL;
+
 @Getter
 @NoArgsConstructor
 public class CheckEmailDuplicationRequest {
 
-    @NotBlank(message = "이메일을 입력하세요.")
+    @NotBlank(message = NOT_BLANK_EMAIL)
     private String email;
 
     @Builder

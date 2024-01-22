@@ -9,26 +9,28 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.foodwallet.server.common.message.ErrorMessage.*;
+
 @Getter
 @NoArgsConstructor
 public class MemberCreateRequest {
 
-    @NotBlank(message = "이메일을 입력하세요.")
+    @NotBlank(message = NOT_BLANK_EMAIL)
     private String email;
 
-    @NotBlank(message = "비밀번호를 입력하세요.")
+    @NotBlank(message = NOT_BLANK_PASSWORD)
     private String pwd;
 
-    @NotBlank(message = "이름을 입력하세요.")
+    @NotBlank(message = NOT_BLANK_NAME)
     private String name;
 
-    @Positive(message = "출생연도를 정확하게 입력하세요.")
+    @Positive(message = POSITIVE_BIRTH_YEAR)
     private Integer birthYear;
 
-    @NotBlank(message = "성별을 입력하세요.")
+    @NotBlank(message = NOT_BLANK_GENDER)
     private String gender;
 
-    @NotNull(message = "회원 구분을 입력하세요.")
+    @NotNull(message = NOT_BLANK_ROLE)
     private MemberRole role;
 
     @Builder

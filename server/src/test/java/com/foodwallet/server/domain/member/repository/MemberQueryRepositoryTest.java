@@ -24,7 +24,7 @@ class MemberQueryRepositoryTest extends IntegrationTestSupport {
         Member member = createMember();
 
         //when
-        boolean isExistEmail = memberQueryRepository.isExistEmail("dong82@naver.com");
+        boolean isExistEmail = memberQueryRepository.existEmail("dong82@naver.com");
 
         //then
         assertThat(isExistEmail).isTrue();
@@ -36,7 +36,7 @@ class MemberQueryRepositoryTest extends IntegrationTestSupport {
         //given
 
         //when
-        boolean isExistEmail = memberQueryRepository.isExistEmail("dong82@naver.com");
+        boolean isExistEmail = memberQueryRepository.existEmail("dong82@naver.com");
 
         //then
         assertThat(isExistEmail).isFalse();

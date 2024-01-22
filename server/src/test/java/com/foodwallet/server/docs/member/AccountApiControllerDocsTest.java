@@ -38,7 +38,7 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
             .email("dong82@naver.com")
             .pwd("dong1234!")
             .name("동팔이")
-            .age(10)
+//            .birthYear(2015)
             .gender("M")
             .build();
 

@@ -10,6 +10,7 @@ import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.StoreQueryApiController;
 import com.foodwallet.server.api.service.bookmark.BookmarkQueryService;
 import com.foodwallet.server.api.service.bookmark.BookmarkService;
+import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.api.service.store.StoreQueryService;
@@ -58,4 +59,7 @@ public abstract class ControllerTestSupport {
 
     @MockBean
     protected MemberService memberService;
+
+    @MockBean
+    protected MemberQueryService memberQueryService;
 }

@@ -4,6 +4,7 @@ import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
 import com.foodwallet.server.api.controller.member.request.SigninRequest;
+import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.response.CheckEmailDuplicationResponse;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 public class AccountApiController {
 
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)

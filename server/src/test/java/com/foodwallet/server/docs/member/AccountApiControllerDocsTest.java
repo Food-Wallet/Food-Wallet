@@ -4,8 +4,10 @@ import com.foodwallet.server.api.controller.member.AccountApiController;
 import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
 import com.foodwallet.server.api.controller.member.request.SigninRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
+import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.request.MemberCreateServiceRequest;
+import com.foodwallet.server.api.service.member.response.CheckEmailDuplicationResponse;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.domain.member.MemberRole;
@@ -38,10 +40,11 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
 
     private static final String BASE_URL = "/api/v1/auth";
     private final MemberService memberService = mock(MemberService.class);
+    private final MemberQueryService memberQueryService = mock(MemberQueryService.class);
 
     @Override
     protected Object initController() {
-        return new AccountApiController(memberService);
+        return new AccountApiController(memberService, memberQueryService);
     }
 
     @DisplayName("회원 가입 API")
@@ -158,6 +161,13 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
             .email("dong82@naver.com")
             .build();
 
+        CheckEmailDuplicationResponse response = CheckEmailDuplicationResponse.builder()
+            .isDuplicated(true)
+            .build();
+
+        given(memberQueryService.checkEmailDuplication(anyString()))
+            .willReturn(response);
+
         mockMvc.perform(
                 post(BASE_URL + "/email")
                     .content(objectMapper.writeValueAsString(request))
@@ -181,7 +191,7 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
                         .description("메시지"),
                     fieldWithPath("data").type(JsonFieldType.OBJECT)
                         .description("응답 데이터"),
-                    fieldWithPath("data.isDuplicated").type(JsonFieldType.BOOLEAN)
+                    fieldWithPath("data.duplicated").type(JsonFieldType.BOOLEAN)
                         .description("이메일 중복 여부")
                 )
             ));

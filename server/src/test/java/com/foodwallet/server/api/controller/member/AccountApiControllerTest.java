@@ -1,6 +1,7 @@
 package com.foodwallet.server.api.controller.member;
 
 import com.foodwallet.server.ControllerTestSupport;
+import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -201,6 +202,47 @@ class AccountApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.code").value("400"))
             .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.message").value("회원 구분을 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("이메일 중복 체크를 한다.")
+    @Test
+    void checkEmailDuplication() throws Exception {
+        //given
+        CheckEmailDuplicationRequest request = CheckEmailDuplicationRequest.builder()
+            .email("dong82@naver.com")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/email")
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("이메일 중복 체크할 때 이메일은 필수값이다.")
+    @Test
+    void checkEmailDuplicationWithoutEmail() throws Exception {
+        //given
+        CheckEmailDuplicationRequest request = CheckEmailDuplicationRequest.builder()
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/email")
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("이메일을 입력하세요."))
             .andExpect(jsonPath("$.data").isEmpty());
     }
 }

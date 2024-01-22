@@ -14,6 +14,10 @@ public class MemberQueryService {
     private final MemberQueryRepository memberQueryRepository;
 
     public CheckEmailDuplicationResponse checkEmailDuplication(String email) {
-        return null;
+        boolean isDuplicated = memberQueryRepository.existEmail(email);
+
+        return CheckEmailDuplicationResponse.builder()
+            .isDuplicated(isDuplicated)
+            .build();
     }
 }

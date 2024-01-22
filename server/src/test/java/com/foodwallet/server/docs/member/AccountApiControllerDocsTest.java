@@ -4,13 +4,25 @@ import com.foodwallet.server.api.controller.member.AccountApiController;
 import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
 import com.foodwallet.server.api.controller.member.request.SigninRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
+import com.foodwallet.server.api.service.member.MemberService;
+import com.foodwallet.server.api.service.member.request.MemberCreateServiceRequest;
+import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.domain.member.MemberRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static com.foodwallet.server.domain.member.MemberRole.USER;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -25,10 +37,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AccountApiControllerDocsTest extends RestDocsSupport {
 
     private static final String BASE_URL = "/api/v1/auth";
+    private final MemberService memberService = mock(MemberService.class);
 
     @Override
     protected Object initController() {
-        return new AccountApiController();
+        return new AccountApiController(memberService);
     }
 
     @DisplayName("회원 가입 API")
@@ -38,9 +51,19 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
             .email("dong82@naver.com")
             .pwd("dong1234!")
             .name("동팔이")
-//            .birthYear(2015)
+            .birthYear(2015)
             .gender("M")
+            .role(USER)
             .build();
+
+        MemberCreateResponse response = MemberCreateResponse.builder()
+            .email("dong82@naver.com")
+            .name("동팔이")
+            .signupDateTime(LocalDateTime.of(2024, 1, 16, 9, 0))
+            .build();
+
+        given(memberService.createMember(any(MemberCreateServiceRequest.class), any(LocalDate.class)))
+            .willReturn(response);
 
         mockMvc.perform(
                 post(BASE_URL + "/signup")
@@ -59,10 +82,12 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
                         .description("비밀번호"),
                     fieldWithPath("name").type(JsonFieldType.STRING)
                         .description("이름"),
-                    fieldWithPath("age").type(JsonFieldType.NUMBER)
-                        .description("나이"),
+                    fieldWithPath("birthYear").type(JsonFieldType.NUMBER)
+                        .description("출생연도"),
                     fieldWithPath("gender").type(JsonFieldType.STRING)
-                        .description("성별")
+                        .description("성별"),
+                    fieldWithPath("role").type(JsonFieldType.STRING)
+                        .description("회원 유형")
                 ),
                 responseFields(
                     fieldWithPath("code").type(JsonFieldType.NUMBER)
@@ -121,7 +146,7 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
                         .description("접근 토큰"),
                     fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
-                            .description("재인증 토큰")
+                        .description("재인증 토큰")
                 )
             ));
     }

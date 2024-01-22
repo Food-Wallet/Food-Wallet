@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.controller.bookmark.BookmarkApiController;
 import com.foodwallet.server.api.controller.bookmark.BookmarkQueryApiController;
+import com.foodwallet.server.api.controller.member.AccountApiController;
 import com.foodwallet.server.api.controller.menu.MenuApiController;
 import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.StoreQueryApiController;
 import com.foodwallet.server.api.service.bookmark.BookmarkQueryService;
 import com.foodwallet.server.api.service.bookmark.BookmarkService;
+import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.menu.MenuService;
 import com.foodwallet.server.api.service.store.StoreQueryService;
 import com.foodwallet.server.api.service.store.StoreService;
@@ -23,7 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {
     StoreApiController.class, StoreQueryApiController.class,
     MenuApiController.class, BookmarkApiController.class,
-    BookmarkQueryApiController.class
+    BookmarkQueryApiController.class, AccountApiController.class
 })
 public abstract class ControllerTestSupport {
 
@@ -53,4 +55,7 @@ public abstract class ControllerTestSupport {
 
     @MockBean
     protected BookmarkQueryService bookmarkQueryService;
+
+    @MockBean
+    protected MemberService memberService;
 }

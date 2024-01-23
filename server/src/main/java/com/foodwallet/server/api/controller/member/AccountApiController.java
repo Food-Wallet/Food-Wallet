@@ -56,6 +56,12 @@ public class AccountApiController {
         return ApiResponse.ok(response);
     }
 
+    /**
+     * 회원 로그인 API
+     *
+     * @param request 로그인할 계정 정보
+     * @return 발급된 JWT 정보
+     */
     @PostMapping("/login")
     public ApiResponse<TokenInfo> login(@Valid @RequestBody LoginRequest request) {
 

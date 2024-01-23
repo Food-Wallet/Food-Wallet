@@ -339,4 +339,19 @@ class AccountApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.message").value("FCM 토큰을 입력하세요."))
             .andExpect(jsonPath("$.data").isEmpty());
     }
+
+    @DisplayName("계정 로그아웃을 한다.")
+    @Test
+    void logout() throws Exception {
+        //given
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/logout")
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
 }

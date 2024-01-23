@@ -30,7 +30,11 @@ public class AccountService implements UserDetailsService {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        return jwtTokenProvider.generateToken(authentication);
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+
+        updateToken(email, fcmToken, tokenInfo.getRefreshToken());
+
+        return tokenInfo;
     }
 
     @Override
@@ -46,5 +50,11 @@ public class AccountService implements UserDetailsService {
             .password(member.getPwd())
             .roles(member.getRole().toString())
             .build();
+    }
+
+    private void updateToken(String email, String fcmToken, String refreshToken) {
+        Member member = memberRepository.findByEmail(email);
+
+        member.modifyToken(fcmToken, refreshToken);
     }
 }

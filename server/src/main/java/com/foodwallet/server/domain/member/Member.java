@@ -67,6 +67,13 @@ public class Member extends BaseEntity {
             .build();
     }
 
+    public void modifyToken(String fcmToken, String refreshToken) {
+        token = Token.builder()
+            .fcmToken(fcmToken)
+            .refreshToken(refreshToken)
+            .build();
+    }
+
     public boolean isBusinessMember() {
         return role == BUSINESS;
     }

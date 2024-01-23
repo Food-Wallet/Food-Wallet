@@ -1,17 +1,25 @@
 package com.foodwallet.server.docs.member;
 
 import com.foodwallet.server.api.controller.member.MemberApiController;
-import com.foodwallet.server.api.controller.member.request.AccountModifyRequest;
-import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
+import com.foodwallet.server.api.controller.member.request.ConnectAccountRequest;
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
+import com.foodwallet.server.api.service.member.AuthenticationService;
+import com.foodwallet.server.api.service.member.request.ConnectAccountServiceRequest;
+import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -27,9 +35,71 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
 
     private static final String BASE_URL = "/api/v1/members";
 
+    private final AuthenticationService authenticationService = mock(AuthenticationService.class);
+
     @Override
     protected Object initController() {
-        return new MemberApiController();
+        return new MemberApiController(authenticationService);
+    }
+
+    @DisplayName("계좌 연결 인증 번호 발급 API")
+    @Test
+    void modifyAccount() throws Exception {
+        ConnectAccountRequest request = ConnectAccountRequest.builder()
+            .bankCode("088")
+            .accountNumber("110111222222")
+            .accountPwd("1234")
+            .build();
+
+        ConnectAccountResponse response = ConnectAccountResponse.builder()
+            .bankCode("088")
+            .accountNumber("110111222222")
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(authenticationService.connectAccount(anyString(), any(ConnectAccountServiceRequest.class)))
+            .willReturn(response);
+
+        mockMvc.perform(
+                post(BASE_URL + "/account")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("connect-account",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                requestFields(
+                    fieldWithPath("bankCode").type(JsonFieldType.STRING)
+                        .description("은행 코드"),
+                    fieldWithPath("accountNumber").type(JsonFieldType.STRING)
+                        .description("계좌 번호"),
+                    fieldWithPath("accountPwd").type(JsonFieldType.STRING)
+                        .description("계좌 비밀번호")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.bankCode").type(JsonFieldType.STRING)
+                        .description("등록된 은행 코드"),
+                    fieldWithPath("data.accountNumber").type(JsonFieldType.STRING)
+                        .description("등록된 계좌 번호")
+                )
+            ));
     }
 
     @DisplayName("비밀번호 변경 API")
@@ -152,55 +222,6 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
                         .description("회원 나이"),
                     fieldWithPath("data.gender").type(JsonFieldType.STRING)
                         .description("회원 성별")
-                )
-            ));
-    }
-
-    @DisplayName("계좌 등록 API")
-    @Test
-    void modifyAccount() throws Exception {
-        AccountModifyRequest request = AccountModifyRequest.builder()
-            .bankCode("088")
-            .accountNumber("110111222222")
-            .accountPwd("1234")
-            .build();
-
-        mockMvc.perform(
-                post(BASE_URL + "/account")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
-                    .content(objectMapper.writeValueAsString(request))
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andDo(document("modify-account",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestHeaders(
-                    headerWithName(HttpHeaders.AUTHORIZATION)
-                        .description("JWT 접근 토큰")
-                ),
-                requestFields(
-                    fieldWithPath("bankCode").type(JsonFieldType.STRING)
-                        .description("은행 코드"),
-                    fieldWithPath("accountNumber").type(JsonFieldType.STRING)
-                        .description("계좌 번호"),
-                    fieldWithPath("accountPwd").type(JsonFieldType.STRING)
-                        .description("계좌 비밀번호")
-                ),
-                responseFields(
-                    fieldWithPath("code").type(JsonFieldType.NUMBER)
-                        .description("코드"),
-                    fieldWithPath("status").type(JsonFieldType.STRING)
-                        .description("상태"),
-                    fieldWithPath("message").type(JsonFieldType.STRING)
-                        .description("메시지"),
-                    fieldWithPath("data").type(JsonFieldType.OBJECT)
-                        .description("응답 데이터"),
-                    fieldWithPath("data.bankCode").type(JsonFieldType.STRING)
-                        .description("등록된 은행 코드"),
-                    fieldWithPath("data.accountNumber").type(JsonFieldType.STRING)
-                        .description("등록된 계좌 번호")
                 )
             ));
     }

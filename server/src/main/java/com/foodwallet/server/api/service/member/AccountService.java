@@ -38,7 +38,9 @@ public class AccountService implements UserDetailsService {
     }
 
     public void logout(String email) {
+        Member member = memberRepository.findByEmail(email);
 
+        member.removeToken();
     }
 
     @Override

@@ -74,6 +74,10 @@ public class Member extends BaseEntity {
             .build();
     }
 
+    public void removeToken() {
+        token = null;
+    }
+
     public boolean isBusinessMember() {
         return role == BUSINESS;
     }

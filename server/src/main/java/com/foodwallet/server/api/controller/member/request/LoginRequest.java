@@ -6,14 +6,16 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SigninRequest {
+public class LoginRequest {
 
     private String email;
     private String pwd;
+    private String fcmToken;
 
     @Builder
-    private SigninRequest(String email, String pwd) {
+    private LoginRequest(String email, String pwd, String fcmToken) {
         this.email = email;
         this.pwd = pwd;
+        this.fcmToken = fcmToken;
     }
 }

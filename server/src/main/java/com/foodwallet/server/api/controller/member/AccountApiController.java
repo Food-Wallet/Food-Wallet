@@ -3,7 +3,8 @@ package com.foodwallet.server.api.controller.member;
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
-import com.foodwallet.server.api.controller.member.request.SigninRequest;
+import com.foodwallet.server.api.controller.member.request.LoginRequest;
+import com.foodwallet.server.api.service.member.AccountService;
 import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.response.CheckEmailDuplicationResponse;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,6 +24,7 @@ public class AccountApiController {
 
     private final MemberService memberService;
     private final MemberQueryService memberQueryService;
+    private final AccountService accountService;
 
     /**
      * 회원 가입 API
@@ -55,8 +56,8 @@ public class AccountApiController {
         return ApiResponse.ok(response);
     }
 
-    @PostMapping("/signin")
-    public ApiResponse<TokenInfo> signin(@Valid @RequestBody SigninRequest request) {
+    @PostMapping("/login")
+    public ApiResponse<TokenInfo> login(@Valid @RequestBody LoginRequest request) {
         TokenInfo tokenInfo = TokenInfo.builder()
             .grantType("Bearer")
             .accessToken("jwt.access.token")

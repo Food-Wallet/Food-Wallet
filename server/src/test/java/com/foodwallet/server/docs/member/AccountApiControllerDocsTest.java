@@ -2,18 +2,18 @@ package com.foodwallet.server.docs.member;
 
 import com.foodwallet.server.api.controller.member.AccountApiController;
 import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
-import com.foodwallet.server.api.controller.member.request.SigninRequest;
+import com.foodwallet.server.api.controller.member.request.LoginRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
+import com.foodwallet.server.api.service.member.AccountService;
 import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.request.MemberCreateServiceRequest;
 import com.foodwallet.server.api.service.member.response.CheckEmailDuplicationResponse;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
-import com.foodwallet.server.domain.member.MemberRole;
+import com.foodwallet.server.security.TokenInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -41,10 +41,11 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
     private static final String BASE_URL = "/api/v1/auth";
     private final MemberService memberService = mock(MemberService.class);
     private final MemberQueryService memberQueryService = mock(MemberQueryService.class);
+    private final AccountService accountService = mock(AccountService.class);
 
     @Override
     protected Object initController() {
-        return new AccountApiController(memberService, memberQueryService);
+        return new AccountApiController(memberService, memberQueryService, accountService);
     }
 
     @DisplayName("회원 가입 API")
@@ -113,27 +114,39 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
 
     @DisplayName("회원 로그인 API")
     @Test
-    void signin() throws Exception {
-        SigninRequest request = SigninRequest.builder()
+    void login() throws Exception {
+        LoginRequest request = LoginRequest.builder()
             .email("dong82@naver.com")
             .pwd("dong1234!")
+            .fcmToken("fcm.token")
             .build();
 
+        TokenInfo tokenInfo = TokenInfo.builder()
+            .grantType("Bearer")
+            .accessToken("jwt.access.token")
+            .refreshToken("jwt.refresh.token")
+            .build();
+
+        given(accountService.login(anyString(), anyString(), anyString()))
+            .willReturn(tokenInfo);
+
         mockMvc.perform(
-                post(BASE_URL + "/signin")
+                post(BASE_URL + "/login")
                     .content(objectMapper.writeValueAsString(request))
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andDo(document("signin",
+            .andDo(document("login",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
                 requestFields(
                     fieldWithPath("email").type(JsonFieldType.STRING)
                         .description("이메일"),
                     fieldWithPath("pwd").type(JsonFieldType.STRING)
-                        .description("비밀번호")
+                        .description("비밀번호"),
+                    fieldWithPath("fcmToken").type(JsonFieldType.STRING)
+                        .description("FCM 토큰 정보")
                 ),
                 responseFields(
                     fieldWithPath("code").type(JsonFieldType.NUMBER)

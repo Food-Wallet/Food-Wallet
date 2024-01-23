@@ -2,6 +2,7 @@ package com.foodwallet.server.api.controller.member;
 
 import com.foodwallet.server.ControllerTestSupport;
 import com.foodwallet.server.api.controller.member.request.CheckEmailDuplicationRequest;
+import com.foodwallet.server.api.controller.member.request.LoginRequest;
 import com.foodwallet.server.api.controller.member.request.MemberCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -243,6 +244,99 @@ class AccountApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.code").value("400"))
             .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.message").value("이메일을 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("계정 로그인을 한다.")
+    @Test
+    void login() throws Exception {
+        //given
+        LoginRequest request = LoginRequest.builder()
+            .email("dong82@naver.com")
+            .pwd("dong1234!")
+            .fcmToken("fcm.token")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/login")
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("로그인할 때 이메일은 필수값이다.")
+    @Test
+    void loginWithoutEmail() throws Exception {
+        //given
+        LoginRequest request = LoginRequest.builder()
+            .pwd("dong1234!")
+            .fcmToken("fcm.token")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/login")
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("이메일을 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("로그인할 때 비밀번호는 필수값이다.")
+    @Test
+    void loginWithoutPwd() throws Exception {
+        //given
+        LoginRequest request = LoginRequest.builder()
+            .email("dong82@naver.com")
+            .fcmToken("fcm.token")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/login")
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("비밀번호를 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("로그인할 때 FCM 토큰은 필수값이다.")
+    @Test
+    void loginWithoutFcmToken() throws Exception {
+        //given
+        LoginRequest request = LoginRequest.builder()
+            .email("dong82@naver.com")
+            .pwd("dong1234!")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/login")
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("FCM 토큰을 입력하세요."))
             .andExpect(jsonPath("$.data").isEmpty());
     }
 }

@@ -14,7 +14,7 @@ include::overview.adoc[]
 [[Account-API]]
 == Account API
 
-include::api/member/signin.adoc[]
+include::api/member/login.adoc[]
 include::api/member/logout.adoc[]
 include::api/member/signup.adoc[]
 include::api/member/check-email-duplication.adoc[]

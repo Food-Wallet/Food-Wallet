@@ -29,7 +29,7 @@ public class Member extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private int age;
+    private int birthYear;
 
     @Column(nullable = false, updatable = false, columnDefinition = "char(1)", length = 1)
     private String gender;
@@ -45,15 +45,26 @@ public class Member extends BaseEntity {
     private Token token;
 
     @Builder
-    private Member(String email, String pwd, String name, int age, String gender, MemberRole role, Account account, Token token) {
+    private Member(String email, String pwd, String name, int birthYear, String gender, MemberRole role, Account account, Token token) {
         this.email = email;
         this.pwd = pwd;
         this.name = name;
-        this.age = age;
+        this.birthYear = birthYear;
         this.gender = gender;
         this.role = role;
         this.account = account;
         this.token = token;
+    }
+
+    public static Member create(String email, String pwd, String name, int birthYear, String gender, MemberRole role) {
+        return Member.builder()
+            .email(email)
+            .pwd(pwd)
+            .name(name)
+            .birthYear(birthYear)
+            .gender(gender)
+            .role(role)
+            .build();
     }
 
     public boolean isBusinessMember() {

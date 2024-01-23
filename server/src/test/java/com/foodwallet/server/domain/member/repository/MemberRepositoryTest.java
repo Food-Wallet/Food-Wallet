@@ -36,8 +36,8 @@ class MemberRepositoryTest extends IntegrationTestSupport {
 
         //then
         assertThat(findMember)
-            .extracting("email", "name", "age", "gender", "role")
-            .contains("dong82@naver.com", "동팔이", 10, "F", USER);
+            .extracting("email", "name", "birthYear", "gender", "role")
+            .contains("dong82@naver.com", "동팔이", 2015, "F", USER);
     }
 
     private Member createMember() {
@@ -45,7 +45,7 @@ class MemberRepositoryTest extends IntegrationTestSupport {
             .email("dong82@naver.com")
             .pwd(passwordEncoder.encode("dong1234!"))
             .name("동팔이")
-            .age(10)
+            .birthYear(2015)
             .gender("F")
             .role(USER)
             .account(null)

@@ -74,7 +74,7 @@ class BookmarkQueryServiceTest extends IntegrationTestSupport {
             .email("dong82@naver.com")
             .pwd(passwordEncoder.encode("dong1234!"))
             .name("동팔이")
-            .age(10)
+            .birthYear(2015)
             .gender("F")
             .role(USER)
             .token(null)

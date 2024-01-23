@@ -273,7 +273,7 @@ class MenuServiceTest extends IntegrationTestSupport {
             .email(email)
             .pwd(passwordEncoder.encode("dong1234!"))
             .name("동팔이")
-            .age(10)
+            .birthYear(2015)
             .gender("F")
             .role(MemberRole.BUSINESS)
             .build();

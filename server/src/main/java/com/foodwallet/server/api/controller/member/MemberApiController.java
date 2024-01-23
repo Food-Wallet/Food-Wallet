@@ -38,7 +38,7 @@ public class MemberApiController {
         MemberInfoResponse response = MemberInfoResponse.builder()
             .email("dong82@naver.com")
             .name("동팔이")
-            .age(10)
+//            .birthYear(2015)
             .gender("F")
             .build();
         return ApiResponse.ok(response);

@@ -1,5 +1,6 @@
 package com.foodwallet.server.api.service.member.response;
 
+import com.foodwallet.server.domain.member.Member;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,5 +18,13 @@ public class MemberCreateResponse {
         this.email = email;
         this.name = name;
         this.signupDateTime = signupDateTime;
+    }
+
+    public static MemberCreateResponse of(Member member) {
+        return MemberCreateResponse.builder()
+            .email(member.getEmail())
+            .name(member.getName())
+            .signupDateTime(member.getCreatedDateTime())
+            .build();
     }
 }

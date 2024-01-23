@@ -5,6 +5,7 @@
 
 include::{snippets}/signup/http-request.adoc[]
 include::{snippets}/signup/request-fields.adoc[]
+include::code/member-role.adoc[]
 
 
 ==== HTTP Response

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -31,6 +32,19 @@ class AccountServiceTest extends IntegrationTestSupport {
         assertThatThrownBy(() -> accountService.login("dong82@naver.com", "dong1234@", "fcmToken"))
             .isInstanceOf(BadCredentialsException.class)
             .hasMessage("자격 증명에 실패하였습니다.");
+    }
+
+    @DisplayName("로그인시 입력 받은 계정이 탈퇴된 계정이면 예외가 발생한다.")
+    @Test
+    void loginWithDeletedMember() {
+        //given
+        Member member = createMember(null);
+        member.remove();
+
+        //when //then
+        assertThatThrownBy(() -> accountService.login("dong82@naver.com", "dong1234!", "fcmToken"))
+            .isInstanceOf(InternalAuthenticationServiceException.class)
+            .hasMessage("탈퇴한 회원입니다.");
     }
 
     @DisplayName("이메일, 비밀번호, FCM 토큰 정보를 입력 받아 JWT를 생성한다. 회원의 토큰 정보는 수정된다.")

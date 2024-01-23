@@ -9,6 +9,7 @@ import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.response.CheckEmailDuplicationResponse;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
+import com.foodwallet.server.security.SecurityUtils;
 import com.foodwallet.server.security.TokenInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -70,8 +71,17 @@ public class AccountApiController {
         return ApiResponse.ok(tokenInfo);
     }
 
+    /**
+     * 회원 로그아웃 API
+     *
+     * @return 빈 데이터
+     */
     @PostMapping("/logout")
     public ApiResponse<String> logout() {
+        String email = SecurityUtils.getCurrentEmail();
+
+        accountService.logout(email);
+
         return ApiResponse.ok(null);
     }
 }

@@ -19,6 +19,7 @@ public abstract class ErrorMessage {
     public static final String SIZE_EMAIL = "이메일의 길이는 최대 100자입니다.";
     public static final String SIZE_NAME = "이름의 길이는 최대 20자입니다.";
     public static final String UNSUPPORTED_BIRTH_YEAR = "1900년생부터 가입이 가능합니다.";
+    public static final String NOT_BLANK_FCM_TOKEN = "FCM 토큰을 입력하세요.";
 
     public static final String NOT_BLANK_STORE_TYPE = "매장 타입은 필수입니다.";
     public static final String NOT_BLANK_STORE_NAME = "매장명은 필수입니다.";

@@ -58,11 +58,9 @@ public class AccountApiController {
 
     @PostMapping("/login")
     public ApiResponse<TokenInfo> login(@Valid @RequestBody LoginRequest request) {
-        TokenInfo tokenInfo = TokenInfo.builder()
-            .grantType("Bearer")
-            .accessToken("jwt.access.token")
-            .refreshToken("jwt.refresh.token")
-            .build();
+
+        TokenInfo tokenInfo = accountService.login(request.getEmail(), request.getPwd(), request.getFcmToken());
+
         return ApiResponse.ok(tokenInfo);
     }
 

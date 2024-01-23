@@ -55,7 +55,7 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
             .pwd("dong1234!")
             .name("동팔이")
             .birthYear(2015)
-            .gender("M")
+            .gender("F")
             .role(USER)
             .build();
 
@@ -90,7 +90,7 @@ public class AccountApiControllerDocsTest extends RestDocsSupport {
                     fieldWithPath("gender").type(JsonFieldType.STRING)
                         .description("성별"),
                     fieldWithPath("role").type(JsonFieldType.STRING)
-                        .description("회원 유형")
+                        .description("회원 구분\nUSER(일반 회원), BUSINESS(사업자 회원), ADMIN(시스템 관리자 회원)")
                 ),
                 responseFields(
                     fieldWithPath("code").type(JsonFieldType.NUMBER)

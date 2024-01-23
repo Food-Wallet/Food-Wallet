@@ -47,6 +47,10 @@ public class AccountService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         Member member = memberRepository.findByEmail(email);
 
+        if (member.isDeleted()) {
+            throw new IllegalArgumentException("탈퇴한 회원입니다.");
+        }
+
         return createMemberUserDetails(member);
     }
 

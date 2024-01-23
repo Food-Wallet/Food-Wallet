@@ -3,6 +3,7 @@ package com.foodwallet.server.api.service.member;
 import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
+import com.foodwallet.server.domain.member.Token;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
 import com.foodwallet.server.security.TokenInfo;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +25,7 @@ class AccountServiceTest extends IntegrationTestSupport {
     @Test
     void loginWithNotEqualsPassword() {
         //given
-        Member member = createMember();
+        Member member = createMember(null);
 
         //when //then
         assertThatThrownBy(() -> accountService.login("dong82@naver.com", "dong1234@", "fcmToken"))
@@ -36,7 +37,7 @@ class AccountServiceTest extends IntegrationTestSupport {
     @Test
     void login() {
         //given
-        Member member = createMember();
+        Member member = createMember(null);
 
         //when
         TokenInfo tokenInfo = accountService.login("dong82@naver.com", "dong1234!", "fcmToken");
@@ -48,8 +49,26 @@ class AccountServiceTest extends IntegrationTestSupport {
             .contains("동팔이", "fcmToken", tokenInfo.getRefreshToken());
     }
 
+    @DisplayName("이메일을 입력 받아 토큰 정보를 삭제한다.")
+    @Test
+    void logout() {
+        //given
+        Token token = Token.builder()
+            .fcmToken("fcm.token")
+            .refreshToken("jwt.refresh.token")
+            .build();
+        Member member = createMember(token);
 
-    private Member createMember() {
+        //when
+        accountService.logout("dong82@naver.com");
+
+        //then
+        Member findMember = memberRepository.findByEmail("dong82@naver.com");
+        assertThat(findMember.getToken()).isNull();
+    }
+
+
+    private Member createMember(Token token) {
         Member member = Member.builder()
             .email("dong82@naver.com")
             .pwd(passwordEncoder.encode("dong1234!"))
@@ -57,6 +76,7 @@ class AccountServiceTest extends IntegrationTestSupport {
             .birthYear(2015)
             .gender("F")
             .role(MemberRole.USER)
+            .token(token)
             .build();
         return memberRepository.save(member);
     }

@@ -37,6 +37,10 @@ public class AccountService implements UserDetailsService {
         return tokenInfo;
     }
 
+    public void logout(String email) {
+
+    }
+
     @Override
     public UserDetails loadUserByUsername(String email) {
         Member member = memberRepository.findByEmail(email);

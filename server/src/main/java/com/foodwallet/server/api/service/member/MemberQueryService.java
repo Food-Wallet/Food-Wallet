@@ -1,6 +1,7 @@
 package com.foodwallet.server.api.service.member;
 
 import com.foodwallet.server.api.service.member.response.CheckEmailDuplicationResponse;
+import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
 import com.foodwallet.server.domain.member.repository.MemberQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,9 @@ public class MemberQueryService {
         return CheckEmailDuplicationResponse.builder()
             .isDuplicated(isDuplicated)
             .build();
+    }
+
+    public MemberInfoResponse searchMemberInfo(String email) {
+        return null;
     }
 }

@@ -241,7 +241,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         Member member = createMember("dong82@naver.com");
 
         //when //then
-        assertThatThrownBy(() -> memberService.modifyPwd("dong82@naver.com", "dong1111!", "dong8282828282828282@"))
+        assertThatThrownBy(() -> memberService.modifyPwd("dong82@naver.com", "dong1234!", "dong8282828282828282@"))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("비밀번호의 길이는 8자 이상 20자 이하입니다.");
     }
@@ -253,7 +253,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         Member member = createMember("dong82@naver.com");
 
         //when //then
-        assertThatThrownBy(() -> memberService.modifyPwd("dong82@naver.com", "dong1111!", "dong828282"))
+        assertThatThrownBy(() -> memberService.modifyPwd("dong82@naver.com", "dong1234!", "dong828282"))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("비밀번호를 올바르게 입력해주세요.");
     }

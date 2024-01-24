@@ -222,6 +222,42 @@ class MemberServiceTest extends IntegrationTestSupport {
             .hasMessage("접근 권한이 없습니다.");
     }
 
+    @DisplayName("비밀번호 수정시 입력 받은 비밀번호의 길이가 8자 미만이라면 예외가 발생한다.")
+    @Test
+    void modifyPwdWithPasswordLessThan() {
+        //given
+        Member member = createMember("dong82@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.modifyPwd("dong82@naver.com", "dong1234!", "dong82@"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("비밀번호의 길이는 8자 이상 20자 이하입니다.");
+    }
+
+    @DisplayName("비밀번호 수정시 입력 받은 비밀번호의 길이가 20자를 초과하면 예외가 발생한다.")
+    @Test
+    void modifyPwdWithPasswordGreaterThan() {
+        //given
+        Member member = createMember("dong82@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.modifyPwd("dong82@naver.com", "dong1111!", "dong8282828282828282@"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("비밀번호의 길이는 8자 이상 20자 이하입니다.");
+    }
+
+    @DisplayName("비밀번호 수정시 입력 받은 비밀번호에 숫자, 영문, 특수문자가 한개 이상 포함되어 있지 않으면 예외가 발생한다.")
+    @Test
+    void modifyPwdWithNotMatchPasswordPattern() {
+        //given
+        Member member = createMember("dong82@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.modifyPwd("dong82@naver.com", "dong1111!", "dong828282"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("비밀번호를 올바르게 입력해주세요.");
+    }
+
     @DisplayName("회원의 이메일, 현재 비밀번호, 새로운 비밀번호를 입력 받아 비밀번호를 수정한다.")
     @Test
     void modifyPwd() {

@@ -8,16 +8,20 @@ import com.foodwallet.server.client.request.OneTransferRequest;
 import com.foodwallet.server.client.response.OneTransferResponse;
 import com.foodwallet.server.domain.member.Account;
 import com.foodwallet.server.domain.member.ConnectAccount;
+import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.ConnectAccountRedisRepository;
+import com.foodwallet.server.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
 public class AuthenticationService {
 
+    private final MemberRepository memberRepository;
     private final ConnectAccountRedisRepository connectAccountRedisRepository;
     private final VirtualBankClient virtualBankClient;
 
@@ -50,7 +54,24 @@ public class AuthenticationService {
     }
 
     public ConnectAccountResponse matchAuthenticationNumber(String email, String authenticationNumber) {
-        return null;
+        Optional<ConnectAccount> findConnectAccount = connectAccountRedisRepository.findById(email);
+        if (findConnectAccount.isEmpty()) {
+            throw new IllegalArgumentException("유효 시간이 만료되었습니다.");
+        }
+        ConnectAccount connectAccount = findConnectAccount.get();
+
+        if (!connectAccount.getAuthenticationNumber().equals(authenticationNumber)) {
+            throw new IllegalArgumentException("인증 번호를 확인해주세요.");
+        }
+
+        Member member = memberRepository.findByEmail(email);
+
+        Account account = connectAccount.getAccount();
+        member.modifyAccount(account);
+
+        connectAccountRedisRepository.deleteById(email);
+
+        return ConnectAccountResponse.of(connectAccount);
     }
 
     private String generateAuthenticationNumber(int size) {

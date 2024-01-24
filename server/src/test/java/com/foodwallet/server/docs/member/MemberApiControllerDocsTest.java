@@ -6,11 +6,14 @@ import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNu
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
 import com.foodwallet.server.api.service.member.AuthenticationService;
+import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.request.ConnectAccountServiceRequest;
 import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
+import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
 import com.foodwallet.server.api.service.member.response.PwdModifyResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.domain.member.MemberRole;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,10 +43,11 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
 
     private final AuthenticationService authenticationService = mock(AuthenticationService.class);
     private final MemberService memberService = mock(MemberService.class);
+    private final MemberQueryService memberQueryService = mock(MemberQueryService.class);
 
     @Override
     protected Object initController() {
-        return new MemberApiController(authenticationService, memberService);
+        return new MemberApiController(authenticationService, memberService, memberQueryService);
     }
 
     @DisplayName("계좌 연결 인증 번호 발급 API")
@@ -262,6 +266,22 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
     @DisplayName("회원 정보 조회 API")
     @Test
     void searchMemberInfo() throws Exception {
+        MemberInfoResponse response = MemberInfoResponse.builder()
+            .email("dong82@naver.com")
+            .name("동팔이")
+            .birthYear(2015)
+            .gender("F")
+            .role(MemberRole.USER)
+            .bankCode("088")
+            .accountNumber("110111222222")
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(memberQueryService.searchMemberInfo(anyString()))
+            .willReturn(response);
+
         mockMvc.perform(
                 get(BASE_URL)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
@@ -288,10 +308,16 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
                         .description("계정 이메일"),
                     fieldWithPath("data.name").type(JsonFieldType.STRING)
                         .description("회원명"),
-                    fieldWithPath("data.age").type(JsonFieldType.NUMBER)
-                        .description("회원 나이"),
+                    fieldWithPath("data.birthYear").type(JsonFieldType.NUMBER)
+                        .description("회원 출생연도"),
                     fieldWithPath("data.gender").type(JsonFieldType.STRING)
-                        .description("회원 성별")
+                        .description("회원 성별"),
+                    fieldWithPath("data.role").type(JsonFieldType.STRING)
+                        .description("회원 구분"),
+                    fieldWithPath("data.account.bankCode").type(JsonFieldType.STRING)
+                        .description("회원 계좌 은행 코드"),
+                    fieldWithPath("data.account.accountNumber").type(JsonFieldType.STRING)
+                        .description("회원 계좌 번호")
                 )
             ));
     }

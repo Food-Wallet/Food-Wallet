@@ -6,6 +6,7 @@ import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNu
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
 import com.foodwallet.server.api.service.member.AuthenticationService;
+import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
 import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
@@ -25,6 +26,7 @@ public class MemberApiController {
 
     private final AuthenticationService authenticationService;
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
 
     @PostMapping("/account")
     public ApiResponse<ConnectAccountResponse> connectAccount(@Valid @RequestBody ConnectAccountRequest request) {
@@ -65,12 +67,10 @@ public class MemberApiController {
 
     @GetMapping
     public ApiResponse<MemberInfoResponse> searchMemberInfo() {
-        MemberInfoResponse response = MemberInfoResponse.builder()
-            .email("dong82@naver.com")
-            .name("동팔이")
-//            .birthYear(2015)
-            .gender("F")
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        MemberInfoResponse response = memberQueryService.searchMemberInfo(email);
+
         return ApiResponse.ok(response);
     }
 }

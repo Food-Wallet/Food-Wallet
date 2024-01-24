@@ -29,6 +29,6 @@ public class MemberQueryService {
     }
 
     public MemberInfoResponse searchMemberInfo(String email) {
-        return null;
+        return memberQueryRepository.findByEmail(email);
     }
 }

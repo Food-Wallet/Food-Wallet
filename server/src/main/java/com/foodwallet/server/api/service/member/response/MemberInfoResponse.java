@@ -15,7 +15,7 @@ public class MemberInfoResponse {
     private final AccountResponse account;
 
     @Builder
-    private MemberInfoResponse(String email, String name, int birthYear, String gender, MemberRole role, String bankCode, String accountNumber) {
+    public MemberInfoResponse(String email, String name, int birthYear, String gender, MemberRole role, String bankCode, String accountNumber) {
         this.email = email;
         this.name = name;
         this.birthYear = birthYear;

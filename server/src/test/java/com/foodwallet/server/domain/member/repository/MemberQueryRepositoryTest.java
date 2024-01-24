@@ -54,8 +54,8 @@ class MemberQueryRepositoryTest extends IntegrationTestSupport {
 
         //then
         assertThat(response)
-            .extracting("email", "name", "birthYear", "gender", "role", "account")
-            .contains("dong82@naver.com", "동팔이", 2015, "F", MemberRole.USER, null);
+            .extracting("email", "name", "birthYear", "gender", "role", "account.bankCode", "account.accountNumber")
+            .contains("dong82@naver.com", "동팔이", 2015, "F", MemberRole.USER, null, null);
     }
 
     private Member createMember() {

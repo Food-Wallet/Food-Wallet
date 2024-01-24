@@ -1,6 +1,7 @@
 package com.foodwallet.server.domain.member.repository;
 
 import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,23 @@ public class MemberQueryRepository {
     }
 
     public MemberInfoResponse findByEmail(String email) {
-        return null;
+        return queryFactory
+            .select(
+                Projections.constructor(MemberInfoResponse.class,
+                    member.email,
+                    member.name,
+                    member.birthYear,
+                    member.gender,
+                    member.role,
+                    member.account.bankCode,
+                    member.account.accountNumber
+                )
+            )
+            .from(member)
+            .where(
+                member.isDeleted.isFalse(),
+                member.email.eq(email)
+            )
+            .fetchFirst();
     }
 }

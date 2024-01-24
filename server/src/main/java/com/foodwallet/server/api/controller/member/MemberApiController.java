@@ -66,11 +66,10 @@ public class MemberApiController {
 
     @PatchMapping("/withdrawal")
     public ApiResponse<MemberWithdrawalResponse> withdrawal(@Valid @RequestBody MemberWithdrawalRequest request) {
-        MemberWithdrawalResponse response = MemberWithdrawalResponse.builder()
-            .email("dong82@naver.com")
-            .name("동팔이")
-            .withdrawalDateTime(LocalDateTime.of(2024, 1, 16, 18, 0))
-            .build();
+        String email = SecurityUtils.getCurrentEmail();
+
+        MemberWithdrawalResponse response = memberService.removeMember(email, request.getPwd());
+
         return ApiResponse.ok(response);
     }
 }

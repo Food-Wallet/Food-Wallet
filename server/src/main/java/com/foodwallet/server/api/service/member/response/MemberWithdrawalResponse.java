@@ -1,5 +1,6 @@
 package com.foodwallet.server.api.service.member.response;
 
+import com.foodwallet.server.domain.member.Member;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,5 +18,13 @@ public class MemberWithdrawalResponse {
         this.email = email;
         this.name = name;
         this.withdrawalDateTime = withdrawalDateTime;
+    }
+
+    public static MemberWithdrawalResponse of(Member member) {
+        return MemberWithdrawalResponse.builder()
+            .email(member.getEmail())
+            .name(member.getName())
+            .withdrawalDateTime(LocalDateTime.now())
+            .build();
     }
 }

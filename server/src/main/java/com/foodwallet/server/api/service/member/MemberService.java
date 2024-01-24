@@ -75,6 +75,15 @@ public class MemberService {
     }
 
     public MemberWithdrawalResponse removeMember(String email, String currentPwd) {
-        return null;
+        Member member = memberRepository.findByEmail(email);
+
+        boolean isMatches = passwordEncoder.matches(currentPwd, member.getPwd());
+        if (!isMatches) {
+            throw new AuthenticationException(NOT_AUTHORIZED);
+        }
+
+        member.remove();
+
+        return MemberWithdrawalResponse.of(member);
     }
 }

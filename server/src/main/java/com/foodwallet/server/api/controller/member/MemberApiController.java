@@ -1,12 +1,15 @@
 package com.foodwallet.server.api.controller.member;
 
 import com.foodwallet.server.api.ApiResponse;
-import com.foodwallet.server.api.controller.member.request.AccountModifyRequest;
+import com.foodwallet.server.api.controller.member.request.ConnectAccountRequest;
+import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNumberRequest;
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
-import com.foodwallet.server.api.service.member.response.AccountModifyResponse;
+import com.foodwallet.server.api.service.member.AuthenticationService;
+import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
 import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
 import com.foodwallet.server.api.service.member.response.MemberWithdrawalResponse;
+import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,26 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/v1/members")
 public class MemberApiController {
+
+    private final AuthenticationService authenticationService;
+
+    @PostMapping("/account")
+    public ApiResponse<ConnectAccountResponse> connectAccount(@Valid @RequestBody ConnectAccountRequest request) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        ConnectAccountResponse response = authenticationService.connectAccount(email, request.toServiceRequest());
+
+        return ApiResponse.ok(response);
+    }
+
+    @PostMapping("/account/match")
+    public ApiResponse<ConnectAccountResponse> matchAuthenticationNumber(@Valid @RequestBody MatchAuthenticationNumberRequest request) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        ConnectAccountResponse response = authenticationService.matchAuthenticationNumber(email, request.getAuthenticationNumber());
+
+        return ApiResponse.ok(response);
+    }
 
     @PatchMapping("/pwd")
     public ApiResponse<String> modifyPwd(@Valid @RequestBody PwdModifyRequest request) {
@@ -40,15 +63,6 @@ public class MemberApiController {
             .name("동팔이")
 //            .birthYear(2015)
             .gender("F")
-            .build();
-        return ApiResponse.ok(response);
-    }
-
-    @PostMapping("/account")
-    public ApiResponse<AccountModifyResponse> modifyAccount(@Valid @RequestBody AccountModifyRequest request) {
-        AccountModifyResponse response = AccountModifyResponse.builder()
-            .bankCode("088")
-            .accountNumber("110111222222")
             .build();
         return ApiResponse.ok(response);
     }

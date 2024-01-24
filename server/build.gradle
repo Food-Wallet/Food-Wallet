@@ -31,6 +31,7 @@ repositories {
 
 ext {
 	set('snippetsDir', file("build/generated-snippets"))
+	set('springCloudVersion', "2023.0.0")
 }
 
 dependencies {
@@ -42,6 +43,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+	//spring cloud
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 	//lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -49,6 +53,9 @@ dependencies {
 	//database
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	//nosql
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	//test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -72,6 +79,12 @@ dependencies {
 	//aws s3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 tasks.named('test') {

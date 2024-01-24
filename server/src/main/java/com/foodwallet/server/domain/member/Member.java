@@ -74,6 +74,10 @@ public class Member extends BaseEntity {
             .build();
     }
 
+    public void modifyAccount(Account account) {
+        this.account = account;
+    }
+
     public void removeToken() {
         token = null;
     }

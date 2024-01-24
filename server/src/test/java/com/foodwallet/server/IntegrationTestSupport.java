@@ -1,6 +1,7 @@
 package com.foodwallet.server;
 
 import com.foodwallet.server.api.FileStore;
+import com.foodwallet.server.client.VirtualBankClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,4 +17,7 @@ public abstract class IntegrationTestSupport {
 
     @MockBean
     protected FileStore fileStore;
+
+    @MockBean
+    protected VirtualBankClient virtualBankClient;
 }

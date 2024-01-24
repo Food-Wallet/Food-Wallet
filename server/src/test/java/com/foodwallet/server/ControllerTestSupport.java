@@ -5,12 +5,14 @@ import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.controller.bookmark.BookmarkApiController;
 import com.foodwallet.server.api.controller.bookmark.BookmarkQueryApiController;
 import com.foodwallet.server.api.controller.member.AccountApiController;
+import com.foodwallet.server.api.controller.member.MemberApiController;
 import com.foodwallet.server.api.controller.menu.MenuApiController;
 import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.StoreQueryApiController;
 import com.foodwallet.server.api.service.bookmark.BookmarkQueryService;
 import com.foodwallet.server.api.service.bookmark.BookmarkService;
 import com.foodwallet.server.api.service.member.AccountService;
+import com.foodwallet.server.api.service.member.AuthenticationService;
 import com.foodwallet.server.api.service.member.MemberQueryService;
 import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.menu.MenuService;
@@ -27,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {
     StoreApiController.class, StoreQueryApiController.class,
     MenuApiController.class, BookmarkApiController.class,
-    BookmarkQueryApiController.class, AccountApiController.class
+    BookmarkQueryApiController.class, AccountApiController.class, MemberApiController.class
 })
 public abstract class ControllerTestSupport {
 
@@ -66,4 +68,7 @@ public abstract class ControllerTestSupport {
 
     @MockBean
     protected AccountService accountService;
+
+    @MockBean
+    protected AuthenticationService authenticationService;
 }

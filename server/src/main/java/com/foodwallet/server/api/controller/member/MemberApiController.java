@@ -9,6 +9,7 @@ import com.foodwallet.server.api.service.member.AuthenticationService;
 import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
 import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
 import com.foodwallet.server.api.service.member.response.MemberWithdrawalResponse;
+import com.foodwallet.server.api.service.member.response.PwdModifyResponse;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class MemberApiController {
     }
 
     @PatchMapping("/pwd")
-    public ApiResponse<String> modifyPwd(@Valid @RequestBody PwdModifyRequest request) {
+    public ApiResponse<PwdModifyResponse> modifyPwd(@Valid @RequestBody PwdModifyRequest request) {
         return ApiResponse.ok(null);
     }
 

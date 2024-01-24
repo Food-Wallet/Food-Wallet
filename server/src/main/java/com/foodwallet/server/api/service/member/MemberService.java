@@ -2,6 +2,7 @@ package com.foodwallet.server.api.service.member;
 
 import com.foodwallet.server.api.service.member.request.MemberCreateServiceRequest;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
+import com.foodwallet.server.api.service.member.response.PwdModifyResponse;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberQueryRepository;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
@@ -53,5 +54,9 @@ public class MemberService {
         Member savedMember = memberRepository.save(member);
 
         return MemberCreateResponse.of(savedMember);
+    }
+
+    public PwdModifyResponse modifyPwd(String email, String currentPwd, String newPwd) {
+        return null;
     }
 }

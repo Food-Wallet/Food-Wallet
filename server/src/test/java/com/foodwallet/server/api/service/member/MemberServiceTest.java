@@ -3,6 +3,8 @@ package com.foodwallet.server.api.service.member;
 import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.member.request.MemberCreateServiceRequest;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
+import com.foodwallet.server.api.service.member.response.PwdModifyResponse;
+import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
@@ -206,6 +208,33 @@ class MemberServiceTest extends IntegrationTestSupport {
         assertThat(response)
             .extracting("email", "name")
             .contains("dong82@naver.com", "동팔이");
+    }
+
+    @DisplayName("비밀번호 수정시 입력 받은 현재 비밀번호가 일치하지 않으면 예외가 발생한다.")
+    @Test
+    void modifyPwdWithNotAuth() {
+        //given
+        Member member = createMember("dong82@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.modifyPwd("dong82@naver.com", "dong1111!", "dong8282@"))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("회원의 이메일, 현재 비밀번호, 새로운 비밀번호를 입력 받아 비밀번호를 수정한다.")
+    @Test
+    void modifyPwd() {
+        //given
+        Member member = createMember("dong82@naver.com");
+
+        //when
+        PwdModifyResponse response = memberService.modifyPwd("dong82@naver.com", "dong1234!", "dong8282@");
+
+        //then
+        Member findMember = memberRepository.findByEmail("dong82@naver.com");
+        boolean isMatches = passwordEncoder.matches("dong8282@", findMember.getPwd());
+        assertThat(isMatches).isTrue();
     }
 
     private Member createMember(String email) {

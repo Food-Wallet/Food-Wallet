@@ -1,6 +1,7 @@
 package com.foodwallet.server.domain.member.repository;
 
 import com.foodwallet.server.IntegrationTestSupport;
+import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +41,21 @@ class MemberQueryRepositoryTest extends IntegrationTestSupport {
 
         //then
         assertThat(isExistEmail).isFalse();
+    }
+
+    @DisplayName("이메일을 입력 받아 회원 정보를 조회한다.")
+    @Test
+    void findByEmail() {
+        //given
+        Member member = createMember();
+
+        //when
+        MemberInfoResponse response = memberQueryRepository.findByEmail("dong82@naver.com");
+
+        //then
+        assertThat(response)
+            .extracting("email", "name", "birthYear", "gender", "role", "account")
+            .contains("dong82@naver.com", "동팔이", 2015, "F", MemberRole.USER, null);
     }
 
     private Member createMember() {

@@ -1,5 +1,6 @@
 package com.foodwallet.server.domain.member.repository;
 
+import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
@@ -22,5 +23,9 @@ public class MemberQueryRepository {
             .where(member.email.eq(email))
             .fetchFirst();
         return content != null;
+    }
+
+    public MemberInfoResponse findByEmail(String email) {
+        return null;
     }
 }

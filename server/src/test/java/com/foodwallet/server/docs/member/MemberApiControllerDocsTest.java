@@ -6,6 +6,7 @@ import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNu
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
 import com.foodwallet.server.api.service.member.AuthenticationService;
+import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.request.ConnectAccountServiceRequest;
 import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
@@ -37,10 +38,11 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
     private static final String BASE_URL = "/api/v1/members";
 
     private final AuthenticationService authenticationService = mock(AuthenticationService.class);
+    private final MemberService memberService = mock(MemberService.class);
 
     @Override
     protected Object initController() {
-        return new MemberApiController(authenticationService);
+        return new MemberApiController(authenticationService, memberService);
     }
 
     @DisplayName("계좌 연결 인증 번호 발급 API")

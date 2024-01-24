@@ -6,6 +6,7 @@ import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNu
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
 import com.foodwallet.server.api.service.member.AuthenticationService;
+import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
 import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
 import com.foodwallet.server.api.service.member.response.MemberWithdrawalResponse;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 public class MemberApiController {
 
     private final AuthenticationService authenticationService;
+    private final MemberService memberService;
 
     @PostMapping("/account")
     public ApiResponse<ConnectAccountResponse> connectAccount(@Valid @RequestBody ConnectAccountRequest request) {
@@ -44,7 +46,11 @@ public class MemberApiController {
 
     @PatchMapping("/pwd")
     public ApiResponse<PwdModifyResponse> modifyPwd(@Valid @RequestBody PwdModifyRequest request) {
-        return ApiResponse.ok(null);
+        String email = SecurityUtils.getCurrentEmail();
+
+        PwdModifyResponse response = memberService.modifyPwd(email, request.getCurrentPwd(), request.getNewPwd());
+
+        return ApiResponse.ok(response);
     }
 
     @PatchMapping("/withdrawal")

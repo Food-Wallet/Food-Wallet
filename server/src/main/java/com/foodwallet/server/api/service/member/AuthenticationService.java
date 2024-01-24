@@ -49,6 +49,10 @@ public class AuthenticationService {
         return ConnectAccountResponse.of(savedConnectAccount);
     }
 
+    public ConnectAccountResponse matchAuthenticationNumber(String email, String authenticationNumber) {
+        return null;
+    }
+
     private String generateAuthenticationNumber(int size) {
         int bound = (int) Math.pow(10, size);
 

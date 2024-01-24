@@ -2,6 +2,7 @@ package com.foodwallet.server.api.controller.member;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.member.request.ConnectAccountRequest;
+import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNumberRequest;
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
 import com.foodwallet.server.api.service.member.AuthenticationService;
@@ -27,6 +28,15 @@ public class MemberApiController {
         String email = SecurityUtils.getCurrentEmail();
 
         ConnectAccountResponse response = authenticationService.connectAccount(email, request.toServiceRequest());
+
+        return ApiResponse.ok(response);
+    }
+
+    @PostMapping("/account/match")
+    public ApiResponse<ConnectAccountResponse> matchAuthenticationNumber(@Valid @RequestBody MatchAuthenticationNumberRequest request) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        ConnectAccountResponse response = authenticationService.matchAuthenticationNumber(email, request.getAuthenticationNumber());
 
         return ApiResponse.ok(response);
     }

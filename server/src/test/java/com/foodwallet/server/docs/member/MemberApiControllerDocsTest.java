@@ -2,6 +2,7 @@ package com.foodwallet.server.docs.member;
 
 import com.foodwallet.server.api.controller.member.MemberApiController;
 import com.foodwallet.server.api.controller.member.request.ConnectAccountRequest;
+import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNumberRequest;
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
 import com.foodwallet.server.api.service.member.AuthenticationService;
@@ -44,7 +45,7 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
 
     @DisplayName("계좌 연결 인증 번호 발급 API")
     @Test
-    void modifyAccount() throws Exception {
+    void connectAccount() throws Exception {
         ConnectAccountRequest request = ConnectAccountRequest.builder()
             .bankCode("088")
             .accountNumber("110111222222")
@@ -84,6 +85,60 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
                         .description("계좌 번호"),
                     fieldWithPath("accountPwd").type(JsonFieldType.STRING)
                         .description("계좌 비밀번호")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.bankCode").type(JsonFieldType.STRING)
+                        .description("등록된 은행 코드"),
+                    fieldWithPath("data.accountNumber").type(JsonFieldType.STRING)
+                        .description("등록된 계좌 번호")
+                )
+            ));
+    }
+
+    @DisplayName("인증 번호 확인 API")
+    @Test
+    void matchAuthenticationNumber() throws Exception {
+        MatchAuthenticationNumberRequest request = MatchAuthenticationNumberRequest.builder()
+            .authenticationNumber("1234")
+            .build();
+
+        ConnectAccountResponse response = ConnectAccountResponse.builder()
+            .bankCode("088")
+            .accountNumber("110111222222")
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(authenticationService.matchAuthenticationNumber(anyString(), anyString()))
+            .willReturn(response);
+
+        mockMvc.perform(
+                post(BASE_URL + "/account/match")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("match-authentication-number",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                requestFields(
+                    fieldWithPath("authenticationNumber").type(JsonFieldType.STRING)
+                        .description("인증 번호")
                 ),
                 responseFields(
                     fieldWithPath("code").type(JsonFieldType.NUMBER)

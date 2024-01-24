@@ -2,6 +2,7 @@ package com.foodwallet.server.api.controller.member;
 
 import com.foodwallet.server.ControllerTestSupport;
 import com.foodwallet.server.api.controller.member.request.ConnectAccountRequest;
+import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNumberRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -106,6 +107,47 @@ class MemberApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.code").value("400"))
             .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
             .andExpect(jsonPath("$.message").value("계좌 비밀번호를 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("발급 받은 인증 번호 일치 여부를 확인한다.")
+    @Test
+    void matchAuthenticationNumber() throws Exception {
+        //given
+        MatchAuthenticationNumberRequest request = MatchAuthenticationNumberRequest.builder()
+            .authenticationNumber("1234")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/account/match")
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("인증 번호 일치 여부를 확인시 인증 번호는 필수값이다.")
+    @Test
+    void matchAuthenticationNumberWithoutAuthenticationNumber() throws Exception {
+        //given
+        MatchAuthenticationNumberRequest request = MatchAuthenticationNumberRequest.builder()
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/account/match")
+                    .with(csrf())
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("인증 번호를 입력하세요."))
             .andExpect(jsonPath("$.data").isEmpty());
     }
 }

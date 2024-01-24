@@ -1,0 +1,14 @@
+[[connect-account]]
+=== 계좌 연결 요청 API
+
+==== HTTP Request
+
+include::{snippets}/connect-account/http-request.adoc[]
+include::{snippets}/connect-account/request-headers.adoc[]
+include::{snippets}/connect-account/request-fields.adoc[]
+
+
+==== HTTP Response
+
+include::{snippets}/connect-account/http-response.adoc[]
+include::{snippets}/connect-account/response-fields.adoc[]

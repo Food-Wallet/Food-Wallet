@@ -78,6 +78,10 @@ public class Member extends BaseEntity {
         this.account = account;
     }
 
+    public void modifyPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
     public void removeToken() {
         token = null;
     }

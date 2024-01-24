@@ -1,0 +1,14 @@
+[[match-authentication-number]]
+=== 계좌 연결 인증 번호 확인 API
+
+==== HTTP Request
+
+include::{snippets}/match-authentication-number/http-request.adoc[]
+include::{snippets}/match-authentication-number/request-headers.adoc[]
+include::{snippets}/match-authentication-number/request-fields.adoc[]
+
+
+==== HTTP Response
+
+include::{snippets}/match-authentication-number/http-response.adoc[]
+include::{snippets}/match-authentication-number/response-fields.adoc[]

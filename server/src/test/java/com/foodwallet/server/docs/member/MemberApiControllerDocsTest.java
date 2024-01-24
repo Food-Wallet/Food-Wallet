@@ -6,8 +6,10 @@ import com.foodwallet.server.api.controller.member.request.MatchAuthenticationNu
 import com.foodwallet.server.api.controller.member.request.MemberWithdrawalRequest;
 import com.foodwallet.server.api.controller.member.request.PwdModifyRequest;
 import com.foodwallet.server.api.service.member.AuthenticationService;
+import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.request.ConnectAccountServiceRequest;
 import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
+import com.foodwallet.server.api.service.member.response.PwdModifyResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -37,10 +39,11 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
     private static final String BASE_URL = "/api/v1/members";
 
     private final AuthenticationService authenticationService = mock(AuthenticationService.class);
+    private final MemberService memberService = mock(MemberService.class);
 
     @Override
     protected Object initController() {
-        return new MemberApiController(authenticationService);
+        return new MemberApiController(authenticationService, memberService);
     }
 
     @DisplayName("계좌 연결 인증 번호 발급 API")
@@ -165,6 +168,16 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
             .newPwd("dong5678@")
             .build();
 
+        PwdModifyResponse response = PwdModifyResponse.builder()
+            .email("dong82@naver.com")
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(memberService.modifyPwd(anyString(), anyString(), anyString()))
+            .willReturn(response);
+
         mockMvc.perform(
                 patch(BASE_URL + "/pwd")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
@@ -193,8 +206,10 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
                         .description("상태"),
                     fieldWithPath("message").type(JsonFieldType.STRING)
                         .description("메시지"),
-                    fieldWithPath("data").type(JsonFieldType.NULL)
-                        .description("응답 데이터")
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.email").type(JsonFieldType.STRING)
+                        .description("비밀번호 변경된 계정의 이메일")
                 )
             ));
     }

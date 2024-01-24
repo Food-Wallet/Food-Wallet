@@ -24,6 +24,8 @@ public abstract class ErrorMessage {
     public static final String NOT_BLANK_ACCOUNT_NUMBER = "계좌 번호를 입력하세요.";
     public static final String NOT_BLANK_ACCOUNT_PWD = "계좌 비밀번호를 입력하세요.";
     public static final String NOT_BLANK_AUTHENTICATION_NUMBER = "인증 번호를 입력하세요.";
+    public static final String NOT_BLANK_CURRENT_PWD = "현재 비밀번호를 입력하세요.";
+    public static final String NOT_BLANK_NEW_PWD = "새로운 비밀번호를 입력하세요.";
 
     public static final String NOT_BLANK_STORE_TYPE = "매장 타입은 필수입니다.";
     public static final String NOT_BLANK_STORE_NAME = "매장명은 필수입니다.";

@@ -23,7 +23,8 @@ include::api/member/check-email-duplication.adoc[]
 == Member API
 
 include::api/member/search-member-info.adoc[]
-include::api/member/modify-account.adoc[]
+include::api/member/connect-account.adoc[]
+include::api/member/match-authentication-number.adoc[]
 include::api/member/modify-pwd.adoc[]
 include::api/member/withdrawal.adoc[]
 

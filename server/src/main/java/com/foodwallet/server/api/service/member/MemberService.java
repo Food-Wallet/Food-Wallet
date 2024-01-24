@@ -2,6 +2,7 @@ package com.foodwallet.server.api.service.member;
 
 import com.foodwallet.server.api.service.member.request.MemberCreateServiceRequest;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
+import com.foodwallet.server.api.service.member.response.MemberWithdrawalResponse;
 import com.foodwallet.server.api.service.member.response.PwdModifyResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.member.Member;
@@ -71,5 +72,9 @@ public class MemberService {
         member.modifyPwd(encodedPwd);
 
         return PwdModifyResponse.of(member);
+    }
+
+    public MemberWithdrawalResponse removeMember(String email, String currentPwd) {
+        return null;
     }
 }

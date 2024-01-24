@@ -3,6 +3,7 @@ package com.foodwallet.server.api.service.member;
 import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.member.request.MemberCreateServiceRequest;
 import com.foodwallet.server.api.service.member.response.MemberCreateResponse;
+import com.foodwallet.server.api.service.member.response.MemberWithdrawalResponse;
 import com.foodwallet.server.api.service.member.response.PwdModifyResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.member.Member;
@@ -271,6 +272,32 @@ class MemberServiceTest extends IntegrationTestSupport {
         Member findMember = memberRepository.findByEmail("dong82@naver.com");
         boolean isMatches = passwordEncoder.matches("dong8282@", findMember.getPwd());
         assertThat(isMatches).isTrue();
+    }
+
+    @DisplayName("회원 탈퇴시 입력 받은 현재 비밀번호가 일치하지 않으면 예외가 발생한다.")
+    @Test
+    void removeMemberWithNotAuth() {
+        //given
+        Member member = createMember("dong82@naver.com");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.removeMember("dong82@naver.com", "dong1111!"))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("회원의 이메일과 현재 비밀번호를 입력 받아 회원 탈퇴를 한다.")
+    @Test
+    void removeMember() {
+        //given
+        Member member = createMember("dong82@naver.com");
+
+        //when
+        MemberWithdrawalResponse response = memberService.removeMember("dong82@naver.com", "dong1234!");
+
+        //then
+        Member findMember = memberRepository.findByEmail("dong82@naver.com");
+        assertThat(findMember.isDeleted()).isTrue();
     }
 
     private Member createMember(String email) {

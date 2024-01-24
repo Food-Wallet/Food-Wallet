@@ -11,6 +11,7 @@ import com.foodwallet.server.api.service.member.MemberService;
 import com.foodwallet.server.api.service.member.request.ConnectAccountServiceRequest;
 import com.foodwallet.server.api.service.member.response.ConnectAccountResponse;
 import com.foodwallet.server.api.service.member.response.MemberInfoResponse;
+import com.foodwallet.server.api.service.member.response.MemberWithdrawalResponse;
 import com.foodwallet.server.api.service.member.response.PwdModifyResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.domain.member.MemberRole;
@@ -21,6 +22,8 @@ import org.mockito.BDDMockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -224,6 +227,18 @@ public class MemberApiControllerDocsTest extends RestDocsSupport {
         MemberWithdrawalRequest request = MemberWithdrawalRequest.builder()
             .pwd("dong1234!")
             .build();
+
+        MemberWithdrawalResponse response = MemberWithdrawalResponse.builder()
+            .email("dong82@naver.com")
+            .name("동팔이")
+            .withdrawalDateTime(LocalDateTime.of(2024, 1, 16, 18, 0))
+            .build();
+
+        given(SecurityUtils.getCurrentEmail())
+            .willReturn("dong82@naver.com");
+
+        given(memberService.removeMember(anyString(), anyString()))
+            .willReturn(response);
 
         mockMvc.perform(
                 patch(BASE_URL + "/withdrawal")

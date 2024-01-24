@@ -28,6 +28,15 @@ public class MemberApiController {
     private final MemberService memberService;
     private final MemberQueryService memberQueryService;
 
+    @GetMapping
+    public ApiResponse<MemberInfoResponse> searchMemberInfo() {
+        String email = SecurityUtils.getCurrentEmail();
+
+        MemberInfoResponse response = memberQueryService.searchMemberInfo(email);
+
+        return ApiResponse.ok(response);
+    }
+
     @PostMapping("/account")
     public ApiResponse<ConnectAccountResponse> connectAccount(@Valid @RequestBody ConnectAccountRequest request) {
         String email = SecurityUtils.getCurrentEmail();
@@ -57,19 +66,9 @@ public class MemberApiController {
 
     @PatchMapping("/withdrawal")
     public ApiResponse<MemberWithdrawalResponse> withdrawal(@Valid @RequestBody MemberWithdrawalRequest request) {
-        MemberWithdrawalResponse response = MemberWithdrawalResponse.builder()
-            .email("dong82@naver.com")
-            .name("동팔이")
-            .withdrawalDateTime(LocalDateTime.of(2024, 1, 16, 18, 0))
-            .build();
-        return ApiResponse.ok(response);
-    }
-
-    @GetMapping
-    public ApiResponse<MemberInfoResponse> searchMemberInfo() {
         String email = SecurityUtils.getCurrentEmail();
 
-        MemberInfoResponse response = memberQueryService.searchMemberInfo(email);
+        MemberWithdrawalResponse response = memberService.removeMember(email, request.getPwd());
 
         return ApiResponse.ok(response);
     }

@@ -33,6 +33,8 @@ public abstract class ErrorMessage {
     public static final String NOT_BLANK_STORE_OPEN_TIME = "운영 시간은 필수입니다.";
     public static final String NOT_NULL_STORE_LATITUDE = "위도는 필수입니다.";
     public static final String NOT_NULL_STORE_LONGITUDE = "경도는 필수입니다.";
+    public static final String SIZE_STORE_NAME = "매장명의 길이는 최대 20자입니다.";
+    public static final String SIZE_STORE_DESCRIPTION = "매장 설명의 길이는 최대 20자입니다.";
 
     public static final String NOT_BLANK_MENU_NAME = "메뉴명은 필수입니다.";
     public static final String POSITIVE_MENU_PRICE = "메뉴 가격은 양수여야 합니다.";

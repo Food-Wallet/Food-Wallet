@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import static com.foodwallet.server.domain.store.StoreStatus.CLOSE;
 import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
-import static org.springframework.util.StringUtils.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -72,8 +71,8 @@ public class Store extends BaseEntity {
         return Store.builder()
             .status(CLOSE)
             .type(type)
-            .name(validLength(name, 20))
-            .description(validLength(description, 200))
+            .name(name)
+            .description(description)
             .bookmarkCount(0)
             .reviewInfo(reviewInfo)
             .member(member)
@@ -82,8 +81,8 @@ public class Store extends BaseEntity {
 
     public void modifyInfo(StoreType type, String name, String description) {
         this.type = type;
-        this.name = validLength(name, 20);
-        this.description = validLength(description, 200);
+        this.name = name;
+        this.description = description;
     }
 
     public void modifyImage(UploadFile image) {
@@ -115,12 +114,5 @@ public class Store extends BaseEntity {
 
     public boolean isMine(Member member) {
         return this.member.getId().equals(member.getId());
-    }
-
-    private static String validLength(String target, int maxLength) {
-        if (hasText(target) && target.length() > maxLength) {
-            throw new IllegalArgumentException(String.format("길이는 최대 %d자 입니다.", maxLength));
-        }
-        return target;
     }
 }

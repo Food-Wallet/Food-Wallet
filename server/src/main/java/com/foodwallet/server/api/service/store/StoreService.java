@@ -58,9 +58,12 @@ public class StoreService {
             throw new IllegalArgumentException(NO_ACCOUNT_INFORMATION);
         }
 
+        String validatedName = StoreValidator.nameValidation(request.getName());
+        String validatedDescription = StoreValidator.descriptionValidation(request.getDescription());
+
         StoreType type = StoreType.of(request.getType());
 
-        Store store = Store.createStore(type, request.getName(), request.getDescription(), member);
+        Store store = Store.createStore(type, validatedName, validatedDescription, member);
         Store savedStore = storeRepository.save(store);
 
         return StoreCreateResponse.of(savedStore);

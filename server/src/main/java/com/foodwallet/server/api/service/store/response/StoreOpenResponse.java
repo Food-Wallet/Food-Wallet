@@ -1,6 +1,5 @@
 package com.foodwallet.server.api.service.store.response;
 
-import com.foodwallet.server.domain.store.Store;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,16 +23,5 @@ public class StoreOpenResponse {
         this.latitude = latitude;
         this.longitude = longitude;
         this.openDateTime = openDateTime;
-    }
-
-    public static StoreOpenResponse of(Store store) {
-        return StoreOpenResponse.builder()
-            .name(store.getName())
-            .address(store.getOperationalInfo().getAddress())
-            .openTime(store.getOperationalInfo().getOpenTime())
-            .latitude(store.getOperationalInfo().getLatitude())
-            .longitude(store.getOperationalInfo().getLongitude())
-            .openDateTime(LocalDateTime.now())
-            .build();
     }
 }

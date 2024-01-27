@@ -30,57 +30,11 @@ public class StoreQueryRepository {
     }
 
     public Slice<StoreResponse> findAllByCond(StoreSearchCond cond, Pageable pageable) {
-        List<StoreResponse> contents = queryFactory
-            .select(
-                Projections.constructor(StoreResponse.class,
-                    store.id,
-                    store.type,
-                    store.name,
-                    store.operationalInfo.address,
-                    store.operationalInfo.openTime,
-                    store.image.storeFileName,
-                    store.reviewInfo.avgRate
-                )
-            )
-            .from(store)
-            .where(
-                store.isDeleted.isFalse(),
-                store.status.eq(OPEN),
-                eqType(cond.getType()),
-                containsName(cond.getQuery())
-            )
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize() + 1)
-            .fetch();
-
-        boolean hasNext = false;
-        if (contents.size() > pageable.getPageSize()) {
-            contents.remove(pageable.getPageSize());
-            hasNext = true;
-        }
-
-        return new SliceImpl<>(contents, pageable, hasNext);
+        return null;
     }
 
     public StoreDetailDto findStoreDetailById(Long storeId) {
-        StoreDetailDto content = queryFactory
-            .select(
-                Projections.constructor(StoreDetailDto.class,
-                    Expressions.asNumber(storeId),
-                    store.type,
-                    store.name,
-                    store.description,
-                    store.image.uploadFileName,
-                    store.reviewInfo.avgRate,
-                    store.status,
-                    store.operationalInfo.address,
-                    store.operationalInfo.openTime
-                )
-            )
-            .from(store)
-            .where(store.id.eq(storeId))
-            .fetchFirst();
-        return content;
+        return null;
     }
 
     private BooleanExpression eqType(StoreType type) {

@@ -45,15 +45,12 @@ public class Store extends BaseEntity {
     @Embedded
     private ReviewInfo reviewInfo;
 
-    @Embedded
-    private OperationalInfo operationalInfo;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @Builder
-    private Store(StoreStatus status, StoreType type, String name, String description, UploadFile image, int bookmarkCount, ReviewInfo reviewInfo, OperationalInfo operationalInfo, Member member) {
+    private Store(StoreStatus status, StoreType type, String name, String description, UploadFile image, int bookmarkCount, ReviewInfo reviewInfo, Member member) {
         this.status = status;
         this.type = type;
         this.name = name;
@@ -61,7 +58,6 @@ public class Store extends BaseEntity {
         this.image = image;
         this.bookmarkCount = bookmarkCount;
         this.reviewInfo = reviewInfo;
-        this.operationalInfo = operationalInfo;
         this.member = member;
     }
 
@@ -89,19 +85,12 @@ public class Store extends BaseEntity {
         this.image = image;
     }
 
-    public void open(String address, String openTime, double latitude, double longitude) {
+    public void open() {
         status = OPEN;
-        operationalInfo = OperationalInfo.builder()
-            .address(address)
-            .openTime(openTime)
-            .latitude(latitude)
-            .longitude(longitude)
-            .build();
     }
 
     public void close() {
         status = CLOSE;
-        operationalInfo = null;
     }
 
     public void increaseBookmarkCount() {

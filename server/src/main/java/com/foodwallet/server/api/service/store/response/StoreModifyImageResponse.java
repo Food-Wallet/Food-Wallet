@@ -9,22 +9,25 @@ import java.time.LocalDateTime;
 @Getter
 public class StoreModifyImageResponse {
 
-    private final String type;
-    private final String name;
-    private final LocalDateTime imageModifiedDateTime;
+    private final Long storeId;
+    private final String storeName;
+    private final String storeImage;
+    private final LocalDateTime modifiedDateTime;
 
     @Builder
-    private StoreModifyImageResponse(String type, String name, LocalDateTime imageModifiedDateTime) {
-        this.type = type;
-        this.name = name;
-        this.imageModifiedDateTime = imageModifiedDateTime;
+    private StoreModifyImageResponse(Long storeId, String storeName, String storeImage, LocalDateTime modifiedDateTime) {
+        this.storeId = storeId;
+        this.storeName = storeName;
+        this.storeImage = storeImage;
+        this.modifiedDateTime = modifiedDateTime;
     }
 
     public static StoreModifyImageResponse of(Store store) {
         return StoreModifyImageResponse.builder()
-            .type(store.getType().getText())
-            .name(store.getName())
-            .imageModifiedDateTime(LocalDateTime.now())
+            .storeId(store.getId())
+            .storeName(store.getName())
+            .storeImage(store.getImage().getStoreFileName())
+            .modifiedDateTime(LocalDateTime.now())
             .build();
     }
 }

@@ -195,4 +195,27 @@ class StoreApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.message").value("매장명을 입력하세요."))
             .andExpect(jsonPath("$.data").isEmpty());
     }
+
+    @DisplayName("매장 이미지를 수정한다.")
+    @Test
+    void modifyStoreImage() throws Exception {
+        //given
+        MockMultipartFile image = new MockMultipartFile(
+            "storeImage",
+            "store-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
+        //when //then
+        mockMvc.perform(
+                multipart(BASE_URL + "/{storeId}/image", 1)
+                    .file(image)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
 }

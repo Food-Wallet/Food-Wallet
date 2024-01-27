@@ -4,8 +4,10 @@ import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
+import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Account;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
@@ -16,13 +18,16 @@ import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 
 import static com.foodwallet.server.domain.member.MemberRole.BUSINESS;
 import static com.foodwallet.server.domain.member.MemberRole.USER;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
 class StoreServiceTest extends IntegrationTestSupport {
 
@@ -156,6 +161,77 @@ class StoreServiceTest extends IntegrationTestSupport {
         assertThat(findStore)
             .extracting("type", "name", "description")
             .contains(StoreType.CHICKEN, "나리닭강정", "국내에서 제일 잘나가는 닭강정!");
+    }
+
+    @DisplayName("매장 이미지 수정시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void modifyStoreImageWithNotAuth() {
+        //given
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+        MockMultipartFile image = new MockMultipartFile(
+            "storeImage",
+            "store-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
+        Member otherMember = createMember("do72@naver.com", BUSINESS, null);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.modifyStoreImage("do72@naver.com", store.getId(), image))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("매장 이미지 수정시 매장이 운영중이라면 예외가 발생한다.")
+    @Test
+    void modifyStoreImageWithOpen() {
+        //given
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.OPEN);
+        MockMultipartFile image = new MockMultipartFile(
+            "storeImage",
+            "store-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
+        //when //then
+        assertThatThrownBy(() -> storeService.modifyStoreImage("dong82@naver.com", store.getId(), image))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("영업중에는 매장 정보를 수정할 수 없습니다.");
+    }
+
+    @DisplayName("회원의 이메일, 매장 식별키, 매장 이미지를 입력 받아 매장 이미지를 수정한다. ")
+    @Test
+    void modifyStoreImage() throws IOException {
+        //given
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+        MockMultipartFile image = new MockMultipartFile(
+            "storeImage",
+            "store-image.jpg",
+            "image/jpg",
+            "<<image data>>".getBytes()
+        );
+
+        UploadFile uploadFile = UploadFile.builder()
+            .uploadFileName("uploadFileName")
+            .storeFileName("storeFileName")
+            .build();
+
+        given(fileStore.storeFile(image))
+            .willReturn(uploadFile);
+
+        //when
+        StoreModifyImageResponse response = storeService.modifyStoreImage("dong82@naver.com", store.getId(), image);
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore)
+            .extracting("image.uploadFileName", "image.storeFileName")
+            .contains("uploadFileName", "storeFileName");
     }
 
     public Account createAccount() {

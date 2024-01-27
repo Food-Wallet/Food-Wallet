@@ -4,6 +4,7 @@ import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
@@ -55,12 +56,7 @@ public class StoreService {
     }
 
     public StoreModifyInfoResponse modifyStoreInfo(String email, Long storeId, StoreModifyInfoServiceRequest request) {
-        Member member = memberRepository.findByEmail(email);
-
-        Store store = storeRepository.findById(storeId);
-        if (!store.isMine(member)) {
-            throw new AuthenticationException(NOT_AUTHORIZED);
-        }
+        Store store = getMyStore(email, storeId);
 
         if (store.isOpen()) {
             throw new IllegalArgumentException("영업중에는 매장 정보를 수정할 수 없습니다.");
@@ -73,6 +69,20 @@ public class StoreService {
         store.modifyInfo(type, validatedName, validatedDescription);
 
         return StoreModifyInfoResponse.of(store);
+    }
+
+    public StoreModifyImageResponse modifyStoreImage(String email, Long storeId, MultipartFile image) {
+        Store store = getMyStore(email, storeId);
+
+        if (store.isOpen()) {
+            throw new IllegalArgumentException("영업중에는 매장 정보를 수정할 수 없습니다.");
+        }
+
+        UploadFile uploadFile = toUploadFile(image);
+
+        store.modifyImage(uploadFile);
+
+        return null;
     }
 
     /**
@@ -88,5 +98,17 @@ public class StoreService {
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드를 실패했습니다.", e);
         }
+    }
+
+    private Store getMyStore(String email, Long storeId) {
+        Member member = memberRepository.findByEmail(email);
+
+        Store store = storeRepository.findById(storeId);
+
+        if (!store.isMine(member)) {
+            throw new AuthenticationException(NOT_AUTHORIZED);
+        }
+
+        return store;
     }
 }

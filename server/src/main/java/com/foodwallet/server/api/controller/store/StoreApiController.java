@@ -2,9 +2,11 @@ package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
+import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
@@ -37,6 +39,18 @@ public class StoreApiController {
         String email = SecurityUtils.getCurrentEmail();
 
         StoreModifyInfoResponse response = storeService.modifyStoreInfo(email, storeId, request.toServiceRequest());
+
+        return ApiResponse.ok(response);
+    }
+
+    @PostMapping("/{storeId}/image")
+    public ApiResponse<StoreModifyImageResponse> modifyStoreImage(
+        @PathVariable Long storeId,
+        @Valid @ModelAttribute StoreModifyImageRequest request
+    ) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreModifyImageResponse response = storeService.modifyStoreImage(email, storeId, request.getStoreImage());
 
         return ApiResponse.ok(response);
     }

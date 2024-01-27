@@ -61,7 +61,7 @@ public class Store extends BaseEntity {
         this.member = member;
     }
 
-    public static Store createStore(StoreType type, String name, String description, Member member) {
+    public static Store createStore(StoreType type, String name, String description, UploadFile image, Member member) {
         ReviewInfo reviewInfo = ReviewInfo.createReviewInfo();
 
         return Store.builder()
@@ -69,6 +69,7 @@ public class Store extends BaseEntity {
             .type(type)
             .name(name)
             .description(description)
+            .image(image)
             .bookmarkCount(0)
             .reviewInfo(reviewInfo)
             .member(member)

@@ -2,6 +2,7 @@ package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.ControllerTestSupport;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
+import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +11,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -111,6 +113,78 @@ class StoreApiControllerTest extends ControllerTestSupport {
                     .part(new MockPart("storeType", request.getStoreType().getBytes()))
                     .part(new MockPart("storeDescription", request.getStoreDescription().getBytes()))
                     .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("매장명을 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("매장 정보를 수정한다.")
+    @Test
+    void modifyStoreInfo() throws Exception {
+        //given
+        StoreModifyInfoRequest request = StoreModifyInfoRequest.builder()
+            .storeType("CHICKEN")
+            .storeName("나리닭강정 본점")
+            .storeDescription("국내 1위 닭강정 맛집 본점!")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                patch(BASE_URL + "/{storeId}", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("매장 정보를 수정할 때 매장 타입은 필수값이다.")
+    @Test
+    void modifyStoreInfoWithoutStoreType() throws Exception {
+        //given
+        StoreModifyInfoRequest request = StoreModifyInfoRequest.builder()
+            .storeName("나리닭강정 본점")
+            .storeDescription("국내 1위 닭강정 맛집 본점!")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                patch(BASE_URL + "/{storeId}", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("매장 타입을 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("매장 정보를 수정할 때 매장명은 필수값이다.")
+    @Test
+    void modifyStoreInfoWithoutStoreName() throws Exception {
+        //given
+        StoreModifyInfoRequest request = StoreModifyInfoRequest.builder()
+            .storeType("CHICKEN")
+            .storeDescription("국내 1위 닭강정 맛집 본점!")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                patch(BASE_URL + "/{storeId}", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
                     .with(csrf())
             )

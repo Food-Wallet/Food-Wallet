@@ -105,4 +105,8 @@ public class Store extends BaseEntity {
     public boolean isMine(Member member) {
         return this.member.getId().equals(member.getId());
     }
+
+    public boolean isOpen() {
+        return status == OPEN;
+    }
 }

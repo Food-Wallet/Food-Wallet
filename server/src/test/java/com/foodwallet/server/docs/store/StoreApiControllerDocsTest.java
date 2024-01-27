@@ -2,9 +2,12 @@ package com.foodwallet.server.docs.store;
 
 import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
+import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
 import com.foodwallet.server.docs.RestDocsSupport;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,18 +21,17 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 import java.time.LocalDateTime;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -82,14 +84,14 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
             .willReturn(response);
 
         mockMvc.perform(
-            multipart(BASE_URL)
-                .file(image)
-                .part(new MockPart("storeType", request.getStoreType().getBytes()))
-                .part(new MockPart("storeName", request.getStoreName().getBytes()))
-                .part(new MockPart("storeDescription", request.getStoreDescription().getBytes()))
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
-        )
+                multipart(BASE_URL)
+                    .file(image)
+                    .part(new MockPart("storeType", request.getStoreType().getBytes()))
+                    .part(new MockPart("storeName", request.getStoreName().getBytes()))
+                    .part(new MockPart("storeDescription", request.getStoreDescription().getBytes()))
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+            )
             .andDo(print())
             .andExpect(status().isCreated())
             .andDo(document("create-store",
@@ -134,6 +136,78 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                         .description("신규 등록된 매장 이미지 URL"),
                     fieldWithPath("data.createdDateTime").type(JsonFieldType.ARRAY)
                         .description("신규 매장 등록 일시")
+                )
+            ));
+    }
+
+    @DisplayName("매장 정보 수정 API")
+    @Test
+    void modifyStoreInfo() throws Exception {
+        StoreModifyInfoRequest request = StoreModifyInfoRequest.builder()
+            .storeType("CHICKEN")
+            .storeName("나리닭강정 본점")
+            .storeDescription("국내 1위 닭강정 맛집 본점!")
+            .build();
+
+        StoreModifyInfoResponse response = StoreModifyInfoResponse.builder()
+            .storeId(1L)
+            .storeType("치킨")
+            .storeName("나리닭강정 본점")
+            .storeDescription("국내 1위 닭강정 맛집 본점!")
+            .modifiedDateTime(LocalDateTime.of(2024, 1, 28, 4, 51))
+            .build();
+
+        given(storeService.modifyStoreInfo(anyString(), anyLong(), any(StoreModifyInfoServiceRequest.class)))
+            .willReturn(response);
+
+        mockMvc.perform(
+                patch(BASE_URL + "/{storeId}", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("modify-store-info",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키")
+                ),
+                requestFields(
+                    fieldWithPath("storeType").type(JsonFieldType.STRING)
+                        .description("수정할 매장 타입"),
+                    fieldWithPath("storeName").type(JsonFieldType.STRING)
+                        .description("수정할 매장명"),
+                    fieldWithPath("storeDescription").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("수정할 매장 설명")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.storeId").type(JsonFieldType.NUMBER)
+                        .description("수정된 매장 식별키"),
+                    fieldWithPath("data.storeType").type(JsonFieldType.STRING)
+                        .description("수정된 매장 타입"),
+                    fieldWithPath("data.storeName").type(JsonFieldType.STRING)
+                        .description("수정된 매장명"),
+                    fieldWithPath("data.storeDescription").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("수정된 매장 설명"),
+                    fieldWithPath("data.modifiedDateTime").type(JsonFieldType.ARRAY)
+                        .description("매장 정보 수정 일시")
                 )
             ));
     }

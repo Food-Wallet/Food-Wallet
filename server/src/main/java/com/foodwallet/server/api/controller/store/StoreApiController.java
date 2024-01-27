@@ -2,8 +2,10 @@ package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
+import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
+import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,17 @@ public class StoreApiController {
         StoreCreateResponse response = storeService.createStore(email, request.toServiceRequest());
 
         return ApiResponse.created(response);
+    }
+
+    @PatchMapping("/{storeId}")
+    public ApiResponse<StoreModifyInfoResponse> modifyStoreInfo(
+        @PathVariable Long storeId,
+        @Valid @RequestBody StoreModifyInfoRequest request
+    ) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreModifyInfoResponse response = storeService.modifyStoreInfo(email, storeId, request.toServiceRequest());
+
+        return ApiResponse.ok(response);
     }
 }

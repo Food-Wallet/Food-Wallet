@@ -12,10 +12,10 @@ import static com.foodwallet.server.common.message.ErrorMessage.NOT_BLANK_PASSWO
 public class StoreRemoveRequest {
 
     @NotBlank(message = NOT_BLANK_PASSWORD)
-    private String pwd;
+    private String currentPwd;
 
     @Builder
-    private StoreRemoveRequest(String pwd) {
-        this.pwd = pwd;
+    private StoreRemoveRequest(String currentPwd) {
+        this.currentPwd = currentPwd;
     }
 }

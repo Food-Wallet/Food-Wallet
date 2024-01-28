@@ -1,10 +1,7 @@
 package com.foodwallet.server.docs.store;
 
 import com.foodwallet.server.api.controller.store.StoreApiController;
-import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
-import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.api.controller.store.request.*;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
@@ -450,6 +447,66 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                         .description("운영 종료 일시")
                 )
             ));
+    }
 
+    @DisplayName("매장 영구 삭제 API")
+    @Test
+    void removeStore() throws Exception {
+        StoreRemoveRequest request = StoreRemoveRequest.builder()
+            .currentPwd("dong1234!")
+            .build();
+
+        StoreRemoveResponse response = StoreRemoveResponse.builder()
+            .storeId(1L)
+            .storeType("치킨")
+            .storeName("나리닭강정")
+            .removedDateTime(LocalDateTime.of(2024, 1, 28, 17, 20))
+            .build();
+
+        given(storeService.removeStore(anyString(), anyLong(), anyString(), any(LocalDateTime.class)))
+            .willReturn(response);
+
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/remove", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("remove-store",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키")
+                ),
+                requestFields(
+                    fieldWithPath("currentPwd").type(JsonFieldType.STRING)
+                        .description("현재 비밀번호")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.storeId").type(JsonFieldType.NUMBER)
+                        .description("영구 삭제한 매장 식별키"),
+                    fieldWithPath("data.storeType").type(JsonFieldType.STRING)
+                        .description("영구 삭제된 매장 타입"),
+                    fieldWithPath("data.storeName").type(JsonFieldType.STRING)
+                        .description("영구 삭제된 매장명"),
+                    fieldWithPath("data.removedDateTime").type(JsonFieldType.ARRAY)
+                        .description("매장 영구 삭제 일시")
+                )
+            ));
     }
 }

@@ -4,6 +4,7 @@ import com.foodwallet.server.ControllerTestSupport;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.api.controller.store.request.StoreRemoveRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -392,5 +393,48 @@ class StoreApiControllerTest extends ControllerTestSupport {
             )
             .andDo(print())
             .andExpect(status().isOk());
+    }
+
+    @DisplayName("매장을 영구 삭제한다.")
+    @Test
+    void removeStore() throws Exception {
+        //given
+        StoreRemoveRequest request = StoreRemoveRequest.builder()
+            .currentPwd("dong1234!")
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/remove", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("매장을 영구 삭제할 때 현재 비밀번호는 필수값이다.")
+    @Test
+    void removeStoreWithoutCurrentPwd() throws Exception {
+        //given
+        StoreRemoveRequest request = StoreRemoveRequest.builder()
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/remove", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("비밀번호를 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 }

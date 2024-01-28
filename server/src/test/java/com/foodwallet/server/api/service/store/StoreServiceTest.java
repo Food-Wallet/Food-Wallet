@@ -411,6 +411,66 @@ class StoreServiceTest extends IntegrationTestSupport {
             .contains(OperationStatus.FINISH, currentDateTime, 0);
     }
 
+    @DisplayName("매장 영구 삭제시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void removeStoreWithoutAuth() {
+        //given
+        LocalDateTime currentDateTime = LocalDateTime.of(2024, 1, 28, 20, 0);
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+
+        Member otherMember = createMember("do72@naver.com", BUSINESS, null);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.removeStore("do72@naver.com", store.getId(), "dong1234!", currentDateTime))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("매장 영구 삭제시 매장이 운영중이라면 예외가 발생한다.")
+    @Test
+    void removeStoreWithOpen() {
+        //given
+        LocalDateTime currentDateTime = LocalDateTime.of(2024, 1, 28, 20, 0);
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.OPEN);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.removeStore("dong82@naver.com", store.getId(), "dong1234!", currentDateTime))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("운영중인 매장은 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("매장 영구 삭제시 현재 비밀번호가 계정 비밀번호와 일치하지 않으면 예외가 발생한다.")
+    @Test
+    void removeStoreWithNotEqualsPwd() {
+        //given
+        LocalDateTime currentDateTime = LocalDateTime.of(2024, 1, 28, 20, 0);
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.removeStore("dong82@naver.com", store.getId(), "dong1111!", currentDateTime))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("현재 비밀번호가 일치하지 않습니다.");
+    }
+
+    @DisplayName("회원의 이메일, 매장 식별키, 현재 비밀번호, 현재 시간을 입력 받아 매장을 영구 삭제한다.")
+    @Test
+    void removeStore() {
+        //given
+        LocalDateTime currentDateTime = LocalDateTime.of(2024, 1, 28, 20, 0);
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+
+        //when
+        StoreRemoveResponse response = storeService.removeStore("dong82@naver.com", store.getId(), "dong1234!", currentDateTime);
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore.isDeleted()).isTrue();
+    }
+
     public Account createAccount() {
         return Account.builder()
             .bankCode("088")

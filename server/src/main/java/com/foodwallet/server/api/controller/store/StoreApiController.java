@@ -1,10 +1,7 @@
 package com.foodwallet.server.api.controller.store;
 
 import com.foodwallet.server.api.ApiResponse;
-import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
-import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
-import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
+import com.foodwallet.server.api.controller.store.request.*;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.security.SecurityUtils;
@@ -74,6 +71,19 @@ public class StoreApiController {
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         StoreCloseResponse response = storeService.closeStore(email, storeId, currentDateTime);
+
+        return ApiResponse.ok(response);
+    }
+
+    @PostMapping("/{storeId}/remove")
+    public ApiResponse<StoreRemoveResponse> removeStore(
+        @PathVariable Long storeId,
+        @Valid @RequestBody StoreRemoveRequest request
+    ) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        StoreRemoveResponse response = storeService.removeStore(email, storeId, request.getCurrentPwd(), currentDateTime);
 
         return ApiResponse.ok(response);
     }

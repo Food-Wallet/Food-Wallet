@@ -15,6 +15,7 @@ import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +37,7 @@ public class StoreService {
     private final OperationRepository operationRepository;
     private final MemberRepository memberRepository;
     private final FileStore fileStore;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public StoreCreateResponse createStore(String email, StoreCreateServiceRequest request) {
         Member member = memberRepository.findByEmail(email);
@@ -126,6 +128,29 @@ public class StoreService {
         store.close();
 
         return StoreCloseResponse.of(store, operation, currentDateTime);
+    }
+
+    public StoreRemoveResponse removeStore(String email, Long storeId, String currentPwd, LocalDateTime currentDateTime) {
+        Member member = memberRepository.findByEmail(email);
+
+        Store store = storeRepository.findById(storeId);
+
+        if (!store.isMine(member)) {
+            throw new AuthenticationException(NOT_AUTHORIZED);
+        }
+
+        if (store.isOpen()) {
+            throw new IllegalArgumentException("운영중인 매장은 삭제할 수 없습니다.");
+        }
+
+        boolean isMatches = passwordEncoder.matches(currentPwd, member.getPwd());
+        if (!isMatches) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        store.remove();
+
+        return StoreRemoveResponse.of(store, currentDateTime);
     }
 
     /**

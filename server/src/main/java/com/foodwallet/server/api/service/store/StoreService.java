@@ -2,18 +2,18 @@ package com.foodwallet.server.api.service.store;
 
 import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
-import com.foodwallet.server.api.service.store.request.StoreModifyServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
 import com.foodwallet.server.api.service.store.response.*;
+import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
-import com.foodwallet.server.domain.store.OperationalInfo;
+import com.foodwallet.server.domain.operation.Operation;
+import com.foodwallet.server.domain.operation.repository.OperationRepository;
 import com.foodwallet.server.domain.store.Store;
-import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
-import com.foodwallet.server.common.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,12 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
+import static com.foodwallet.server.api.service.store.StoreValidator.*;
 import static com.foodwallet.server.common.message.ExceptionMessage.*;
-import static com.foodwallet.server.common.message.ExceptionMessage.NOT_AUTHORIZED;
-import static com.foodwallet.server.common.message.ExceptionMessage.NO_ACCOUNT_INFORMATION;
-import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
-
 
 @RequiredArgsConstructor
 @Service
@@ -34,19 +34,11 @@ import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final OperationRepository operationRepository;
     private final MemberRepository memberRepository;
     private final FileStore fileStore;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    /**
-     * 매장 정보를 입력 받아 신규 매장을 등록한다.
-     *
-     * @param email   신규 매장을 등록할 회원의 이메일
-     * @param request 신규 매장의 정보
-     * @return 신규 등록된 매장의 정보
-     * @throws AuthenticationException  등록을 시도한 회원이 사업자 권한이 없는 경우
-     * @throws IllegalArgumentException 회원의 계좌 정보가 존재하지 않는 경우
-     */
     public StoreCreateResponse createStore(String email, StoreCreateServiceRequest request) {
         Member member = memberRepository.findByEmail(email);
 
@@ -59,120 +51,123 @@ public class StoreService {
         }
 
         StoreType type = StoreType.of(request.getType());
+        String validatedName = nameValidation(request.getName());
+        String validatedDescription = descriptionValidation(request.getDescription());
 
-        Store store = Store.createStore(type, request.getName(), request.getDescription(), member);
+        UploadFile uploadFile = toUploadFile(request.getImage());
+
+        Store store = Store.createStore(type, validatedName, validatedDescription, uploadFile, member);
         Store savedStore = storeRepository.save(store);
 
         return StoreCreateResponse.of(savedStore);
     }
 
-    /**
-     * 매장 정보를 입력 받아 매장 정보를 수정한다.
-     *
-     * @param email   정보 수정을 요청한 회원의 이메일
-     * @param storeId 정보 수정할 매장의 식별키
-     * @param request 수정할 매장 정보
-     * @return 수정된 매장의 정보
-     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
-     */
-    public StoreModifyResponse modifyStoreInfo(String email, Long storeId, StoreModifyServiceRequest request) {
+    public StoreModifyInfoResponse modifyStoreInfo(String email, Long storeId, StoreModifyInfoServiceRequest request) {
         Store store = getMyStore(email, storeId);
+
+        if (store.isOpen()) {
+            throw new IllegalArgumentException("영업중에는 매장 정보를 수정할 수 없습니다.");
+        }
 
         StoreType type = StoreType.of(request.getType());
+        String validatedName = nameValidation(request.getName());
+        String validatedDescription = descriptionValidation(request.getDescription());
 
-        store.modifyInfo(type, request.getName(), request.getDescription());
+        store.modifyInfo(type, validatedName, validatedDescription);
 
-        return StoreModifyResponse.of(store);
+        return StoreModifyInfoResponse.of(store);
     }
 
-    /**
-     * 이미지 파일을 입력 받아 매장 이미지를 수정한다.
-     *
-     * @param email   이미지 수정을 요청한 회원의 이메일
-     * @param storeId 이미지 수정할 매장의 식별키
-     * @param image   수정할 이미지 파일
-     * @return 수정된 매장의 정보
-     * @throws IOException             이미지 업로드에 실패한 경우
-     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
-     */
-    public StoreModifyImageResponse modifyStoreImage(String email, Long storeId, MultipartFile image) throws IOException {
+    public StoreModifyImageResponse modifyStoreImage(String email, Long storeId, MultipartFile image) {
         Store store = getMyStore(email, storeId);
 
-        UploadFile uploadFile = fileStore.storeFile(image);
+        if (store.isOpen()) {
+            throw new IllegalArgumentException("영업중에는 매장 정보를 수정할 수 없습니다.");
+        }
+
+        UploadFile uploadFile = toUploadFile(image);
 
         store.modifyImage(uploadFile);
 
-        return StoreModifyImageResponse.of(store);
+        return null;
     }
 
-    /**
-     * 현재 위치 정보를 입력 받아 매장 운영을 시작한다.
-     *
-     * @param email   운영 시작을 요청한 회원의 이메일
-     * @param storeId 운영 시작할 매장의 식별키
-     * @param request 운영 시작할 매장의 현재 위치 정보
-     * @return 운영 시작한 매장의 정보
-     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
-     */
     public StoreOpenResponse openStore(String email, Long storeId, StoreOpenServiceRequest request) {
         Store store = getMyStore(email, storeId);
 
-        store.open(request.getAddress(), request.getOpenTime(), request.getLatitude(), request.getLongitude());
+        if (store.isOpen()) {
+            throw new IllegalArgumentException("이미 매장을 운영하고 있습니다.");
+        }
 
-        return StoreOpenResponse.of(store);
+        if (request.getStartTime() == request.getFinishTime()) {
+            throw new IllegalArgumentException("운영 시작 시간과 종료 시간을 다르게 설정해주세요.");
+        }
+
+        String validatedAddress = addressValidation(request.getAddress());
+        String time = generateTime(request.getStartTime(), request.getFinishTime());
+        double validatedLatitude = latitudeValidation(request.getLatitude());
+        double validatedLongitude = longitudeValidation(request.getLongitude());
+
+        Operation operation = Operation.create(validatedAddress, time, validatedLatitude, validatedLongitude, store);
+        Operation savedOperation = operationRepository.save(operation);
+        store.open();
+
+        return StoreOpenResponse.of(store, savedOperation);
     }
 
-    /**
-     * 매장 운영을 종료한다.
-     *
-     * @param email   운영 종료를 요청한 회원의 이메일
-     * @param storeId 운영 종료할 매징의 식별키
-     * @return 운영 종료한 매장의 정보
-     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
-     */
-    public StoreCloseResponse closeStore(String email, Long storeId) {
+    public StoreCloseResponse closeStore(String email, Long storeId, LocalDateTime currentDateTime) {
         Store store = getMyStore(email, storeId);
 
-        OperationalInfo operationalInfo = store.getOperationalInfo();
+        if (!store.isOpen()) {
+            throw new IllegalArgumentException("운영 중인 매장이 아닙니다.");
+        }
 
+        //todo: 2024-01-28 16:40 매장 총 매출액 계산 로직 미구현
+        Operation operation = operationRepository.findByStoreIdAndStatusEqStart(storeId);
+        operation.finish(0, currentDateTime);
         store.close();
 
-        return StoreCloseResponse.of(store.getName(), operationalInfo);
+        return StoreCloseResponse.of(store, operation, currentDateTime);
     }
 
-    /**
-     * 매장을 영구 삭제한다.
-     *
-     * @param email   영구 삭제를 요청한 회원의 이메일
-     * @param storeId 영구 삭제할 매장의 식별키
-     * @return 영구 삭제된 매장의 정보
-     * @throws AuthenticationException 매장을 등록한 회원과 요청한 회원이 다른 경우
-     */
-    public StoreRemoveResponse removeStore(String email, Long storeId, String pwd) {
-        Store store = getMyStore(email, storeId);
+    public StoreRemoveResponse removeStore(String email, Long storeId, String currentPwd, LocalDateTime currentDateTime) {
+        Member member = memberRepository.findByEmail(email);
 
-        if (store.getStatus().equals(OPEN)) {
+        Store store = storeRepository.findById(storeId);
+
+        if (!store.isMine(member)) {
+            throw new AuthenticationException(NOT_AUTHORIZED);
+        }
+
+        if (store.isOpen()) {
             throw new IllegalArgumentException("운영중인 매장은 삭제할 수 없습니다.");
         }
 
-        Member member = memberRepository.findByEmail(email);
-        if (!passwordEncoder.matches(pwd, member.getPwd())) {
+        boolean isMatches = passwordEncoder.matches(currentPwd, member.getPwd());
+        if (!isMatches) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
         store.remove();
 
-        return StoreRemoveResponse.of(store);
+        return StoreRemoveResponse.of(store, currentDateTime);
     }
 
     /**
-     * 회원과 매장을 조회한다. 조회된 회원과 매장을 등록한 회원이 같으면 매장을 반환한다.
+     * S3 서버에 파일을 업로드하고 이미지 URL 정보를 반환한다.
      *
-     * @param email   조회할 회원의 이메일
-     * @param storeId 조회할 매장의 식별키
-     * @return 조회된 매장 엔티티
-     * @throws AuthenticationException 조회된 회원과 매장을 등록한 회원이 다른 경우
+     * @param file S3 서버에 업로드할 파일
+     * @return 업로드된 이미지 URL 정보
+     * @throws RuntimeException S3 서버에 파일 업로드를 실패한 경우
      */
+    private UploadFile toUploadFile(MultipartFile file) {
+        try {
+            return fileStore.storeFile(file);
+        } catch (IOException e) {
+            throw new RuntimeException("파일 업로드를 실패했습니다.", e);
+        }
+    }
+
     private Store getMyStore(String email, Long storeId) {
         Member member = memberRepository.findByEmail(email);
 
@@ -183,5 +178,17 @@ public class StoreService {
         }
 
         return store;
+    }
+
+    private String generateTime(LocalTime startTime, LocalTime finishTime) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("a h:mm");
+        String startTimeStr = startTime.format(timeFormatter);
+        if (finishTime.isBefore(startTime)) {
+            String finishTimeStr = finishTime.format(DateTimeFormatter.ofPattern("익일 h:mm"));
+            return String.format("%s ~ %s", startTimeStr, finishTimeStr);
+        }
+
+        String finishTimeStr = finishTime.format(timeFormatter);
+        return String.format("%s ~ %s", startTimeStr, finishTimeStr);
     }
 }

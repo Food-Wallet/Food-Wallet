@@ -1,6 +1,7 @@
 package com.foodwallet.server.api.service.store.response;
 
-import com.foodwallet.server.domain.store.OperationalInfo;
+import com.foodwallet.server.domain.operation.Operation;
+import com.foodwallet.server.domain.store.Store;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,31 +10,28 @@ import java.time.LocalDateTime;
 @Getter
 public class StoreCloseResponse {
 
-    private final String name;
-    private final String address;
-    private final String openTime;
-    private final Double latitude;
-    private final Double longitude;
-    private final LocalDateTime closedDateTime;
+    private final Long storeId;
+    private final String status;
+    private final String storeName;
+    private final OperationCloseResponse operationInfo;
+    private final LocalDateTime finishedDateTime;
 
     @Builder
-    private StoreCloseResponse(String name, String address, String openTime, Double latitude, Double longitude, LocalDateTime closedDateTime) {
-        this.name = name;
-        this.address = address;
-        this.openTime = openTime;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.closedDateTime = closedDateTime;
+    private StoreCloseResponse(Long storeId, String status, String storeName, OperationCloseResponse operationInfo, LocalDateTime finishedDateTime) {
+        this.storeId = storeId;
+        this.status = status;
+        this.storeName = storeName;
+        this.operationInfo = operationInfo;
+        this.finishedDateTime = finishedDateTime;
     }
 
-    public static StoreCloseResponse of(String name, OperationalInfo operationalInfo) {
+    public static StoreCloseResponse of(Store store, Operation operation, LocalDateTime currentDateTime) {
         return StoreCloseResponse.builder()
-            .name(name)
-            .address(operationalInfo.getAddress())
-            .openTime(operationalInfo.getOpenTime())
-            .latitude(operationalInfo.getLatitude())
-            .longitude(operationalInfo.getLongitude())
-            .closedDateTime(LocalDateTime.now())
+            .storeId(store.getId())
+            .status(store.getStatus().getText())
+            .storeName(store.getName())
+            .operationInfo(OperationCloseResponse.of(operation))
+            .finishedDateTime(currentDateTime)
             .build();
     }
 }

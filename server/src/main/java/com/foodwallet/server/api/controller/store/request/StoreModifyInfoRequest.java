@@ -1,19 +1,17 @@
 package com.foodwallet.server.api.controller.store.request;
 
-import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
-import static com.foodwallet.server.common.message.ErrorMessage.NOT_BLANK_STORE_TYPE;
 import static com.foodwallet.server.common.message.ErrorMessage.NOT_BLANK_STORE_NAME;
+import static com.foodwallet.server.common.message.ErrorMessage.NOT_BLANK_STORE_TYPE;
 
-@Getter @Setter
+@Getter
 @NoArgsConstructor
-public class StoreCreateRequest {
+public class StoreModifyInfoRequest {
 
     @NotBlank(message = NOT_BLANK_STORE_TYPE)
     private String storeType;
@@ -23,22 +21,18 @@ public class StoreCreateRequest {
 
     private String storeDescription;
 
-    private MultipartFile storeImage;
-
     @Builder
-    private StoreCreateRequest(String storeType, String storeName, String storeDescription, MultipartFile storeImage) {
+    private StoreModifyInfoRequest(String storeType, String storeName, String storeDescription) {
         this.storeType = storeType;
         this.storeName = storeName;
         this.storeDescription = storeDescription;
-        this.storeImage = storeImage;
     }
 
-    public StoreCreateServiceRequest toServiceRequest() {
-        return StoreCreateServiceRequest.builder()
+    public StoreModifyInfoServiceRequest toServiceRequest() {
+        return StoreModifyInfoServiceRequest.builder()
             .type(storeType)
             .name(storeName)
             .description(storeDescription)
-            .image(storeImage)
             .build();
     }
 }

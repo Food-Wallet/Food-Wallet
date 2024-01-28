@@ -9,22 +9,25 @@ import java.time.LocalDateTime;
 @Getter
 public class StoreRemoveResponse {
 
-    private final String type;
-    private final String name;
+    private final Long storeId;
+    private final String storeType;
+    private final String storeName;
     private final LocalDateTime removedDateTime;
 
     @Builder
-    private StoreRemoveResponse(String type, String name, LocalDateTime removedDateTime) {
-        this.type = type;
-        this.name = name;
+    private StoreRemoveResponse(Long storeId, String storeType, String storeName, LocalDateTime removedDateTime) {
+        this.storeId = storeId;
+        this.storeType = storeType;
+        this.storeName = storeName;
         this.removedDateTime = removedDateTime;
     }
 
-    public static StoreRemoveResponse of(Store store) {
+    public static StoreRemoveResponse of(Store store, LocalDateTime currentDateTime) {
         return StoreRemoveResponse.builder()
-            .type(store.getType().getText())
-            .name(store.getName())
-            .removedDateTime(LocalDateTime.now())
+            .storeId(store.getId())
+            .storeType(store.getType().getText())
+            .storeName(store.getName())
+            .removedDateTime(currentDateTime)
             .build();
     }
 }

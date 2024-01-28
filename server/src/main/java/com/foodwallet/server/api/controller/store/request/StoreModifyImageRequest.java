@@ -10,10 +10,10 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class StoreModifyImageRequest {
 
-    private MultipartFile image;
+    private MultipartFile storeImage;
 
     @Builder
-    private StoreModifyImageRequest(MultipartFile image) {
-        this.image = image;
+    private StoreModifyImageRequest(MultipartFile storeImage) {
+        this.storeImage = storeImage;
     }
 }

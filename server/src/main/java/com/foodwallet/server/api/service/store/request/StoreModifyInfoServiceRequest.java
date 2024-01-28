@@ -4,14 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class StoreModifyServiceRequest {
+public class StoreModifyInfoServiceRequest {
 
     private final String type;
     private final String name;
     private final String description;
 
     @Builder
-    private StoreModifyServiceRequest(String type, String name, String description) {
+    private StoreModifyInfoServiceRequest(String type, String name, String description) {
         this.type = type;
         this.name = name;
         this.description = description;

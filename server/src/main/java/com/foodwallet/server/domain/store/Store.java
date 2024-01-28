@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import static com.foodwallet.server.domain.store.StoreStatus.CLOSE;
 import static com.foodwallet.server.domain.store.StoreStatus.OPEN;
-import static org.springframework.util.StringUtils.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,15 +45,12 @@ public class Store extends BaseEntity {
     @Embedded
     private ReviewInfo reviewInfo;
 
-    @Embedded
-    private OperationalInfo operationalInfo;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @Builder
-    private Store(StoreStatus status, StoreType type, String name, String description, UploadFile image, int bookmarkCount, ReviewInfo reviewInfo, OperationalInfo operationalInfo, Member member) {
+    private Store(StoreStatus status, StoreType type, String name, String description, UploadFile image, int bookmarkCount, ReviewInfo reviewInfo, Member member) {
         this.status = status;
         this.type = type;
         this.name = name;
@@ -62,18 +58,18 @@ public class Store extends BaseEntity {
         this.image = image;
         this.bookmarkCount = bookmarkCount;
         this.reviewInfo = reviewInfo;
-        this.operationalInfo = operationalInfo;
         this.member = member;
     }
 
-    public static Store createStore(StoreType type, String name, String description, Member member) {
+    public static Store createStore(StoreType type, String name, String description, UploadFile image, Member member) {
         ReviewInfo reviewInfo = ReviewInfo.createReviewInfo();
 
         return Store.builder()
             .status(CLOSE)
             .type(type)
-            .name(validLength(name, 20))
-            .description(validLength(description, 200))
+            .name(name)
+            .description(description)
+            .image(image)
             .bookmarkCount(0)
             .reviewInfo(reviewInfo)
             .member(member)
@@ -82,27 +78,20 @@ public class Store extends BaseEntity {
 
     public void modifyInfo(StoreType type, String name, String description) {
         this.type = type;
-        this.name = validLength(name, 20);
-        this.description = validLength(description, 200);
+        this.name = name;
+        this.description = description;
     }
 
     public void modifyImage(UploadFile image) {
         this.image = image;
     }
 
-    public void open(String address, String openTime, double latitude, double longitude) {
+    public void open() {
         status = OPEN;
-        operationalInfo = OperationalInfo.builder()
-            .address(address)
-            .openTime(openTime)
-            .latitude(latitude)
-            .longitude(longitude)
-            .build();
     }
 
     public void close() {
         status = CLOSE;
-        operationalInfo = null;
     }
 
     public void increaseBookmarkCount() {
@@ -117,10 +106,7 @@ public class Store extends BaseEntity {
         return this.member.getId().equals(member.getId());
     }
 
-    private static String validLength(String target, int maxLength) {
-        if (hasText(target) && target.length() > maxLength) {
-            throw new IllegalArgumentException(String.format("길이는 최대 %d자 입니다.", maxLength));
-        }
-        return target;
+    public boolean isOpen() {
+        return status == OPEN;
     }
 }

@@ -7,28 +7,34 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
+
 import static com.foodwallet.server.common.message.ErrorMessage.*;
 
 @Getter
 @NoArgsConstructor
 public class StoreOpenRequest {
 
-    @NotBlank(message = NOT_BLANK_STORE_ADDRESS)
+    @NotBlank(message = NOT_BLANK_OPERATION_ADDRESS)
     private String address;
 
-    @NotBlank(message = NOT_BLANK_STORE_OPEN_TIME)
-    private String openTime;
+    @NotNull(message = NOT_NULL_OPERATION_START_TIME)
+    private LocalTime startTime;
 
-    @NotNull(message = NOT_NULL_STORE_LATITUDE)
+    @NotNull(message = NOT_NULL_OPERATION_FINISH_TIME)
+    private LocalTime finishTime;
+
+    @NotNull(message = NOT_NULL_OPERATION_LATITUDE)
     private Double latitude;
 
-    @NotNull(message = NOT_NULL_STORE_LONGITUDE)
+    @NotNull(message = NOT_NULL_OPERATION_LONGITUDE)
     private Double longitude;
 
     @Builder
-    private StoreOpenRequest(String address, String openTime, Double latitude, Double longitude) {
+    private StoreOpenRequest(String address, LocalTime startTime, LocalTime finishTime, Double latitude, Double longitude) {
         this.address = address;
-        this.openTime = openTime;
+        this.startTime = startTime;
+        this.finishTime = finishTime;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -36,7 +42,8 @@ public class StoreOpenRequest {
     public StoreOpenServiceRequest toServiceRequest() {
         return StoreOpenServiceRequest.builder()
             .address(address)
-            .openTime(openTime)
+            .startTime(startTime)
+            .finishTime(finishTime)
             .latitude(latitude)
             .longitude(longitude)
             .build();

@@ -27,12 +27,18 @@ public abstract class ErrorMessage {
     public static final String NOT_BLANK_CURRENT_PWD = "현재 비밀번호를 입력하세요.";
     public static final String NOT_BLANK_NEW_PWD = "새로운 비밀번호를 입력하세요.";
 
-    public static final String NOT_BLANK_STORE_TYPE = "매장 타입은 필수입니다.";
-    public static final String NOT_BLANK_STORE_NAME = "매장명은 필수입니다.";
-    public static final String NOT_BLANK_STORE_ADDRESS = "주소는 필수입니다.";
-    public static final String NOT_BLANK_STORE_OPEN_TIME = "운영 시간은 필수입니다.";
-    public static final String NOT_NULL_STORE_LATITUDE = "위도는 필수입니다.";
-    public static final String NOT_NULL_STORE_LONGITUDE = "경도는 필수입니다.";
+    public static final String NOT_BLANK_STORE_TYPE = "매장 타입을 입력하세요.";
+    public static final String NOT_BLANK_STORE_NAME = "매장명을 입력하세요.";
+    public static final String NOT_BLANK_OPERATION_ADDRESS = "주소를 입력하세요.";
+    public static final String NOT_NULL_OPERATION_START_TIME = "시작 시간을 입력하세요.";
+    public static final String NOT_NULL_OPERATION_FINISH_TIME = "종료 시간을 입력하세요.";
+    public static final String NOT_NULL_OPERATION_LATITUDE = "위도를 입력하세요.";
+    public static final String NOT_NULL_OPERATION_LONGITUDE = "경도를 입력하세요.";
+    public static final String SIZE_STORE_NAME = "매장명의 길이는 최대 20자입니다.";
+    public static final String SIZE_STORE_DESCRIPTION = "매장 설명의 길이는 최대 20자입니다.";
+    public static final String SIZE_OPERATION_ADDRESS = "운영 주소의 길이는 최대 30자입니다.";
+    public static final String SIZE_LATITUDE_ADDRESS = "위도를 올바르게 입력해주세요.";
+    public static final String SIZE_LONGITUDE_ADDRESS = "경도를 올바르게 입력해주세요.";
 
     public static final String NOT_BLANK_MENU_NAME = "메뉴명은 필수입니다.";
     public static final String POSITIVE_MENU_PRICE = "메뉴 가격은 양수여야 합니다.";

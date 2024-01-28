@@ -378,6 +378,78 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                         .description("운영 시작 일시")
                 )
             ));
+    }
+
+    @DisplayName("매장 운영 종료 API")
+    @Test
+    void closeStore() throws Exception {
+        OperationCloseResponse operationInfo = OperationCloseResponse.builder()
+            .operationId(1L)
+            .address("경기도 성남시 분당구 판교역로 166")
+            .time("오전 11:00 ~ 오후 8:00")
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+        StoreCloseResponse response = StoreCloseResponse.builder()
+            .storeId(1L)
+            .status(StoreStatus.CLOSE.getText())
+            .storeName("나리닭강정")
+            .operationInfo(operationInfo)
+            .finishedDateTime(LocalDateTime.of(2024, 1, 28, 20, 10))
+            .build();
+
+        given(storeService.closeStore(anyString(), anyLong(), any(LocalDateTime.class)))
+            .willReturn(response);
+
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/close", 1)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("close-store",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.storeId").type(JsonFieldType.NUMBER)
+                        .description("운영을 종료한 매장 식별키"),
+                    fieldWithPath("data.status").type(JsonFieldType.STRING)
+                        .description("매장 운영 상태"),
+                    fieldWithPath("data.storeName").type(JsonFieldType.STRING)
+                        .description("운영을 종료한 매장명"),
+                    fieldWithPath("data.operationInfo").type(JsonFieldType.OBJECT)
+                        .description("매장 운영 정보"),
+                    fieldWithPath("data.operationInfo.operationId").type(JsonFieldType.NUMBER)
+                        .description("매장 운영 정보 식별키"),
+                    fieldWithPath("data.operationInfo.address").type(JsonFieldType.STRING)
+                        .description("매장 운영한 장소의 도로명 주소"),
+                    fieldWithPath("data.operationInfo.time").type(JsonFieldType.STRING)
+                        .description("매장 운영 시간 정보"),
+                    fieldWithPath("data.operationInfo.latitude").type(JsonFieldType.NUMBER)
+                        .description("매장 운영한 장소의 위도"),
+                    fieldWithPath("data.operationInfo.longitude").type(JsonFieldType.NUMBER)
+                        .description("매장 운영한 장소의 경도"),
+                    fieldWithPath("data.finishedDateTime").type(JsonFieldType.ARRAY)
+                        .description("운영 종료 일시")
+                )
+            ));
 
     }
 }

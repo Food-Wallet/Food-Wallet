@@ -6,15 +6,14 @@ import com.foodwallet.server.api.controller.store.request.StoreModifyImageReques
 import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
 import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.StoreService;
-import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
-import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
+import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @RestController
@@ -65,6 +64,16 @@ public class StoreApiController {
         String email = SecurityUtils.getCurrentEmail();
 
         StoreOpenResponse response = storeService.openStore(email, storeId, request.toServiceRequest());
+
+        return ApiResponse.ok(response);
+    }
+
+    @PostMapping("/{storeId}/close")
+    public ApiResponse<StoreCloseResponse> closeStore(@PathVariable Long storeId) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        StoreCloseResponse response = storeService.closeStore(email, storeId, currentDateTime);
 
         return ApiResponse.ok(response);
     }

@@ -27,4 +27,13 @@ public class OperationRepositoryImpl implements OperationRepository {
         }
         return findOperation.get();
     }
+
+    @Override
+    public Operation findByStoreIdAndStatusEqStart(Long storeId) {
+        Optional<Operation> findOperation = operationJpaRepository.findByStoreIdAndStatusEqStart(storeId);
+        if (findOperation.isEmpty()) {
+            throw new NoSuchElementException("존재하지 않는 운영 정보입니다.");
+        }
+        return findOperation.get();
+    }
 }

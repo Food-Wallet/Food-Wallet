@@ -62,7 +62,7 @@ public class Operation extends BaseEntity {
         Coordinate coordinate = Coordinate.create(latitude, longitude);
 
         return Operation.builder()
-            .status(OperationStatus.OPEN)
+            .status(OperationStatus.START)
             .address(address)
             .time(time)
             .coordinate(coordinate)
@@ -71,5 +71,11 @@ public class Operation extends BaseEntity {
             .totalSales(0)
             .store(store)
             .build();
+    }
+
+    public void finish(int totalSales, LocalDateTime currentDateTime) {
+        this.status = OperationStatus.FINISH;
+        this.totalSales = totalSales;
+        this.finishedDateTime = currentDateTime;
     }
 }

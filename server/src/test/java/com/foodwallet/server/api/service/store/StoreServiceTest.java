@@ -4,17 +4,16 @@ import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
-import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
-import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
+import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Account;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
+import com.foodwallet.server.domain.operation.Coordinate;
 import com.foodwallet.server.domain.operation.Operation;
+import com.foodwallet.server.domain.operation.OperationStatus;
 import com.foodwallet.server.domain.operation.repository.OperationRepository;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreStatus;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static com.foodwallet.server.domain.member.MemberRole.BUSINESS;
@@ -357,6 +357,60 @@ class StoreServiceTest extends IntegrationTestSupport {
             .contains("경기도 성남시 분당구 판교역로 166", "오전 11:00 ~ 오후 8:00", 37.3954951, 127.1103645, 0);
     }
 
+    @DisplayName("매장 운영 종료시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void closeStoreWithoutAuth() {
+        //given
+        LocalDateTime currentDateTime = LocalDateTime.of(2024, 1, 28, 20, 0);
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.OPEN);
+        Operation operation = createOperation(OperationStatus.START, LocalDateTime.of(2024, 1, 28, 10, 50), store);
+
+        Member otherMember = createMember("do72@naver.com", BUSINESS, null);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.closeStore("do72@naver.com", store.getId(), currentDateTime))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("매장 운영 종료시 매장이 운영 상태가 아니라면 예외가 발생한다.")
+    @Test
+    void closeStoreWithNotOpen() {
+        //given
+        LocalDateTime currentDateTime = LocalDateTime.of(2024, 1, 28, 20, 0);
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+        Operation operation = createOperation(OperationStatus.FINISH, currentDateTime, store);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.closeStore("dong82@naver.com", store.getId(), currentDateTime))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("운영 중인 매장이 아닙니다.");
+    }
+
+    @DisplayName("회원의 이메일, 매장 식별키, 현재 시간을 입력 받아 매장 운영을 종료한다.")
+    @Test
+    void closeStore() {
+        //given
+        LocalDateTime currentDateTime = LocalDateTime.of(2024, 1, 28, 20, 0);
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.OPEN);
+        Operation operation = createOperation(OperationStatus.START, LocalDateTime.of(2024, 1, 28, 10, 50), store);
+
+        //when
+        StoreCloseResponse response = storeService.closeStore("dong82@naver.com", store.getId(), currentDateTime);
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore.getStatus()).isEqualByComparingTo(StoreStatus.CLOSE);
+
+        Operation findOperation = operationRepository.findById(operation.getId());
+        assertThat(findOperation)
+            .extracting("status", "finishedDateTime", "totalSales")
+            .contains(OperationStatus.FINISH, currentDateTime, 0);
+    }
+
     public Account createAccount() {
         return Account.builder()
             .bankCode("088")
@@ -387,5 +441,22 @@ class StoreServiceTest extends IntegrationTestSupport {
             .member(member)
             .build();
         return storeRepository.save(store);
+    }
+
+    private Operation createOperation(OperationStatus status, LocalDateTime finishedDateTime, Store store) {
+        Operation operation = Operation.builder()
+            .status(status)
+            .address("경기도 성남시 분당구 판교역로 166")
+            .time("오전 11:00 ~ 오후 20:00")
+            .coordinate(Coordinate.builder()
+                .latitude(37.3954951)
+                .longitude(127.1103645)
+                .build())
+            .startedDateTime(LocalDateTime.of(2024, 1, 28, 10, 50))
+            .finishedDateTime(finishedDateTime)
+            .totalSales(0)
+            .store(store)
+            .build();
+        return operationRepository.save(operation);
     }
 }

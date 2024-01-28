@@ -379,4 +379,18 @@ class StoreApiControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.message").value("경도를 입력하세요."))
             .andExpect(jsonPath("$.data").isEmpty());
     }
+
+    @DisplayName("매장 운영을 종료한다.")
+    @Test
+    void closeStore() throws Exception {
+        //given //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/close", 1)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
 }

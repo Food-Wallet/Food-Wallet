@@ -4,10 +4,7 @@ import com.foodwallet.server.api.FileStore;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
-import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
-import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
+import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Member;
@@ -23,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -113,6 +111,21 @@ public class StoreService {
         store.open();
 
         return StoreOpenResponse.of(store, savedOperation);
+    }
+
+    public StoreCloseResponse closeStore(String email, Long storeId, LocalDateTime currentDateTime) {
+        Store store = getMyStore(email, storeId);
+
+        if (!store.isOpen()) {
+            throw new IllegalArgumentException("운영 중인 매장이 아닙니다.");
+        }
+
+        //todo: 2024-01-28 16:40 매장 총 매출액 계산 로직 미구현
+        Operation operation = operationRepository.findByStoreIdAndStatusEqStart(storeId);
+        operation.finish(0, currentDateTime);
+        store.close();
+
+        return StoreCloseResponse.of(store, operation, currentDateTime);
     }
 
     /**

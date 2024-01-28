@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OperationStatus {
 
-    OPEN("영업중"),
-    CLOSE("영업종료");
+    START("운영시작"),
+    FINISH("운영종료");
 
     private final String text;
 }

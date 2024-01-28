@@ -4,13 +4,14 @@ import com.foodwallet.server.api.controller.store.StoreApiController;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
+import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
-import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
-import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
+import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
+import com.foodwallet.server.api.service.store.response.*;
 import com.foodwallet.server.docs.RestDocsSupport;
+import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.security.SecurityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -30,8 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -284,5 +285,99 @@ public class StoreApiControllerDocsTest extends RestDocsSupport {
                         .description("매장 이미지 수정 일시")
                 )
             ));
+    }
+
+    @DisplayName("매장 운영 시작 API")
+    @Test
+    void openStore() throws Exception {
+        StoreOpenRequest request = StoreOpenRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(20, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        OperationOpenResponse operationInfo = OperationOpenResponse.builder()
+            .operationId(1L)
+            .address("경기도 성남시 분당구 판교역로 166")
+            .time("오전 11:00 ~ 오후 8:00")
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+        StoreOpenResponse response = StoreOpenResponse.builder()
+            .storeId(1L)
+            .status(StoreStatus.OPEN.getText())
+            .storeName("나리닭강정")
+            .operationInfo(operationInfo)
+            .startedDateTime(LocalDateTime.of(2024, 1, 28, 10, 50))
+            .build();
+
+        given(storeService.openStore(anyString(), anyLong(), any(StoreOpenServiceRequest.class)))
+            .willReturn(response);
+
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/open", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(document("open-store",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION)
+                        .description("JWT 접근 토큰")
+                ),
+                pathParameters(
+                    parameterWithName("storeId")
+                        .description("매장 식별키")
+                ),
+                requestFields(
+                    fieldWithPath("address").type(JsonFieldType.STRING)
+                        .description("매장 운영할 장소의 도로명 주소"),
+                    fieldWithPath("startTime").type(JsonFieldType.ARRAY)
+                        .description("매장 운영을 시작할 시간"),
+                    fieldWithPath("finishTime").type(JsonFieldType.ARRAY)
+                        .description("매장 운영을 종료할 시간"),
+                    fieldWithPath("latitude").type(JsonFieldType.NUMBER)
+                        .description("매장 운영할 장소의 위도"),
+                    fieldWithPath("longitude").type(JsonFieldType.NUMBER)
+                        .description("매장 운영할 장소의 경도")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        .description("응답 데이터"),
+                    fieldWithPath("data.storeId").type(JsonFieldType.NUMBER)
+                        .description("운영을 시작한 매장 식별키"),
+                    fieldWithPath("data.status").type(JsonFieldType.STRING)
+                        .description("매장 운영 상태"),
+                    fieldWithPath("data.storeName").type(JsonFieldType.STRING)
+                        .description("운영을 시작한 매장명"),
+                    fieldWithPath("data.operationInfo").type(JsonFieldType.OBJECT)
+                        .description("매장 운영 정보"),
+                    fieldWithPath("data.operationInfo.operationId").type(JsonFieldType.NUMBER)
+                        .description("매장 운영 정보 식별키"),
+                    fieldWithPath("data.operationInfo.address").type(JsonFieldType.STRING)
+                        .description("매장 운영할 장소의 도로명 주소"),
+                    fieldWithPath("data.operationInfo.time").type(JsonFieldType.STRING)
+                        .description("매장 운영 시간 정보"),
+                    fieldWithPath("data.operationInfo.latitude").type(JsonFieldType.NUMBER)
+                        .description("매장 운영할 장소의 위도"),
+                    fieldWithPath("data.operationInfo.longitude").type(JsonFieldType.NUMBER)
+                        .description("매장 운영할 장소의 경도"),
+                    fieldWithPath("data.startedDateTime").type(JsonFieldType.ARRAY)
+                        .description("운영 시작 일시")
+                )
+            ));
+
     }
 }

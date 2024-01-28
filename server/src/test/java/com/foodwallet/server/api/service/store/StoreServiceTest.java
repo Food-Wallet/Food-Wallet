@@ -3,26 +3,30 @@ package com.foodwallet.server.api.service.store;
 import com.foodwallet.server.IntegrationTestSupport;
 import com.foodwallet.server.api.service.store.request.StoreCreateServiceRequest;
 import com.foodwallet.server.api.service.store.request.StoreModifyInfoServiceRequest;
+import com.foodwallet.server.api.service.store.request.StoreOpenServiceRequest;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
+import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import com.foodwallet.server.common.exception.AuthenticationException;
 import com.foodwallet.server.domain.UploadFile;
 import com.foodwallet.server.domain.member.Account;
 import com.foodwallet.server.domain.member.Member;
 import com.foodwallet.server.domain.member.MemberRole;
 import com.foodwallet.server.domain.member.repository.MemberRepository;
+import com.foodwallet.server.domain.operation.Operation;
+import com.foodwallet.server.domain.operation.repository.OperationRepository;
 import com.foodwallet.server.domain.store.Store;
 import com.foodwallet.server.domain.store.StoreStatus;
 import com.foodwallet.server.domain.store.StoreType;
 import com.foodwallet.server.domain.store.repository.StoreRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
+import java.time.LocalTime;
 
 import static com.foodwallet.server.domain.member.MemberRole.BUSINESS;
 import static com.foodwallet.server.domain.member.MemberRole.USER;
@@ -39,6 +43,9 @@ class StoreServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private StoreRepository storeRepository;
+
+    @Autowired
+    private OperationRepository operationRepository;
 
     @DisplayName("신규 매장 등록시 사업자 회원이 아니라면 예외가 발생한다.")
     @Test
@@ -232,6 +239,122 @@ class StoreServiceTest extends IntegrationTestSupport {
         assertThat(findStore)
             .extracting("image.uploadFileName", "image.storeFileName")
             .contains("uploadFileName", "storeFileName");
+    }
+
+    @DisplayName("매장 운영 시작시 본인의 매장이 아니라면 예외가 발생한다.")
+    @Test
+    void openStoreWithoutAuth() {
+        //given
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+        StoreOpenServiceRequest request = StoreOpenServiceRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(20, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        Member otherMember = createMember("do72@naver.com", BUSINESS, null);
+
+        //when //then
+        assertThatThrownBy(() -> storeService.openStore("do72@naver.com", store.getId(), request))
+            .isInstanceOf(AuthenticationException.class)
+            .hasMessage("접근 권한이 없습니다.");
+    }
+
+    @DisplayName("매장 운영 시작시 매장이 이미 운영중이라면 예외가 발생한다.")
+    @Test
+    void openStoreWithOpen() {
+        //given
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.OPEN);
+        StoreOpenServiceRequest request = StoreOpenServiceRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(20, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        //when //then
+        assertThatThrownBy(() -> storeService.openStore("dong82@naver.com", store.getId(), request))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("이미 매장을 운영하고 있습니다.");
+    }
+
+    @DisplayName("매장 운영 시작시 입력 받은 운영 시작 시간과 종료 시간이 같으면 예외가 발생한다.")
+    @Test
+    void openStoreWithStartTimeEqualsFinishTime() {
+        //given
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+        StoreOpenServiceRequest request = StoreOpenServiceRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(11, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        //when //then
+        assertThatThrownBy(() -> storeService.openStore("dong82@naver.com", store.getId(), request))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("운영 시작 시간과 종료 시간을 다르게 설정해주세요.");
+    }
+
+    @DisplayName("매장 운영 시작시 입력 받은 운영 시작 시간보다 종료 시간이 과거라면 익일 종료로 변경된다.")
+    @Test
+    void openStoreWithFinishTimeLessThanStartTime() {
+        //given
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+        StoreOpenServiceRequest request = StoreOpenServiceRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(10, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        //when
+        StoreOpenResponse response = storeService.openStore("dong82@naver.com", store.getId(), request);
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore.getStatus()).isEqualByComparingTo(StoreStatus.OPEN);
+
+        Operation operation = operationRepository.findById(response.getOperationInfo().getOperationId());
+        assertThat(operation)
+            .extracting("address", "time", "coordinate.latitude", "coordinate.longitude", "totalSales")
+            .contains("경기도 성남시 분당구 판교역로 166", "오전 11:00 ~ 익일 10:00", 37.3954951, 127.1103645, 0);
+    }
+
+    @DisplayName("회원의 이메일, 매장 식별키, 운영 정보를 입력 받아 매장 운영을 시작한다.")
+    @Test
+    void openStore() {
+        //given
+        Member member = createMember("dong82@naver.com", BUSINESS, null);
+        Store store = createStore(member, StoreStatus.CLOSE);
+        StoreOpenServiceRequest request = StoreOpenServiceRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(20, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        //when
+        StoreOpenResponse response = storeService.openStore("dong82@naver.com", store.getId(), request);
+
+        //then
+        Store findStore = storeRepository.findById(store.getId());
+        assertThat(findStore.getStatus()).isEqualByComparingTo(StoreStatus.OPEN);
+
+        Operation operation = operationRepository.findById(response.getOperationInfo().getOperationId());
+        assertThat(operation)
+            .extracting("address", "time", "coordinate.latitude", "coordinate.longitude", "totalSales")
+            .contains("경기도 성남시 분당구 판교역로 166", "오전 11:00 ~ 오후 8:00", 37.3954951, 127.1103645, 0);
     }
 
     public Account createAccount() {

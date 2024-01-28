@@ -4,10 +4,12 @@ import com.foodwallet.server.api.ApiResponse;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyImageRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
+import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import com.foodwallet.server.api.service.store.StoreService;
 import com.foodwallet.server.api.service.store.response.StoreCreateResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyImageResponse;
 import com.foodwallet.server.api.service.store.response.StoreModifyInfoResponse;
+import com.foodwallet.server.api.service.store.response.StoreOpenResponse;
 import com.foodwallet.server.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,18 @@ public class StoreApiController {
         String email = SecurityUtils.getCurrentEmail();
 
         StoreModifyImageResponse response = storeService.modifyStoreImage(email, storeId, request.getStoreImage());
+
+        return ApiResponse.ok(response);
+    }
+
+    @PostMapping("/{storeId}/open")
+    public ApiResponse<StoreOpenResponse> openStore(
+        @PathVariable Long storeId,
+        @Valid @RequestBody StoreOpenRequest request
+    ) {
+        String email = SecurityUtils.getCurrentEmail();
+
+        StoreOpenResponse response = storeService.openStore(email, storeId, request.toServiceRequest());
 
         return ApiResponse.ok(response);
     }

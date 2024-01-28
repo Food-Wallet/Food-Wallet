@@ -20,7 +20,11 @@ public class Operation extends BaseEntity {
     @Column(name = "operation_id")
     private Long id;
 
-    @Column(nullable = false, updatable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(10) default 'OPEN'", length = 10)
+    private OperationStatus status;
+
+    @Column(nullable = false, updatable = false, length = 30)
     private String address;
 
     @Column(nullable = false, updatable = false, length = 20)
@@ -43,7 +47,8 @@ public class Operation extends BaseEntity {
     private Store store;
 
     @Builder
-    private Operation(String address, String time, Coordinate coordinate, LocalDateTime startedDateTime, LocalDateTime finishedDateTime, int totalSales, Store store) {
+    private Operation(OperationStatus status, String address, String time, Coordinate coordinate, LocalDateTime startedDateTime, LocalDateTime finishedDateTime, int totalSales, Store store) {
+        this.status = status;
         this.address = address;
         this.time = time;
         this.coordinate = coordinate;
@@ -51,5 +56,20 @@ public class Operation extends BaseEntity {
         this.finishedDateTime = finishedDateTime;
         this.totalSales = totalSales;
         this.store = store;
+    }
+
+    public static Operation create(String address, String time, double latitude, double longitude, Store store) {
+        Coordinate coordinate = Coordinate.create(latitude, longitude);
+
+        return Operation.builder()
+            .status(OperationStatus.OPEN)
+            .address(address)
+            .time(time)
+            .coordinate(coordinate)
+            .startedDateTime(LocalDateTime.now())
+            .finishedDateTime(LocalDateTime.now())
+            .totalSales(0)
+            .store(store)
+            .build();
     }
 }

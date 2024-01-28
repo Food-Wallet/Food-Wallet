@@ -1,5 +1,7 @@
 package com.foodwallet.server.api.service.store.response;
 
+import com.foodwallet.server.domain.operation.Operation;
+import com.foodwallet.server.domain.store.Store;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,20 +10,28 @@ import java.time.LocalDateTime;
 @Getter
 public class StoreOpenResponse {
 
-    private final String name;
-    private final String address;
-    private final String openTime;
-    private final Double latitude;
-    private final Double longitude;
-    private final LocalDateTime openDateTime;
+    private final Long storeId;
+    private final String status;
+    private final String storeName;
+    private final OperationOpenResponse operationInfo;
+    private final LocalDateTime startedDateTime;
 
     @Builder
-    private StoreOpenResponse(String name, String address, String openTime, Double latitude, Double longitude, LocalDateTime openDateTime) {
-        this.name = name;
-        this.address = address;
-        this.openTime = openTime;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.openDateTime = openDateTime;
+    private StoreOpenResponse(Long storeId, String status, String storeName, OperationOpenResponse operationInfo, LocalDateTime startedDateTime) {
+        this.storeId = storeId;
+        this.status = status;
+        this.storeName = storeName;
+        this.operationInfo = operationInfo;
+        this.startedDateTime = startedDateTime;
+    }
+
+    public static StoreOpenResponse of(Store store, Operation operation) {
+        return StoreOpenResponse.builder()
+            .storeId(store.getId())
+            .status(store.getStatus().getText())
+            .storeName(store.getName())
+            .operationInfo(OperationOpenResponse.of(operation))
+            .startedDateTime(LocalDateTime.now())
+            .build();
     }
 }

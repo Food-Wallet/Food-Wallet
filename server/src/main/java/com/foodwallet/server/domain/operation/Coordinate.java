@@ -13,14 +13,18 @@ import lombok.NoArgsConstructor;
 public class Coordinate {
 
     @Column(nullable = false)
-    private String latitude;
+    private double latitude;
 
     @Column(nullable = false)
-    private String longitude;
+    private double longitude;
 
     @Builder
-    private Coordinate(String latitude, String longitude) {
+    private Coordinate(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public static Coordinate create(double latitude, double longitude) {
+        return new Coordinate(latitude, longitude);
     }
 }

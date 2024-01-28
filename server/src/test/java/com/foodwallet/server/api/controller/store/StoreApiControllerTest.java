@@ -3,6 +3,7 @@ package com.foodwallet.server.api.controller.store;
 import com.foodwallet.server.ControllerTestSupport;
 import com.foodwallet.server.api.controller.store.request.StoreCreateRequest;
 import com.foodwallet.server.api.controller.store.request.StoreModifyInfoRequest;
+import com.foodwallet.server.api.controller.store.request.StoreOpenRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -10,8 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import java.time.LocalTime;
+
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -217,5 +219,164 @@ class StoreApiControllerTest extends ControllerTestSupport {
             )
             .andDo(print())
             .andExpect(status().isOk());
+    }
+
+    @DisplayName("매장 운영을 시작한다.")
+    @Test
+    void openStore() throws Exception {
+        //given
+        StoreOpenRequest request = StoreOpenRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(20, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/open", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @DisplayName("매장 운영을 시작할 때 주소는 필수값이다.")
+    @Test
+    void openStoreWithoutAddress() throws Exception {
+        //given
+        StoreOpenRequest request = StoreOpenRequest.builder()
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(20, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/open", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("주소를 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("매장 운영을 시작할 때 운영 시작 시간은 필수값이다.")
+    @Test
+    void openStoreWithStartTime() throws Exception {
+        //given
+        StoreOpenRequest request = StoreOpenRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .finishTime(LocalTime.of(20, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/open", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("시작 시간을 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("매장 운영을 시작할 때 운영 종료 시간은 필수값이다.")
+    @Test
+    void openStoreWithoutFinishTime() throws Exception {
+        //given
+        StoreOpenRequest request = StoreOpenRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .latitude(37.3954951)
+            .longitude(127.1103645)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/open", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("종료 시간을 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("매장 운영을 시작할 때 위도는 필수값이다.")
+    @Test
+    void openStoreWithoutLatitude() throws Exception {
+        //given
+        StoreOpenRequest request = StoreOpenRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(20, 0))
+            .longitude(127.1103645)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/open", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("위도를 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("매장 운영을 시작할 때 경도는 필수값이다.")
+    @Test
+    void openStoreWithoutLongitude() throws Exception {
+        //given
+        StoreOpenRequest request = StoreOpenRequest.builder()
+            .address("경기도 성남시 분당구 판교역로 166")
+            .startTime(LocalTime.of(11, 0))
+            .finishTime(LocalTime.of(20, 0))
+            .latitude(37.3954951)
+            .build();
+
+        //when //then
+        mockMvc.perform(
+                post(BASE_URL + "/{storeId}/open", 1)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer jwt.access.token")
+                    .with(csrf())
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("400"))
+            .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("경도를 입력하세요."))
+            .andExpect(jsonPath("$.data").isEmpty());
     }
 }
